@@ -23,6 +23,20 @@ public class YoloIntegration : MonoBehaviour
         }
     }
 
+    Texture2D ResizeTexture(Texture2D source, int newWidth, int newHeight)
+    {
+        RenderTexture rt = RenderTexture.GetTemporary(newWidth, newHeight);
+        Graphics.Blit(source, rt);
+        RenderTexture.active = rt;
+
+        Texture2D newTex = new Texture2D(newWidth, newHeight, TextureFormat.RGB24, false);
+        newTex.ReadPixels(new Rect(0, 0, newWidth, newHeight), 0, 0);
+        newTex.Apply();
+
+        RenderTexture.ReleaseTemporary(rt);
+        return newTex;
+    }
+
     async void CaptureAndSend()
     {
         // Capture the camera view to a texture
@@ -38,6 +52,8 @@ public class YoloIntegration : MonoBehaviour
             debugImage.texture = tex;
         }
 
+        Texture2D resizedTex = ResizeTexture(tex, 416, 416);
+
         // Convert to PNG and send to YOLO server
         byte[] imageBytes = tex.EncodeToPNG();
         string yoloResponse = await SendToYOLO(imageBytes);
@@ -52,6 +68,9 @@ public class YoloIntegration : MonoBehaviour
         Destroy(tex);
         RenderTexture.active = null;
     }
+
+
+
 
     async Task<string> SendToYOLO(byte[] imageBytes)
     {
@@ -100,11 +119,26 @@ public class YoloIntegration : MonoBehaviour
             float xMax = detection.xmax / imageWidth;
             float yMax = detection.ymax / imageHeight;
 
+
+            float flippedYMin = 1 - yMax;
+            float flippedYMax = 1 - yMin;
+
             // Scale normalized coordinates to local space within OverheadCameraView
+
             float localXMin = xMin * viewSize.x;
-            float localYMin = yMin * viewSize.y;
+            float localYMin = flippedYMin * viewSize.y;
             float localXMax = xMax * viewSize.x;
-            float localYMax = yMax * viewSize.y;
+            float localYMax = flippedYMax * viewSize.y;
+
+            
+            // Apply a manual Y-offset adjustment to align the boxes to the camera view
+            float xOffset = 10; // Adjust this value to fine-tune alignment
+            float yOffset = -305; // Adjust this value to fine-tune alignment
+
+            localXMin += xOffset;
+            localXMax += xOffset;
+            localYMin += yOffset;
+            localYMax += yOffset;
 
             Debug.Log($"Local Min: ({localXMin}, {localYMin}), Local Max: ({localXMax}, {localYMax})");
 
@@ -112,14 +146,8 @@ public class YoloIntegration : MonoBehaviour
             GameObject box = Instantiate(boundingBoxPrefab, overheadCameraView);
             RectTransform rt = box.GetComponent<RectTransform>();
 
-            float adjustedX = localXMin;
-            float adjustedY = localYMin;    
-
-            adjustedX += 30f;
-            adjustedY -= 325f;
-
             // Set the bounding box position relative to OverheadCameraView
-            rt.anchoredPosition = new Vector2(adjustedX, adjustedY);
+            rt.anchoredPosition = new Vector2(localXMin, localYMin);
 
             // Set the size of the bounding box
             rt.sizeDelta = new Vector2(
@@ -129,11 +157,25 @@ public class YoloIntegration : MonoBehaviour
 
             Debug.Log($"Bounding Box Position: {rt.anchoredPosition}, Size: {rt.sizeDelta}");
 
-            // Optionally: Add label and confidence
             Text label = box.GetComponentInChildren<Text>();
             if (label != null)
             {
-                label.text = $"{detection.name} ({detection.confidence:F2})";
+                // Set the label text
+                // label.text = $"{detection.name} ({detection.confidence:F2})";
+                label.text = $"{detection.name}";
+
+
+                // Adjust the label position relative to the bounding box
+                RectTransform labelRect = label.GetComponent<RectTransform>();
+
+                if (labelRect != null)
+                {
+                    labelRect.anchorMin = new Vector2(0, 1);
+                    labelRect.anchorMax = new Vector2(0, 1);
+                    labelRect.pivot = new Vector2(0.5f, 1);
+
+                    labelRect.anchoredPosition = new Vector2(75, 17); // Centered at the top
+                }
             }
 
             boundingBoxes.Add(box);
