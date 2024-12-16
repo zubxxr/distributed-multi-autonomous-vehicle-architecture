@@ -8,8 +8,97 @@ public class ParkingSpot : MonoBehaviour
     public Rect bounds; // Combined bounds of the parking space
     public bool IsOccupied = false; // Whether the spot is occupied
 
+    public Camera overheadCamera;
+    [SerializeField] private RectTransform overheadCameraView;
+
     private Renderer[] renderers;
     private GameObject fillPlane; // Plane to fill the spot with color
+    
+    /// <summary>
+    /// Transforms the parking spot bounds to the overhead camera's screen-space coordinates
+    /// and draws them in the UI.
+    /// </summary>
+    public void DrawInCameraView()
+    {
+        if (overheadCamera == null || overheadCameraView == null)
+        {
+            Debug.LogError($"Overhead camera or camera view not assigned for {id}");
+            return;
+        }
+
+        // Adjust the bounds by applying the offsets
+        Rect adjustedBounds = new Rect(
+            bounds.x,
+            bounds.y,
+            bounds.width,
+            bounds.height
+        );
+
+        // Convert bounds to world space corners
+        Vector3 bottomLeft = new Vector3(adjustedBounds.xMin, transform.position.y, adjustedBounds.yMin);
+        Vector3 bottomRight = new Vector3(adjustedBounds.xMax, transform.position.y, adjustedBounds.yMin);
+        Vector3 topLeft = new Vector3(adjustedBounds.xMin, transform.position.y, adjustedBounds.yMax);
+        Vector3 topRight = new Vector3(adjustedBounds.xMax, transform.position.y, adjustedBounds.yMax);
+
+        // Transform the world corners to screen space
+        Vector3[] screenCorners = new Vector3[4];
+        screenCorners[0] = overheadCamera.WorldToViewportPoint(bottomLeft);
+        screenCorners[1] = overheadCamera.WorldToViewportPoint(bottomRight);
+        screenCorners[2] = overheadCamera.WorldToViewportPoint(topLeft);
+        screenCorners[3] = overheadCamera.WorldToViewportPoint(topRight);
+
+        // Convert viewport coordinates to UI local coordinates
+        RectTransform cameraViewRect = overheadCameraView.GetComponent<RectTransform>();
+        Vector2 viewSize = cameraViewRect.rect.size;
+        Vector2[] uiCorners = new Vector2[4];
+
+        for (int i = 0; i < screenCorners.Length; i++)
+        {
+            // Convert to UI coordinates by scaling the viewport coordinates
+            uiCorners[i] = new Vector2(
+                screenCorners[i].x * viewSize.x,
+                screenCorners[i].y * viewSize.y
+            );
+        }
+
+        // Draw the rectangle in the UI
+        DrawRectangleInView(uiCorners, cameraViewRect);
+    }
+
+    private void DrawRectangleInView(Vector2[] corners, RectTransform parent)
+    {
+        if (corners.Length != 4)
+        {
+            Debug.LogError("Invalid number of corners for the rectangle.");
+            return;
+        }
+
+        // Create a GameObject to represent the rectangle
+        GameObject rectangle = new GameObject($"Rectangle_{id}", typeof(RectTransform));
+        RectTransform rectTransform = rectangle.GetComponent<RectTransform>();
+        rectTransform.SetParent(parent, false);
+
+        // Calculate the center and size of the rectangle
+        Vector2 center = (corners[0] + corners[2]) / 2;
+        Vector2 size = new Vector2(
+            Vector2.Distance(corners[0], corners[1]), // Width
+            Vector2.Distance(corners[0], corners[2])  // Height
+        );
+
+        // Define offsets for the bounds
+        float offsetX = -272.29f; // Horizontal adjustment
+        float offsetY = -187.0f; // Vertical adjustment
+        
+        // Apply offsets to the center position
+        center += new Vector2(offsetX, offsetY);
+
+        rectTransform.anchoredPosition = center;
+        rectTransform.sizeDelta = size;
+
+        // Add a background image to visualize the rectangle
+        UnityEngine.UI.Image image = rectangle.AddComponent<UnityEngine.UI.Image>();
+        image.color = IsOccupied ? new Color(1, 0, 0, 0.5f) : new Color(0, 1, 0, 0.5f); // Red for occupied, green for empty
+    }
 
     void Start()
     {
@@ -22,7 +111,7 @@ public class ParkingSpot : MonoBehaviour
 
         // Calculate combined bounds from parking lines
         bounds = CalculateBounds();
-        CreateFillPlane();
+        // CreateFillPlane();
     }
 
     void Update()
@@ -66,12 +155,6 @@ public class ParkingSpot : MonoBehaviour
             // Find the center of the parking spot (midpoint between the two parking lines)
             Vector3 center = (line1Pos + line2Pos) / 2;
 
-            // Debugging the positions, scales, and distances
-            Debug.Log($"Parking Line {i+1} position: {line1Pos}, scale: {line1Scale}");
-            Debug.Log($"Parking Line {i+2} position: {line2Pos}, scale: {line2Scale}");
-            Debug.Log($"Distance between parking lines: {distance}");
-            Debug.Log($"Calculated width: {width}, depth: {depth}, height: {height}");
-
             // Update the combined bounds by encapsulating the bounds of this parking spot
             combinedBounds.Encapsulate(new Bounds(center, new Vector3(width, height, depth)));
         }
@@ -84,52 +167,103 @@ public class ParkingSpot : MonoBehaviour
             combinedBounds.size.z
         );
 
-        if (id == "5")  // For debugging purposes
-        {
-            Debug.Log($"Final Combined Bounds for {id}: Min={finalBounds.min}, Size={finalBounds.size}");
-        }
-
         return finalBounds;
     }
 
-    public void IsOccupiedByYOLO(List<Detection> detections, int imageWidth, int imageHeight)
+    public void IsOccupiedByYOLO(List<Detection> detections, int imageWidth, int imageHeight, string spotID)
     {
+        if (overheadCameraView == null)
+        {
+            Debug.LogError("Overhead camera view not assigned.");
+            return;
+        }
+
+        // Transform the parking spot bounds to UI-space using DrawRectangleInView
+        RectTransform cameraViewRect = overheadCameraView.GetComponent<RectTransform>();
+        Vector3[] screenCorners = new Vector3[4];
+        Vector3 bottomLeft = new Vector3(bounds.xMin, transform.position.y, bounds.yMin);
+        Vector3 bottomRight = new Vector3(bounds.xMax, transform.position.y, bounds.yMin);
+        Vector3 topLeft = new Vector3(bounds.xMin, transform.position.y, bounds.yMax);
+        Vector3 topRight = new Vector3(bounds.xMax, transform.position.y, bounds.yMax);
+
+        // Convert to viewport space
+        screenCorners[0] = overheadCamera.WorldToViewportPoint(bottomLeft);
+        screenCorners[1] = overheadCamera.WorldToViewportPoint(bottomRight);
+        screenCorners[2] = overheadCamera.WorldToViewportPoint(topLeft);
+        screenCorners[3] = overheadCamera.WorldToViewportPoint(topRight);
+
+        // Convert viewport space to UI local space
+        Vector2 viewSize = cameraViewRect.rect.size;
+        Vector2[] uiCorners = new Vector2[4];
+        for (int i = 0; i < screenCorners.Length; i++)
+        {
+            uiCorners[i] = new Vector2(
+                screenCorners[i].x * viewSize.x,
+                screenCorners[i].y * viewSize.y
+            );
+        }
+
+        // Calculate the final UI rectangle
+        Vector2 center = (uiCorners[0] + uiCorners[2]) / 2;
+        Vector2 size = new Vector2(
+            Vector2.Distance(uiCorners[0], uiCorners[1]), // Width
+            Vector2.Distance(uiCorners[0], uiCorners[2])  // Height
+        );
+
+        // Offsets applied (same as in DrawRectangleInView)
+        float offsetX = -272.29f;
+        float offsetY = -187.0f;
+        center += new Vector2(offsetX, offsetY);
+
+        Rect uiBounds = new Rect(
+            center.x - size.x / 2,
+            center.y - size.y / 2,
+            size.x,
+            size.y
+        );
+
+        // Check for overlap with YOLO detections
         bool isOccupied = false;
 
         foreach (var detection in detections)
         {
+            // Create detection rect in UI space
             Rect detectionRect = new Rect(
-                detection.xmin / imageWidth,
-                detection.ymin / imageHeight,
-                (detection.xmax - detection.xmin) / imageWidth,
-                (detection.ymax - detection.ymin) / imageHeight
+                detection.xmin / imageWidth * viewSize.x,
+                detection.ymin / imageHeight * viewSize.y,
+                (detection.xmax - detection.xmin) / imageWidth * viewSize.x,
+                (detection.ymax - detection.ymin) / imageHeight * viewSize.y
             );
 
-            // Assuming the bounds of the parking spot is a Rect
-            if (this.bounds.Overlaps(detectionRect))
+            // Check for overlap
+            if (uiBounds.Overlaps(detectionRect))
             {
                 isOccupied = true;
+                Debug.Log($"Spot {spotID} is occupied by detection.");
                 break;
             }
         }
 
-        // Update IsOccupied status
-        this.IsOccupied = isOccupied;
+        IsOccupied = isOccupied;
+        UpdateColor();
     }
+
 
 
     public void UpdateColor()
     {
-        Renderer renderer = GetComponent<Renderer>(); // Assuming you have a Renderer attached to your ParkingSpot GameObject
-        if (renderer != null)
+        Color color = IsOccupied ? Color.red : Color.green;
+        foreach (Renderer renderer in renderers)
         {
-            if (IsOccupied)
-                renderer.material.color = Color.red; // Change color to red if occupied
-            else
-                renderer.material.color = Color.green; // Change color to green if empty
+            renderer.material.color = color;
+        }
+
+        // Optionally, update the fill plane color as well
+        if (fillPlane != null)
+        {
+            fillPlane.GetComponent<Renderer>().material.color = color;
         }
     }
-
     private void CreateFillPlane()
     {
         if (bounds.width <= 0 || bounds.height <= 0)
@@ -161,7 +295,7 @@ public class ParkingSpot : MonoBehaviour
 
         // Disable the collider
         Destroy(fillPlane.GetComponent<Collider>());
-        Debug.Log($"Created fill plane for {id} at {fillPlane.transform.position} with scale {fillPlane.transform.localScale}");
+        // Debug.Log($"Created fill plane for {id} at {fillPlane.transform.position} with scale {fillPlane.transform.localScale}");
 
     }
 
@@ -188,7 +322,7 @@ public class ParkingSpot : MonoBehaviour
 
         // Construct the average rotation
         Quaternion averageRotation = Quaternion.LookRotation(averageForward, averageUp);
-        Debug.Log($"Average rotation for {id}: {averageRotation.eulerAngles}");
+        // Debug.Log($"Average rotation for {id}: {averageRotation.eulerAngles}");
         return averageRotation;
     }
 
