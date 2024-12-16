@@ -110,17 +110,15 @@ public class YoloIntegration : MonoBehaviour
 
         // Clear the empty parking spots list before recalculating
         emptyParkingSpots.Clear();
-
-        Debug.Log($"Parking Spots 1: {string.Join(", ", parkingSpots)}");
         
         // Check detections for each parking spot
         foreach (ParkingSpot spot in parkingSpots)
-        {
-            spot.IsOccupiedByYOLO(detections.ToList(), imageWidth, imageHeight);
+        {   
+            spot.UpdateColor(); // Update the spot color
+            spot.DrawInCameraView(); // Draw the spot in the overhead camera view
+            spot.IsOccupiedByYOLO(detections.ToList(), imageWidth, imageHeight, spot.id);
 
-            bool isOccupied = spot.IsOccupied;
-
-            if (!isOccupied)
+            if (!spot.IsOccupied)
             {
                 emptyParkingSpots.Add(spot.id);
             }
