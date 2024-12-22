@@ -110,7 +110,7 @@ public class YoloIntegration : MonoBehaviour
 
         // Clear the empty parking spots list before recalculating
         emptyParkingSpots.Clear();
-        
+
         // Check detections for each parking spot
         foreach (ParkingSpot spot in parkingSpots)
         {   
@@ -147,8 +147,15 @@ public class YoloIntegration : MonoBehaviour
             float localXMax = xMax * viewSize.x;
             float localYMax = flippedYMax * viewSize.y;
 
-            float xOffset = 10;
-            float yOffset = -305;
+            // Calculate width and height
+            float detectionWidth = localXMax - localXMin;
+            float detectionHeight = localYMax - localYMin;
+
+            // Debug: Output the detection dimensions (Width and Height)
+            // Debug.Log($"Detection {detection.name} - XMin: {localXMin}, YMin: {localYMin}, XMax: {localXMax}, YMax: {localYMax}, Width: {detectionWidth}, Height: {detectionHeight}");
+
+            float xOffset = -255.31916f;
+            float yOffset = -133.89724f;
 
             localXMin += xOffset;
             localXMax += xOffset;
@@ -162,6 +169,10 @@ public class YoloIntegration : MonoBehaviour
                 localXMax - localXMin,
                 localYMax - localYMin
             );
+
+            // Debug.Log($"[BoundingBox] Position - Anchored Position: {rt.anchoredPosition}, Size Delta: {rt.sizeDelta}");
+
+            // Debug.Log($"[BoundingBox] Position - Anchored Position: {rt.anchoredPosition}, Size Delta: {rt.sizeDelta}");
 
             Text label = box.GetComponentInChildren<Text>();
             if (label != null)
