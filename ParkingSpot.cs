@@ -14,6 +14,51 @@ public class ParkingSpot : MonoBehaviour
     private Renderer[] renderers;
     private GameObject fillPlane; // Plane to fill the spot with color
     
+    private void Awake()
+    {
+        // Automatically find the Camera GameObject and assign it first
+        if (overheadCamera == null)
+        {
+            GameObject cameraObject = GameObject.Find("Camera");
+            if (cameraObject != null)
+            {
+                overheadCamera = cameraObject.GetComponent<Camera>();
+                // Debug.Log("Camera assigned successfully.");
+            }
+            else
+            {
+                Debug.LogWarning("Camera GameObject could not be found.");
+            }
+        }
+
+        // Automatically find the OverheadCameraView GameObject and assign its RectTransform
+        if (overheadCameraView == null)
+        {
+            GameObject viewObject = GameObject.Find("OverheadCameraView");
+            if (viewObject != null)
+            {
+                overheadCameraView = viewObject.GetComponent<RectTransform>();
+                // Debug.Log("OverheadCameraView assigned successfully.");
+            }
+            else
+            {
+                Debug.LogWarning("OverheadCameraView GameObject could not be found.");
+            }
+        }
+
+        // Debug logs to confirm success or failure
+        if (overheadCamera == null)
+        {
+            Debug.LogWarning("Camera GameObject could not be found. Please ensure a GameObject named 'Camera' is present in the scene.");
+        }
+
+        if (overheadCameraView == null)
+        {
+            Debug.LogWarning("OverheadCameraView GameObject could not be found. Please ensure a GameObject named 'OverheadCameraView' is present in the scene.");
+        }
+    }
+
+
     /// <summary>
     /// Transforms the parking spot bounds to the overhead camera's screen-space coordinates
     /// and draws them in the UI.
@@ -33,12 +78,12 @@ public class ParkingSpot : MonoBehaviour
             bounds.height
         );
 
+
         // Convert bounds to world space corners
         Vector3 bottomLeft = new Vector3(adjustedBounds.xMin, transform.position.y, adjustedBounds.yMin);
         Vector3 bottomRight = new Vector3(adjustedBounds.xMax, transform.position.y, adjustedBounds.yMin);
         Vector3 topLeft = new Vector3(adjustedBounds.xMin, transform.position.y, adjustedBounds.yMax);
         Vector3 topRight = new Vector3(adjustedBounds.xMax, transform.position.y, adjustedBounds.yMax);
-
 
         // Transform the world corners to screen space
         Vector3[] screenCorners = new Vector3[4];
@@ -172,7 +217,7 @@ public class ParkingSpot : MonoBehaviour
             size.y
         );
 
-        Debug.Log($"[ParkingSpot] spotID = {spotID},  UI Bounds: {uiBounds}");
+        // Debug.Log($"[ParkingSpot] spotID = {spotID},  UI Bounds: {uiBounds}");
 
         // Check for overlap with YOLO detections
         bool isOccupied = false;
@@ -274,6 +319,9 @@ public class ParkingSpot : MonoBehaviour
         // To store the final combined bounds
         Bounds combinedBounds = new Bounds(parkingLines[0].transform.position, Vector3.zero);
 
+        Debug.Log($"parkingLines[0]: {parkingLines[0]}");
+
+
         // Iterate through all consecutive pairs of parking lines
         for (int i = 0; i < parkingLines.Length - 1; i++)
         {
@@ -310,13 +358,10 @@ public class ParkingSpot : MonoBehaviour
             combinedBounds.size.x,
             combinedBounds.size.z
         );
+        
 
         return finalBounds;
     }
-
-
-
-
 
     public void UpdateColor()
     {
