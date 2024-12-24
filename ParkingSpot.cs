@@ -147,17 +147,13 @@ public class ParkingSpot : MonoBehaviour
             size.x, // Reduce width by 5
             size.y  // Reduce height by 5
         );
-
-        // Debug.Log($"[DrawRectangleInView]: center: {center}, size: {size}");
-
-        // Debug.Log($"RectTransform Dimensions: X = {rectTransform.anchoredPosition.x}, Y = {rectTransform.anchoredPosition.y}, Width = {rectTransform.sizeDelta.x}, Height = {rectTransform.sizeDelta.y}");
+        
+        // ***** UNCOMMENT TO SEE PARKING SPOT BOUNDS *****
 
         // Add a background image to visualize the rectangle
-        UnityEngine.UI.Image image = rectangle.AddComponent<UnityEngine.UI.Image>();
-        image.color = IsOccupied ? new Color(1, 0, 0, 0.5f) : new Color(0, 1, 0, 0.5f); // Red for occupied, green for empty
+        // UnityEngine.UI.Image image = rectangle.AddComponent<UnityEngine.UI.Image>();
+        // image.color = IsOccupied ? new Color(1, 0, 0, 0.5f) : new Color(0, 1, 0, 0.5f); // Red for occupied, green for empty
 
-        // Debug.Log($"[DrawRectangleInView] Bounds Size: Width = {size.x}, Height = {size.y}");
-        // Debug.Log($"[DrawInCameraView] bottomLeft: {bottomLeft},  bottomRight: {bottomRight}, topLeft: {topLeft}, topRight: {topRight}");
     }
 
     public void IsOccupiedByYOLO(List<Detection> detections, int imageWidth, int imageHeight, string spotID)
@@ -318,9 +314,6 @@ public class ParkingSpot : MonoBehaviour
 
         // To store the final combined bounds
         Bounds combinedBounds = new Bounds(parkingLines[0].transform.position, Vector3.zero);
-
-        Debug.Log($"parkingLines[0]: {parkingLines[0]}");
-
 
         // Iterate through all consecutive pairs of parking lines
         for (int i = 0; i < parkingLines.Length - 1; i++)
