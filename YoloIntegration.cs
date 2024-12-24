@@ -166,8 +166,8 @@ public class YoloIntegration : MonoBehaviour
             RectTransform rt = box.GetComponent<RectTransform>();
             rt.anchoredPosition = new Vector2(localXMin, localYMin);
             rt.sizeDelta = new Vector2(
-                localXMax - localXMin,
-                localYMax - localYMin
+                localXMax - localXMin + 15,
+                localYMax - localYMin + 20
             );
 
             // Debug.Log($"[BoundingBox] Position - Anchored Position: {rt.anchoredPosition}, Size Delta: {rt.sizeDelta}");
