@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Linq; // For LINQ methods like OrderBy
 using System.Collections.Generic; 
+
 public class ParkingSpot : MonoBehaviour
 {
     public string id; // Spot ID (e.g., "Spot_1")
@@ -153,7 +154,25 @@ public class ParkingSpot : MonoBehaviour
         // Add a background image to visualize the rectangle
         // UnityEngine.UI.Image image = rectangle.AddComponent<UnityEngine.UI.Image>();
         // image.color = IsOccupied ? new Color(1, 0, 0, 0.5f) : new Color(0, 1, 0, 0.5f); // Red for occupied, green for empty
+	
+	// -------------------------------
+        // ADDING TEXT LABEL FOR SPOT ID
+        // -------------------------------
+        GameObject labelGO = new GameObject($"Label_{id}", typeof(RectTransform));
+        RectTransform labelRect = labelGO.GetComponent<RectTransform>();
+        labelRect.SetParent(parent, false);
+        labelRect.anchoredPosition = center;
+        labelRect.sizeDelta = new Vector2(50, 20); // Size of the label
 
+        var text = labelGO.AddComponent<UnityEngine.UI.Text>();
+        text.text = id;
+        text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        text.fontSize = 24;
+        text.color = Color.white;
+        text.alignment = TextAnchor.MiddleCenter;
+        text.horizontalOverflow = HorizontalWrapMode.Overflow;
+        text.verticalOverflow = VerticalWrapMode.Overflow;
+        
     }
 
     public void IsOccupiedByYOLO(List<Detection> detections, int imageWidth, int imageHeight, string spotID)
@@ -272,7 +291,7 @@ public class ParkingSpot : MonoBehaviour
             if (uiBounds.Overlaps(detectionRect))
             {
                 isOccupied = true;
-                Debug.Log($"Spot {spotID} is occupied by detection.");
+                // Debug.Log($"Spot {spotID} is occupied by detection.");
                 break;
             }
         }
