@@ -1,5 +1,7 @@
 # Multi Vehicle Autonomous Valet Parking Using Two Machines
 
+**[Include Steps on Downloading Autoware, AWSIM, UnityHub]**
+
 ## Step 1: Running AWSIM and Autoware
 This step covers running AWSIM and Autoware on Host 1, and another separate Autoware client on Host 2.
 
@@ -23,7 +25,7 @@ After launching UnityHub, open the project named `AWSIM-Labs-Zenoh` and click pl
    source install/setup.bash
    ros2 launch autoware_launch e2e_simulator.launch.xml vehicle_model:=awsim_labs_vehicle sensor_model:=awsim_labs_sensor_kit map_path:=/home/zubair/autoware_map/sirc/ launch_vehicle_interface:=true
    ```
-[Include Picture Here]
+**[Include Picture Here]**
 
 ### Host 2 (Victus Laptop)
 1. Launch Autoware on Host 2  
@@ -33,7 +35,7 @@ After launching UnityHub, open the project named `AWSIM-Labs-Zenoh` and click pl
      ros2 launch autoware_launch e2e_simulator.launch.xml vehicle_model:=awsim_labs_vehicle sensor_model:=awsim_labs_sensor_kit map_path:=/home/Zubair/autoware_map/sirc/ launch_vehicle_interface:=true
      ```
      
-[Include Picture Here]
+**[Include Picture Here]**
 
 ---
 
@@ -115,4 +117,4 @@ python3 avp_sirc.py
 This script can be run separately on each host. It subscribes to the empty parking spot ROS2 topic, takes the first parking spot from the list, sets a destination in that parking spot, and parks.
 
 
-[Include Picture Here]
+**[Include Picture Here]**
