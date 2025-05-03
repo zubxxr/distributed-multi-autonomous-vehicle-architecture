@@ -34,18 +34,15 @@ https://terminalroot.com/how-to-install-unity-engine-on-ubuntu-via-appimage/
      ``` bash
      cd $HOME/ZENOH/zenoh-plugin-ros2dds
      source $HOME/ZENOH/zenoh-plugin-ros2dds/install/setup.bash
-     zenoh_bridge_ros2dds -c zenoh-bridge.json5
+     zenoh_bridge_ros2dds -c zenoh-bridge-awsim.json5
      ```
+Note that this bridge config file does not have a namespace.
 
 ## Host 2 (Victus Laptop)
 1. Run Zenoh Bridge and Connect to Host 1
      ``` bash
      cd $HOME/ZENOH/zenoh-plugin-ros2dds
      source $HOME/ZENOH/zenoh-plugin-ros2dds/install/setup.bash
-     zenoh_bridge_ros2dds -c zenoh-bridge.json5 -e tcp/10.0.0.22:7447
+     zenoh_bridge_ros2dds -c zenoh-bridge-vehicle1.json5 -e tcp/10.0.0.22:7447
      ```
-
-
-
-
-   
+Note that this bridge config file has a namespace of `/vehicle1`. This is because the AWSIM config file sends ROS2 topics through Zenoh with the `/vehicle1` namespace.
