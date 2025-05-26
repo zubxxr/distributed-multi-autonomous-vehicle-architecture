@@ -2,7 +2,7 @@
   plugins: {
     ros2dds: {
         nodename: "zenoh_bridge_ros2dds",
-        namespace: "/nitro_vehicle"
+        namespace: "/vehicle2"
     }
   },
   mode: "peer",
