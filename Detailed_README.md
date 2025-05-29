@@ -64,18 +64,6 @@ This behavior works as expected and for convienience, as changing all the topics
 ![image](https://github.com/user-attachments/assets/794bbd3a-ad3a-430f-b9b6-67220d69003d)
 
 
-**Host 1 ROS2 Topics:**
-
-![image](https://github.com/user-attachments/assets/010fc7f3-64c8-4104-b005-f408506e1d81)
-
-**Host 2 ROS2 Topics:**
-
-![image](https://github.com/user-attachments/assets/ad107ba4-30d5-429d-b8fb-3eef4007f90c)
-
-**Host 3 ROS2 Topics:**
-
-[Include Picture]
-
 ## Host 1 (ROG Laptop)
 **1. Run Zenoh Bridge**
    ``` bash
