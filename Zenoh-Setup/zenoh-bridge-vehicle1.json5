@@ -1,7 +1,4 @@
 {
-  "connect": {
-      "endpoints": ["tcp/10.0.0.22:7447"]
-  },
     "plugins": {
     "ros2dds": {
       "nodename": "zenoh_vehicle1_bridge",
