@@ -40,7 +40,7 @@ A ROS2 topic is published as a result of the parking spot detection, which publi
 ![image](https://github.com/user-attachments/assets/fd8fad9a-dfba-4936-b6e1-dfc06943eb2d)
 
 ## Step 3: Launching Autoware
-This step Autoware on Host 2, and similarly, another separate Autoware client on Host 3.
+This step covers Autoware on Host 2, and similarly, another separate Autoware client on Host 3.
 
 ### Host 2 (Victus Laptop)
 1. Launch Autoware on Host 2  
