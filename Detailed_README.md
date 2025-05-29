@@ -141,7 +141,7 @@ Use the IP address retrieved from the above step. In this case, its 10.0.0.22.
      zenoh_bridge_ros2dds -c zenoh-bridge-vehicle2.json5 -e tcp/10.0.0.22:7447
      ```
 
-## Step 4: Start the Automated Valet Parking Node
+## Step 5: Start the Automated Valet Parking Node
 ### Launch Script Sending Available Parking Spots to Autoware
 ```cmd
 cd $HOME/Multi-AVP
