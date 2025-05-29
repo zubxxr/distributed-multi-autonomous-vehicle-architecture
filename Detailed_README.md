@@ -1,8 +1,27 @@
+
 # Multi Vehicle Autonomous Valet Parking Using Three Machines
 
 **[Include Steps on Downloading Autoware, AWSIM, UnityHub]**
 
-## Step 1: Start the Parking Spot Detection Node
+
+## Step 1: Launching AWSIM
+This step covers running AWSIM on Host 1.
+
+### Host 1 (ROG Laptop)
+**1. Launch UnityHub**
+  ```bash
+  cd ~/Unity
+  ./UnityHub.AppImage
+  ```
+**2. Launch AWSIM**
+
+After launching UnityHub, open the project named `AWSIM-Labs-Zenoh` and click play to run the scene. This simulates both ego vehicles, which will run their own Autoware clients. 
+
+![image](https://github.com/user-attachments/assets/fffc4994-3622-4f69-a574-68b61ac352b1)
+
+
+## Step 2: Start the Parking Spot Detection Node
+[Include description here]
 ### Launch YOLO Server
 ```cmd
 cd $HOME/Multi-AVP
@@ -16,25 +35,12 @@ This python script takes frames from the overhead camera in the AWSIM simulation
 
 In Unity, there are scripts that retrieve the bounding box coordinates. maps and draws them on to the overhead camera view in the simulation, and compares them with the parking spot coordinates. If there is overlap, then it is classified as occupied. 
 
-A ROS2 topic is published as a result of the parking spot detection, which publishes a list of empty parking spots. After launching AWSIM in Step 2, the list can be seen in the bottom left of the image below.
+A ROS2 topic is published as a result of the parking spot detection, which publishes a list of empty parking spots. The list can be seen in the bottom left of the image below.
 
-![image](https://github.com/user-attachments/assets/5d5c2bd4-8f4f-4dc5-8a24-78317df7bc6a)
+![image](https://github.com/user-attachments/assets/fd8fad9a-dfba-4936-b6e1-dfc06943eb2d)
 
-## Step 2: Running AWSIM and Autoware
-This step covers running AWSIM on Host 1, Autoware on Host 2, and similarly, another separate Autoware client on Host 3.
-
-### Host 1 (ROG Laptop)
-**1. Launch UnityHub**
-  ```bash
-  cd ~/Unity
-  ./UnityHub.AppImage
-  ```
-**2. Launch AWSIM**
-
-After launching UnityHub, open the project named `AWSIM-Labs-Zenoh` and click play to run the scene. This simulates both ego vehicles, which will run their own Autoware clients. The YOLO server from Step 1 will also automatically connect, and start displaying the list of empty parking spots.
-
-![image](https://github.com/user-attachments/assets/19b96e0d-1337-4224-81e8-99eabad8666d)
-
+## Step 3: Launching Autoware
+This step Autoware on Host 2, and similarly, another separate Autoware client on Host 3.
 
 ### Host 2 (Victus Laptop)
 1. Launch Autoware on Host 2  
@@ -54,12 +60,13 @@ After launching UnityHub, open the project named `AWSIM-Labs-Zenoh` and click pl
      source install/setup.bash
      ros2 launch autoware_launch e2e_simulator.launch.xml vehicle_model:=awsim_labs_vehicle sensor_model:=awsim_labs_sensor_kit map_path:=/home/ovin/autoware_map/sirc/ launch_vehicle_interface:=true
      ```
+**[Include Picture Here]**
 ---
 
-## Step 3: Running Zenoh Bridge To Connect Both Ego Vehicles in AWSIM to Both Autoware Clients
+## Step 4: Running Zenoh Bridge To Connect Both Ego Vehicles in AWSIM to Both Autoware Clients
 This step covers running the Zenoh bridge on both hosts with their respective config files. 
 
-After Step 1, the current setup is:
+To recap, after the previous steps, the current setup is:
 - AWSIM running on Host 1
 - Autoware running on Host 2
 - Autoware running on Host 3
