@@ -18,15 +18,6 @@ After launching UnityHub, open the project named `AWSIM-Labs-Zenoh` and click pl
 ![image](https://github.com/user-attachments/assets/19b96e0d-1337-4224-81e8-99eabad8666d)
 
 
-**3. Launch Autoware on Host 1**     
-   ```bash
-   cd ~/autoware
-   source /opt/ros/humble/setup.bash
-   source install/setup.bash
-   ros2 launch autoware_launch e2e_simulator.launch.xml vehicle_model:=awsim_labs_vehicle sensor_model:=awsim_labs_sensor_kit map_path:=/home/zubair/autoware_map/sirc/ launch_vehicle_interface:=true
-   ```
-**[Include Picture Here]**
-
 ### Host 2 (Victus Laptop)
 1. Launch Autoware on Host 2  
      ```bash
@@ -37,28 +28,37 @@ After launching UnityHub, open the project named `AWSIM-Labs-Zenoh` and click pl
      
 **[Include Picture Here]**
 
+
+### Host 3 (Nitro PC)
+1. Launch Autoware
+     ```bash
+     cd ~/autoware
+     source install/setup.bash
+     ros2 launch autoware_launch e2e_simulator.launch.xml vehicle_model:=awsim_labs_vehicle sensor_model:=awsim_labs_sensor_kit map_path:=/home/ovin/autoware_map/sirc/ launch_vehicle_interface:=true
+     ```
 ---
 
 ## Step 2: Running Zenoh Bridge To Connect Both Ego Vehicles in AWSIM to Both Autoware Clients
 This step covers running the Zenoh bridge on both hosts with their respective config files. 
 
 After Step 1, the current setup is:
-- Autoware and AWSIM running on Host 1
+- AWSIM running on Host 1
+- Autoware running on Host 2
 - Autoware running on Host 2
 
-AWSIM has been configured to simulate two ego vehicles, both publishing the same set of topics. However, the second vehicle, `AWSIM_EGO_Victus`, has `/vehicle1` manually prefixed to each of its topic names. This prevents conflicts between the two ego vehicles by isolating their data under separate namespaces.
+AWSIM has been configured to simulate two ego vehicles, both publishing the same set of topics. The first vehicle, `Vehicle1_EgoVehicle`, has `/vehicle1` manually prefixed to each of its topic names, while the second vehicle, `Vehicle2_EgoVehicle`, has `/vehicle2` prefixed. This prevents conflicts between the two ego vehicles by isolating their data under separate namespaces.
 
-**Example of Host 1 Ego Vehicle (AWSIM_EGO_ROG):**
+**Example of Host 2 Ego Vehicle (Vehicle1_EgoVehicle):**
 
 ![image](https://github.com/user-attachments/assets/0079be4c-058d-417a-b861-04158c2979e2)
 
-**Example of Host 2 Ego Vehicle (AWSIM_EGO_ROG):**
+**Example of Host 3 Ego Vehicle (Vehicle2_EgoVehicle):**
 
 ![image](https://github.com/user-attachments/assets/2c768d2b-a6c0-4d36-aec5-00fbfc0a960d)
 
 
-  
-The Zenoh bridge is run on both hosts to enable communication and data exchange. On host 1, the [config](https://github.com/zubxxr/Multi-Vehicle-Autonomous-Valet-Parking/blob/main/Zenoh-Setup/zenoh-bridge-awsim.json5) file has no namespace set, and the bridge is started first. This means it sends all ROS 2 topics to host 2 without any filtering. On host 2, the bridge is started shortly after, using a [config](https://github.com/zubxxr/Multi-Vehicle-Autonomous-Valet-Parking/blob/main/Zenoh-Setup/zenoh-bridge-vehicle1.json5) that includes the namespace `/vehicle1`. As a result, it only receives data from the topics under that namespace. However, it can "see" other topics, but not recieve data from them. When these topics are listed on host 2, they appear without the `/vehicle1` prefix. 
+The Zenoh bridge is run on both hosts to enable communication and data exchange. On host 1, the [config](https://github.com/zubxxr/Multi-Vehicle-Autonomous-Valet-Parking/blob/main/Zenoh-Setup/zenoh-bridge-awsim.json5) file has no namespace set, and the bridge is started first. This means it sends all ROS 2 topics to host 2 and host 3 without any filtering. On host 2, the bridge is started shortly after, using a [config](https://github.com/zubxxr/Multi-Vehicle-Autonomous-Valet-Parking/blob/main/Zenoh-Setup/zenoh-bridge-vehicle1.json5) that includes the namespace `/vehicle1`. As a result, it only receives data from the topics under that namespace. However, it can "see" other topics, but not recieve data from them. When these topics are listed on host 2, they appear without the `/vehicle1` prefix. The same thing applies to host 3. The bridge on host 3 can be started after, using the [config file](https://github.com/zubxxr/Multi-Vehicle-Autonomous-Valet-Parking/blob/main/Zenoh-Setup/zenoh-bridge-vehicle2.json5) that includes the namespace `/vehicle2`.
+
 This behavior works as expected and for convienience, as changing all the topics in Autoware would be challenging. Essentially, the Zenoh bridge on host 2 maps namespaced Zenoh topics to local ROS 2 topics by stripping the namespace defined in the config.
 
 ![image](https://github.com/user-attachments/assets/794bbd3a-ad3a-430f-b9b6-67220d69003d)
@@ -72,6 +72,9 @@ This behavior works as expected and for convienience, as changing all the topics
 
 ![image](https://github.com/user-attachments/assets/ad107ba4-30d5-429d-b8fb-3eef4007f90c)
 
+**Host 3 ROS2 Topics:**
+
+[Include Picture]
 
 ## Host 1 (ROG Laptop)
 **1. Run Zenoh Bridge**
@@ -116,6 +119,13 @@ Use the IP address retrieved from the above step. In my case, its 10.0.0.22.
    source $HOME/ZENOH/zenoh-plugin-ros2dds/install/setup.bash
    zenoh_bridge_ros2dds -c zenoh-bridge-vehicle1.json5 -e tcp/10.0.0.22:7447
    ```
+## Host 3 (Nitro PC)
+1. Run Zenoh Bridge and Connect to Host 1
+     ``` bash
+     cd $HOME/ZENOH/zenoh-plugin-ros2dds
+     source $HOME/ZENOH/zenoh-plugin-ros2dds/install/setup.bash
+     zenoh_bridge_ros2dds -c zenoh-bridge-vehicle2.json5 -e tcp/10.0.0.22:7447
+     ```
 
 ## Step 3: Start the Parking Spot Detection Node
 ### Launch YOLO Server
