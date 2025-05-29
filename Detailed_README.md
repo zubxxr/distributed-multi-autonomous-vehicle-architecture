@@ -73,7 +73,7 @@ This behavior works as expected and for convienience, as changing all the topics
 ![image](https://github.com/user-attachments/assets/ad107ba4-30d5-429d-b8fb-3eef4007f90c)
 
 
-### Host 1 (ROG Laptop)
+## Host 1 (ROG Laptop)
 **1. Run Zenoh Bridge**
    ``` bash
    cd $HOME/ZENOH/zenoh-plugin-ros2dds
@@ -81,8 +81,36 @@ This behavior works as expected and for convienience, as changing all the topics
    zenoh_bridge_ros2dds -c zenoh-bridge-awsim.json5
    ```
 
+## Finding Your IP Address
+To set up Zenoh properly, you need the **IP address of your machine’s active network interface** (usually Wi-Fi or Ethernet).
+
+### Run this in your terminal:
+```bash
+ip a
+```
+
+### Look for your active network interface:
+- For **Wi-Fi**, the name usually starts with `wlp` (e.g., `wlp3s0`, `wlp0s20f3`)
+- For **Ethernet**, it usually starts with `enp` (e.g., `enp2s0`)
+- Ignore interfaces like `lo` (loopback), `docker0`, or `br-...` (Docker bridges)
+
+### Find the line that looks like this:
+```
+inet 10.0.0.22/24 ...
+```
+
+The part before the slash (`10.0.0.22`) is your **IP address**. Use this as a command line argument when connecting to Host 1. For example:
+
+```json
+zenoh_bridge_ros2dds -e tcp/<IP-address>:7447
+zenoh_bridge_ros2dds -e tcp/10.0.0.22:7447
+```
+
+> **Tip:** If you’re unsure which interface is active, check which one shows an `inet` address in the `10.x.x.x` or `192.168.x.x` range and says `state UP`.
+
 ## Host 2 (Victus Laptop)
 **1. Run Zenoh Bridge and Connect to Host 1**
+Use the IP address retrieved from the above step. In my case, its 10.0.0.22.
    ``` bash
    cd $HOME/ZENOH/zenoh-plugin-ros2dds
    source $HOME/ZENOH/zenoh-plugin-ros2dds/install/setup.bash
