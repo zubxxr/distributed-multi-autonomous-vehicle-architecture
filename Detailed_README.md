@@ -82,13 +82,7 @@ The Zenoh bridge is run on both hosts to enable communication and data exchange.
 
 This behavior works as expected and for convienience, as changing all the topics in Autoware would be challenging. Essentially, the Zenoh bridge on host 2 and host 3 respectively maps namespaced Zenoh topics to local ROS 2 topics by stripping the namespace defined in their configs.
 
-![image](https://github.com/user-attachments/assets/7027731c-0d79-420f-9ea4-fdf0e229c87b)
-
-
-
-
-
-
+![image](https://github.com/user-attachments/assets/c12b7d85-80ef-450e-b460-aab95cfb1995)
 
 
 ## Host 1 (ROG Laptop)
