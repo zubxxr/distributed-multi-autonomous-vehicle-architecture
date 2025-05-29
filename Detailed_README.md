@@ -113,7 +113,8 @@ zenoh_bridge_ros2dds -e tcp/10.0.0.22:7447
 
 ## Host 2 (Victus Laptop)
 **1. Run Zenoh Bridge and Connect to Host 1**
-Use the IP address retrieved from the above step. In my case, its 10.0.0.22.
+
+Use the IP address retrieved from the above step. In this case, its 10.0.0.22.
    ``` bash
    cd $HOME/ZENOH/zenoh-plugin-ros2dds
    source $HOME/ZENOH/zenoh-plugin-ros2dds/install/setup.bash
