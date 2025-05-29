@@ -44,7 +44,7 @@ This step covers running the Zenoh bridge on both hosts with their respective co
 After Step 1, the current setup is:
 - AWSIM running on Host 1
 - Autoware running on Host 2
-- Autoware running on Host 2
+- Autoware running on Host 3
 
 AWSIM has been configured to simulate two ego vehicles, both publishing the same set of topics. The first vehicle, `Vehicle1_EgoVehicle`, has `/vehicle1` manually prefixed to each of its topic names, while the second vehicle, `Vehicle2_EgoVehicle`, has `/vehicle2` prefixed. This prevents conflicts between the two ego vehicles by isolating their data under separate namespaces.
 
