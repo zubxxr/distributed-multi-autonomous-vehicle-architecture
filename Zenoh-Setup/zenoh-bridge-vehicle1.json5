@@ -1,11 +1,13 @@
 {
-  plugins: {
-    ros2dds: {
-        nodename: "zenoh_bridge_ros2dds",
-        namespace: "/vehicle1"
-    }
+  "connect": {
+      "endpoints": ["tcp/10.0.0.22:7447"]
   },
-  mode: "peer",
+    "plugins": {
+    "ros2dds": {
+      "nodename": "zenoh_vehicle1_bridge",
+      "namespace": "/vehicle1"
+    },
+  },
   transport: {
     link: {
       tx: {
