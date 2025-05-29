@@ -1,4 +1,4 @@
-# Multi Vehicle Autonomous Valet Parking Using Two Machines
+# Multi Vehicle Autonomous Valet Parking Using Three Machines
 
 **[Include Steps on Downloading Autoware, AWSIM, UnityHub]**
 
