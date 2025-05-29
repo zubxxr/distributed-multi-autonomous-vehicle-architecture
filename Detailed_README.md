@@ -19,7 +19,7 @@ A ROS2 topic is published as a result of the parking spot detection, which publi
 ![image](https://github.com/user-attachments/assets/5d5c2bd4-8f4f-4dc5-8a24-78317df7bc6a)
 
 ## Step 2: Running AWSIM and Autoware
-This step covers running AWSIM and Autoware on Host 1, and another separate Autoware client on Host 2.
+This step covers running AWSIM on Host 1, Autoware on Host 2, and similarly, another separate Autoware client on Host 3.
 
 ### Host 1 (ROG Laptop)
 **1. Launch UnityHub**
