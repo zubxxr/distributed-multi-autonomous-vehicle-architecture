@@ -50,11 +50,11 @@ AWSIM has been configured to simulate two ego vehicles, both publishing the same
 
 **Example of Host 2 Ego Vehicle (Vehicle1_EgoVehicle):**
 
-![image](https://github.com/user-attachments/assets/0079be4c-058d-417a-b861-04158c2979e2)
+![image](https://github.com/user-attachments/assets/39639116-1c8b-48a2-88e1-d3f7cd109e05)
 
 **Example of Host 3 Ego Vehicle (Vehicle2_EgoVehicle):**
 
-![image](https://github.com/user-attachments/assets/2c768d2b-a6c0-4d36-aec5-00fbfc0a960d)
+![image](https://github.com/user-attachments/assets/c5a7c99a-d0b0-42b4-86f2-ea0ef9b76d84)
 
 
 The Zenoh bridge is run on both hosts to enable communication and data exchange. On host 1, the [config](https://github.com/zubxxr/Multi-Vehicle-Autonomous-Valet-Parking/blob/main/Zenoh-Setup/zenoh-bridge-awsim.json5) file has no namespace set, and the bridge is started first. This means it sends all ROS 2 topics to host 2 and host 3 without any filtering. On host 2, the bridge is started shortly after, using a [config](https://github.com/zubxxr/Multi-Vehicle-Autonomous-Valet-Parking/blob/main/Zenoh-Setup/zenoh-bridge-vehicle1.json5) that includes the namespace `/vehicle1`. As a result, it only receives data from the topics under that namespace. However, it can "see" other topics, but not recieve data from them. When these topics are listed on host 2, they appear without the `/vehicle1` prefix. The same thing applies to host 3. The bridge on host 3 can be started after, using the [config file](https://github.com/zubxxr/Multi-Vehicle-Autonomous-Valet-Parking/blob/main/Zenoh-Setup/zenoh-bridge-vehicle2.json5) that includes the namespace `/vehicle2`.
