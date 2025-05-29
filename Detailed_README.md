@@ -50,9 +50,6 @@ This step covers running Autoware on Host 2, and similarly, another separate Aut
      ros2 launch autoware_launch e2e_simulator.launch.xml vehicle_model:=awsim_labs_vehicle sensor_model:=awsim_labs_sensor_kit map_path:=/home/Zubair/autoware_map/sirc/ launch_vehicle_interface:=true
      ```
      
-**[Include Picture Here]**
-
-
 ### Host 3 (Nitro PC)
 1. Launch Autoware
      ```bash
@@ -60,7 +57,6 @@ This step covers running Autoware on Host 2, and similarly, another separate Aut
      source install/setup.bash
      ros2 launch autoware_launch e2e_simulator.launch.xml vehicle_model:=awsim_labs_vehicle sensor_model:=awsim_labs_sensor_kit map_path:=/home/ovin/autoware_map/sirc/ launch_vehicle_interface:=true
      ```
-**[Include Picture Here]**
 ---
 
 ## Step 4: Running Zenoh Bridge To Connect Both Ego Vehicles in AWSIM to Both Autoware Clients
