@@ -1,8 +1,27 @@
 
 # Multi Vehicle Autonomous Valet Parking Using Three Machines
 
+[Include summary]
+
+## System Setup
+The image below shows all the machines involved in this project.
+
 ![image](https://github.com/user-attachments/assets/466b95f2-8b8e-4e33-910b-87cc5aba8b10)
 
+### Host 1
+Host 1 is the laptop on the far left. Its display is extended to the two adjacent monitors:
+
+- Laptop screen: runs terminal commands for the Zenoh Bridge, YOLOv5 server, and related processes.
+- Center monitor: displays the AWSIM simulation.
+- Right monitor: used to remotely access Host 2 and Host 3 via AnyDesk.
+
+### Host 2
+Host 2 is the laptop placed on top of the PC tower. It runs Autoware and the Zenoh Bridge independently.
+
+### Host 3
+Host 3 is the PC tower itself. Its output is shown on the far-right monitor and runs Autoware and the Zenoh Bridge for a second ego vehicle.
+
+---
 
 **[Include Steps on Downloading Autoware, AWSIM, UnityHub]**
 
