@@ -1,8 +1,7 @@
 
 # Multi Vehicle Autonomous Valet Parking Using Three Machines
 
-![image](https://github.com/user-attachments/assets/8c000fdf-cb7c-4816-8a5a-02082fcbe1c2)
-
+![image](https://github.com/user-attachments/assets/4960259e-dd66-4147-a1b3-4cc07cefd5d6)
 
 **[Include Steps on Downloading Autoware, AWSIM, UnityHub]**
 
