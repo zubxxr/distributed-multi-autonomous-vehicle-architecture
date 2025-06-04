@@ -11,9 +11,9 @@ The image below shows all the machines involved in this project.
 ### Host 1
 Host 1 is the laptop on the far left. Its display is extended to the two adjacent monitors:
 
-- Laptop screen: runs terminal commands for the Zenoh Bridge, YOLOv5 server, and related processes.
-- Center monitor: displays the AWSIM simulation.
-- Right monitor: used to remotely access Host 2 and Host 3 via AnyDesk.
+- **Laptop screen**: runs terminal commands for the Zenoh Bridge, YOLOv5 server, and related processes.
+- **Center monitor**: displays the AWSIM simulation.
+- **Right monitor**: used to remotely access Host 2 and Host 3 via AnyDesk.
 
 ### Host 2
 Host 2 is the laptop placed on top of the PC tower. It runs Autoware and the Zenoh Bridge independently.
