@@ -48,7 +48,7 @@ To install Autoware, follow the instructions on [this page](https://autowarefoun
 
 ---
 
-## Installing AWSIM
+## Installing UnityHub/AWSIM
 
 Follow the steps on [this page](https://autowarefoundation.github.io/AWSIM-Labs/main/GettingStarted/SetupUnityProject/).  
 > **Note:** At the time of writing, the documentation incorrectly tells you to clone:
@@ -59,7 +59,17 @@ Follow the steps on [this page](https://autowarefoundation.github.io/AWSIM-Labs/
 > ```bash
 > git clone https://github.com/autowarefoundation/AWSIM-Labs.git
 > ```
-**⚠️ MAKE SURE TO SKIP THE "IMPORT EXTERNAL PACKAGES" STEP.**
+
+### ⚠️ Replace the Map Package Link
+In the **"Import external packages"** section, **do not** use the green “Download Map Package” button shown in the docs.
+
+Instead, **download the map package from the link below**:
+
+[Download Zenoh-AWSIM-Labs-SIRC-June-4-2025.unitypackage](https://drive.google.com/file/d/1JXPlB_EWzItpGQwsTVuQIvlqlbNDCXrp/view?usp=sharing)
+
+Then, follow the remaining steps in that section to import the `.unitypackage` file into Unity.
+
+---
 
 ## Step 1: Launching AWSIM
 This step covers running AWSIM on Host 1.
@@ -70,6 +80,9 @@ This step covers running AWSIM on Host 1.
   cd ~/Unity
   ./UnityHub.AppImage
   ```
+
+@@
+
 **2. Launch AWSIM**
 
 After launching UnityHub, open the project named `AWSIM-Labs-Zenoh` and click play to run the scene. This simulates both ego vehicles, which will run their own Autoware clients. 
