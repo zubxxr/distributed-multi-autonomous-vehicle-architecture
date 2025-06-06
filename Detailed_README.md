@@ -4,27 +4,62 @@
 [Include summary]
 
 ## System Setup
-The image below shows all the machines involved in this project.
+The image below shows all the machines involved in this project. All systems are running Ubuntu 22.04.
 
 ![image](https://github.com/user-attachments/assets/466b95f2-8b8e-4e33-910b-87cc5aba8b10)
 
 ### Host 1
-Host 1 is the laptop on the far left. Its display is extended to the two adjacent monitors:
+Host 1 is the laptop on the far left. It has a RTX 2060 Max-Q GPU and 24 GB of RAM.
+
+Its display is extended to the two adjacent monitors:
 
 - **Laptop screen**: runs terminal commands for the Zenoh Bridge, YOLOv5 server, and related processes.
 - **Center monitor**: displays the AWSIM simulation.
 - **Right monitor**: used to remotely access Host 2 and Host 3 via AnyDesk.
 
 ### Host 2
-Host 2 is the laptop placed on top of the PC tower. It runs Autoware and the Zenoh Bridge independently.
+Host 2 is the laptop placed on top of the PC tower. It has a RTX 4050 GPU and 16 GB of RAM. It runs Autoware and the Zenoh Bridge independently. 
 
 ### Host 3
-Host 3 is the PC tower itself. Its output is shown on the far-right monitor and runs Autoware and the Zenoh Bridge for a second ego vehicle.
+Host 3 is the PC tower itself. It has a RTX 3060 GPU and 24 GB of RAM. Its output is shown on the far-right monitor and runs Autoware and the Zenoh Bridge for a second ego vehicle.
 
 ---
 
 **[Include Steps on Downloading Autoware, AWSIM, UnityHub]**
 
+## Installing Autoware
+Read the [following](https://autowarefoundation.github.io/autoware-documentation/main/installation/) to see the hardware requirements. 
+
+The version of [Autoware](https://github.com/autowarefoundation/autoware/tree/release/2024.11) being used is `release/2024.11`. This version was forked and updated to better support the custom parking simulation use case.
+
+To install Autoware, follow the instructions on [this page](https://autowarefoundation.github.io/autoware-documentation/main/installation/autoware/source-installation/).
+
+> **Note:** Replace the following command:
+> 
+> ```bash
+> git clone https://github.com/autowarefoundation/autoware.git
+> ```
+> 
+> with:
+> 
+> ```bash
+> git clone https://github.com/zubxxr/autoware.git
+> ```
+
+---
+
+## Installing AWSIM
+
+Follow the steps on [this page](https://autowarefoundation.github.io/AWSIM-Labs/main/GettingStarted/SetupUnityProject/).  
+> **Note:** At the time of writing, the documentation incorrectly tells you to clone:
+> ```bash
+> git clone git@github.com:autowarefoundation/AWSIM.git
+> ```
+> The correct repository is:
+> ```bash
+> git clone https://github.com/autowarefoundation/AWSIM-Labs.git
+> ```
+**⚠️ MAKE SURE TO SKIP THE "IMPORT EXTERNAL PACKAGES" STEP.**
 
 ## Step 1: Launching AWSIM
 This step covers running AWSIM on Host 1.
