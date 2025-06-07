@@ -216,6 +216,7 @@ source $HOME/zenoh-plugin-ros2dds/install/setup.bash
 ```
 
 3. Find IP Address for Host 1
+   
 To set up Zenoh properly, you need the **IP address of the Host 1 active network interface** (usually Wi-Fi or Ethernet).
 
 Run the following in your terminal:
@@ -401,7 +402,7 @@ To recap, after the previous steps, the current setup is:
 ### Host 2 (Victus Laptop)
 **1. Run Zenoh Bridge and Connect to Host 1**
 
-Use the IP address retrieved from [Find IP Address for Host 1](find-ip-address-for-host-1) step. In this case, its 10.0.0.22.
+Use the IP address retrieved from [Installing Zenoh ROS 2 Bridge](#installing-zenoh-ros-2-bridge) step 3. In this case, its 10.0.0.22.
    ``` bash
    cd $HOME/zenoh-plugin-ros2dds
    source $HOME/zenoh-plugin-ros2dds/install/setup.bash
