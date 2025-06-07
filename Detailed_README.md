@@ -17,10 +17,11 @@
      - [Unity Installation](#unity-installation)  
      - [Open AWSIM Project](#open-awsim-project)  
      - [Replace the Map Package Link](#replace-the-map-package-link)  
-   - [Installing Zenoh](#installing-zenoh)  
+   - [Installing Zenoh](#installing-zenoh)
+   - [YOLOv5 Server Setup](#yolov5-server-setup)
 3. [Launching the Full System](#launching-the-full-system-awsim-autoware-zenoh-and-yolo)  
    - [Step 1: Launching AWSIM](#step-1-launching-awsim)  
-   - [Step 2: Start the Parking Spot Detection Node](#step-2-start-the-parking-spot-detection-node)  
+   - [Step 2: Start the YOLO Server](#step-2-start-the-yolo-server)  
    - [Step 3: Launching Autoware](#step-3-launching-autoware)  
    - [Step 4: Running Zenoh Bridge](#step-4-running-zenoh-bridge)  
      - [Finding Your IP Address](#finding-your-ip-address)  
@@ -154,7 +155,6 @@ source $HOME/zenoh-plugin-ros2dds/install/setup.bash
 
 ### YOLOv5 Server Setup
 
-
 The YOLOv5 server runs locally on the same machine as AWSIM. It captures frames from the overhead camera in the simulation, performs vehicle detection using YOLOv5, extracts the bounding box coordinates, and sends them to Unity for further processing.
 
 In Unity, custom scripts receive these bounding boxes, draws them on the overhead view, and compares them with predefined parking spot coordinates. If there is any overlap, the spot is marked as **occupied**.
@@ -226,24 +226,12 @@ After launching UnityHub, open the project named `AWSIM-Labs-Zenoh` and click pl
 ![image](https://github.com/user-attachments/assets/fffc4994-3622-4f69-a574-68b61ac352b1)
 
 
-### Step 2: Start the Parking Spot Detection Node
-[Include description here]
-### Launch YOLO Server
+### Step 2: Start the YOLO Server
 ```cmd
-cd $HOME/Multi-AVP
-source env/bin/activate
+cd ~/YOLO_Server
+source yolo_server_env/bin/activate
 python3 yolo_server.py
 ```
-
-![image](https://github.com/user-attachments/assets/346d98c2-df20-48df-8cc1-311367c3021b)
-
-This python script takes frames from the overhead camera in the AWSIM simulation, runs YOLO car detection on them, and extracts the bounding box coordinates.
-
-In Unity, there are scripts that retrieve the bounding box coordinates. maps and draws them on to the overhead camera view in the simulation, and compares them with the parking spot coordinates. If there is overlap, then it is classified as occupied. 
-
-A ROS2 topic is published as a result of the parking spot detection, which publishes a list of empty parking spots. The list can be seen in the bottom left of the image below.
-
-![image](https://github.com/user-attachments/assets/fd8fad9a-dfba-4936-b6e1-dfc06943eb2d)
 
 ### Step 3: Launching Autoware
 This step covers running Autoware on Host 2, and similarly, another separate Autoware client on Host 3.
