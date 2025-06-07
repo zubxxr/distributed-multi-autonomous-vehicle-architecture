@@ -3,6 +3,29 @@
 
 [Include summary]
 
+---
+
+## Table of Contents
+
+1. [System Setup](#system-setup)  
+   - [Host 1](#host-1)  
+   - [Host 2](#host-2)  
+   - [Host 3](#host-3)  
+2. [Software Installation and Setup](#software-installation-and-setup)  
+   - [Installing Autoware](#installing-autoware)  
+   - [AWSIM Setup](#awsim-setup)  
+     - [Unity Installation](#unity-installation)  
+     - [Open AWSIM Project](#open-awsim-project)  
+     - [Replace the Map Package Link](#replace-the-map-package-link)  
+   - [Installing Zenoh](#installing-zenoh)  
+3. [Launching the Full System](#launching-the-full-system-awsim-autoware-zenoh-and-yolo)  
+   - [Step 1: Launching AWSIM](#step-1-launching-awsim)  
+   - [Step 2: Start the Parking Spot Detection Node](#step-2-start-the-parking-spot-detection-node)  
+   - [Step 3: Launching Autoware](#step-3-launching-autoware)  
+   - [Step 4: Running Zenoh Bridge](#step-4-running-zenoh-bridge)  
+     - [Finding Your IP Address](#finding-your-ip-address)  
+   - [Step 5: Start the Automated Valet Parking Node](#step-5-start-the-automated-valet-parking-node)
+  
 ## System Setup
 The image below shows all the machines involved in this project. All systems are running Ubuntu 22.04.
 
@@ -106,7 +129,7 @@ Follow the **"Open AWSIM project**" step in [this page](https://autowarefoundati
 > git clone ~/https://github.com/autowarefoundation/AWSIM-Labs.git
 > ```
 
-#### ⚠️ Replace the Map Package Link
+#### Replace the Map Package Link
 In the **"Import external packages"** section, **do not** use the green “Download Map Package” button shown in the docs.
 
 Instead, **download the map package from this link**: [Download Zenoh-AWSIM-Labs-SIRC-June-4-2025.unitypackage](https://drive.google.com/file/d/1JXPlB_EWzItpGQwsTVuQIvlqlbNDCXrp/view?usp=sharing)
@@ -188,8 +211,8 @@ This step covers running Autoware on Host 2, and similarly, another separate Aut
      ```
 ---
 
-## Step 4: Running Zenoh Bridge To Connect Both Ego Vehicles in AWSIM to Both Autoware Clients
-This step covers running the Zenoh bridge on both hosts with their respective config files. 
+## Step 4: Running Zenoh Bridge
+This step covers running the Zenoh bridge on both hosts with their respective config files to connect both ego vehicles in AWSIM to both Autoware clients.
 
 To recap, after the previous steps, the current setup is:
 - AWSIM running on Host 1
