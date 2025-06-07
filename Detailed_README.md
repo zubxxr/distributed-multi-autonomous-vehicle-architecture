@@ -433,3 +433,16 @@ This script can be run separately on each host. It subscribes to the empty parki
 
 ## Future Work
 []
+
+
+---
+
+## Acknowledgements
+
+Special thanks to [Ontario Tech University], [Prof. Mohamed El-Darieby], and my lab collaborators for their guidance and support.
+
+## License
+
+[Specify license if needed]
+
+---
