@@ -25,9 +25,9 @@ Host 3 is the PC tower itself. It has a RTX 3060 GPU and 24 GB of RAM. Its outpu
 
 ---
 
-**[Include Steps on Downloading Autoware, AWSIM, UnityHub]**
+## Software Installation and Setup
 
-## Installing Autoware
+### Installing Autoware
 Read the [following](https://autowarefoundation.github.io/autoware-documentation/main/installation/) to see the hardware requirements. 
 
 The version of [Autoware](https://github.com/autowarefoundation/autoware/tree/release/2024.11) being used is `release/2024.11`. This version was forked and updated to better support the custom parking simulation use case.
@@ -48,18 +48,29 @@ To install Autoware, follow the instructions on [this page](https://autowarefoun
 
 ---
 
-## Installing UnityHub
+### AWSIM Setup
 
-Installing UnityHub requires two steps. The first is installing it through the package manager. This is required to sign in. Then it must be installed as a binary. 
+Setting up AWSIM requires the installation of Unity. Follow the **"Environment preparation"** section and carefully read the **"ROS 2"** section on [this page](https://autowarefoundation.github.io/AWSIM-Labs/main/GettingStarted/SetupUnityProject/) to get started.  
 
-Follow the **"Install the Unity Hub on Linux**" section in [this page](https://docs.unity3d.com/hub/manual/InstallHub.html).
+> The **"ROS 2"** section mentions that your environment should not have ROS 2 sourced.  
+> It is recommended to **remove any ROS 2 sourcing lines from your `~/.bashrc`**, and instead **manually source ROS 2 only when needed**, to avoid environment conflicts.
+
+#### Unity Installation
 
 
-Then launch it:
+##### **1. Install Unity Hub from the Package Manager**
+
+Start by installing Unity Hub to enable login. Follow the **"Install the Unity Hub on Linux"** section on [this page](https://docs.unity3d.com/hub/manual/InstallHub.html).
+
+After installation, launch Unity Hub with:
+
 ```bash
 unityhub
 ```
+Sign in or create a Unity account as prompted.
 
+##### **2. Install Unity Editor Binary**
+Run the following commands to install the Unity Editor:
 ```bash
 mkdir ~/Unity
 cd ~/Unity
@@ -69,12 +80,23 @@ sudo groupadd fuse
 sudo usermod -a -G fuse $USER
 wget https://public-cdn.cloud.unity3d.com/hub/prod/UnityHub.AppImage
 chmod +x UnityHub.AppImage
+./UnityHub.AppImage unityhub://2022.3.62f1/d91830b65d9b
+```
+The final command installs Unity version `2022.3.62f1`, which at the time of writing is the current version.
+
+For future use, to launch Unity Hub later, run the following commands in a terminal that does not have ROS 2 sourced:
+```bash
+cd ~/Unity
+./UnityHub.AppImage
 ```
 
+These two steps complete the **"Unity installation**" section in [this page](https://autowarefoundation.github.io/AWSIM-Labs/main/GettingStarted/SetupUnityProject/).
 
-## Installing AWSIM
 
-Follow the steps on [this page](https://autowarefoundation.github.io/AWSIM-Labs/main/GettingStarted/SetupUnityProject/).  
+#### Open AWSIM Project 
+
+Follow the **"Open AWSIM project**" step in [this page](https://autowarefoundation.github.io/AWSIM-Labs/main/GettingStarted/SetupUnityProject/).  
+
 > **Note:** At the time of writing, the documentation incorrectly tells you to clone:
 > ```bash
 > git clone git@github.com:autowarefoundation/AWSIM.git
@@ -84,22 +106,31 @@ Follow the steps on [this page](https://autowarefoundation.github.io/AWSIM-Labs/
 > git clone ~/https://github.com/autowarefoundation/AWSIM-Labs.git
 > ```
 
-### ⚠️ Replace the Map Package Link
+#### ⚠️ Replace the Map Package Link
 In the **"Import external packages"** section, **do not** use the green “Download Map Package” button shown in the docs.
 
-Instead, **download the map package from the link below**:
-
-[Download Zenoh-AWSIM-Labs-SIRC-June-4-2025.unitypackage](https://drive.google.com/file/d/1JXPlB_EWzItpGQwsTVuQIvlqlbNDCXrp/view?usp=sharing)
+Instead, **download the map package from this link**: [Download Zenoh-AWSIM-Labs-SIRC-June-4-2025.unitypackage](https://drive.google.com/file/d/1JXPlB_EWzItpGQwsTVuQIvlqlbNDCXrp/view?usp=sharing)
 
 Then, follow the remaining steps in that section to import the `.unitypackage` file into Unity.
 
 ---
 
-## Installing Zenoh
+### Installing Zenoh
 
+First, install [Rust](https://www.rust-lang.org/tools/install).
+
+Next, clone the repo.
 ```bash
 git clone ~/https://github.com/eclipse-zenoh/zenoh-plugin-ros2dds -b release/1.4.0
+cd ~/zenoh-plugin-ros2dds
+rustup update
+rosdep install --from-paths . --ignore-src -r -y
+colcon build --packages-select zenoh_bridge_ros2dds --cmake-args -DCMAKE_BUILD_TYPE=Release
+source $HOME/zenoh-plugin-ros2dds/install/setup.bash
 ```
+
+## Launching the Full System: AWSIM, Autoware, Zenoh, and YOLO
+Follow the steps below to launch all components required for the simulation.
 
 ## Step 1: Launching AWSIM
 This step covers running AWSIM on Host 1.
@@ -110,8 +141,6 @@ This step covers running AWSIM on Host 1.
   cd ~/Unity
   ./UnityHub.AppImage
   ```
-
-@@
 
 **2. Launch AWSIM**
 
