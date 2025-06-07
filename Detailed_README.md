@@ -139,11 +139,48 @@ Then, follow the remaining steps in that section to import the `.unitypackage` f
 
 ---
 
-### Installing Zenoh
+### Zenoh
+This step covers setting up the Zenoh bridge on both hosts using their respective config files. This enables communication between the two ego vehicles simulated in AWSIM and their corresponding Autoware clients.
 
-First, install [Rust](https://www.rust-lang.org/tools/install).
+AWSIM is configured to simulate two ego vehicles, both publishing the same set of ROS 2 topics. To prevent conflicts, each vehicle's topics are manually namespaced:
+- `Vehicle1_EgoVehicle` uses the `/vehicle1` prefix
+- `Vehicle2_EgoVehicle` uses the `/vehicle2` prefix
 
-Next, clone the repo.
+This isolates their data and avoids topic collisions.
+
+
+**Example of Host 2 Ego Vehicle (Vehicle1_EgoVehicle):**
+
+![image](https://github.com/user-attachments/assets/39639116-1c8b-48a2-88e1-d3f7cd109e05)
+
+**Example of Host 3 Ego Vehicle (Vehicle2_EgoVehicle):**
+
+![image](https://github.com/user-attachments/assets/c5a7c99a-d0b0-42b4-86f2-ea0ef9b76d84)
+
+
+#### How Zenoh Bridges Work
+
+The Zenoh bridge is launched on each host to enable bidirectional communication of ROS 2 topics across machines.
+
+- **Host 1 (AWSIM machine)** starts the bridge **first**, using this [config](https://github.com/zubxxr/Multi-Vehicle-Autonomous-Valet-Parking/blob/main/Zenoh-Setup/zenoh-bridge-awsim.json5). It **does not include a namespace**, so it sends *all* topics (for both vehicles) without filtering.
+
+- **Host 2 (Vehicle 1)** starts the bridge **second**, using this [config](https://github.com/zubxxr/Multi-Vehicle-Autonomous-Valet-Parking/blob/main/Zenoh-Setup/zenoh-bridge-vehicle1.json5), which includes the namespace `/vehicle1`. This means:
+  - It **only receives topics** under `/vehicle1`
+  - It can still “see” other topics (like `/vehicle2`), but **cannot subscribe to or use them**
+  - Topics appear without the `/vehicle1` prefix locally, due to Zenoh stripping it automatically
+
+- **Host 3 (Vehicle 2)** follows the same process using the [config](https://github.com/zubxxr/Multi-Vehicle-Autonomous-Valet-Parking/blob/main/Zenoh-Setup/zenoh-bridge-vehicle2.json5) with the `/vehicle2` namespace.
+
+This behavior is intentional and convenient — changing topic names in Autoware directly would be far more complex. Zenoh handles the mapping by stripping the namespace from incoming Zenoh topics before exposing them to the ROS 2 layer.
+
+![image](https://github.com/user-attachments/assets/c12b7d85-80ef-450e-b460-aab95cfb1995)
+
+#### Installing Zenoh ROS 2 Bridge
+
+1. Install [Rust](https://www.rust-lang.org/tools/install)
+
+2. Clone and build the Zenoh bridge on all hosts:
+
 ```bash
 git clone ~/https://github.com/eclipse-zenoh/zenoh-plugin-ros2dds -b release/1.4.0
 cd ~/zenoh-plugin-ros2dds
@@ -152,6 +189,79 @@ rosdep install --from-paths . --ignore-src -r -y
 colcon build --packages-select zenoh_bridge_ros2dds --cmake-args -DCMAKE_BUILD_TYPE=Release
 source $HOME/zenoh-plugin-ros2dds/install/setup.bash
 ```
+
+3. Find IP Address for Host 1
+To set up Zenoh properly, you need the **IP address of the Host 1 active network interface** (usually Wi-Fi or Ethernet).
+
+Run the following in your terminal:
+```bash
+ip a
+```
+
+Look for your active network interface:
+- For **Wi-Fi**, the name usually starts with `wlp` (e.g., `wlp3s0`, `wlp0s20f3`)
+- For **Ethernet**, it usually starts with `enp` (e.g., `enp2s0`)
+- Ignore interfaces like `lo` (loopback), `docker0`, or `br-...` (Docker bridges)
+
+Find the line that looks like this:
+```
+inet 10.0.0.22/24 ...
+```
+
+The IP address before the slash (`10.0.0.22`) is what you’ll use to connect from the other hosts:
+
+```json
+zenoh_bridge_ros2dds -e tcp/<IP-address>:7447
+zenoh_bridge_ros2dds -e tcp/10.0.0.22:7447
+```
+
+> **Tip:** If you’re unsure which interface is active, check which one shows an `inet` address in the `10.x.x.x` or `192.168.x.x` range and says `state UP`.
+
+
+3. **Launch the Zenoh bridge with host-specific configuration:**
+   ##### A) Host 1 (Running AWSIM)
+   
+   Download the config file: [zenoh-bridge-awsim.json5](https://github.com/zubxxr/Multi-Vehicle-Autonomous-Valet-Parking/blob/main/Zenoh-Setup/zenoh-bridge-awsim.json5)
+   
+   ```bash
+   cd ~/zenoh-plugin-ros2dds
+   mv ~/Downloads/zenoh-bridge-awsim.json5 .
+   source $HOME/zenoh-plugin-ros2dds/install/setup.bash
+
+   # Test to see if it works
+   zenoh_bridge_ros2dds -c zenoh-bridge-awsim.json5 # This should be executed first
+   ```
+   
+   ##### B) Host 2 (Vehicle 1 / Autoware 1)
+   
+   Download the config file: [zenoh-bridge-vehicle1.json5](https://github.com/zubxxr/Multi-Vehicle-Autonomous-Valet-Parking/blob/main/Zenoh-Setup/zenoh-bridge-vehicle1.json5)
+   
+   ```bash
+   cd ~/zenoh-plugin-ros2dds
+   mv ~/Downloads/zenoh-bridge-vehicle1.json5 .
+   source $HOME/zenoh-plugin-ros2dds/install/setup.bash
+
+   # Test to see if it works
+   zenoh_bridge_ros2dds -c zenoh-bridge-vehicle1.json5 -e tcp/<IP-address>:7447
+   # Replace <IP-address> with Host 1's IP (e.g., 10.0.0.22)
+   # This should be executed after Host 1 is running
+   ```
+   
+   ##### C) Host 3 (Vehicle 2 / Autoware 2)
+   
+   Download the config file: [zenoh-bridge-vehicle2.json5](https://github.com/zubxxr/Multi-Vehicle-Autonomous-Valet-Parking/blob/main/Zenoh-Setup/zenoh-bridge-vehicle2.json5)
+   
+   ```bash
+   cd ~/zenoh-plugin-ros2dds
+   mv ~/Downloads/zenoh-bridge-vehicle2.json5 .
+   source $HOME/zenoh-plugin-ros2dds/install/setup.bash
+
+   # Test to see if it works
+   zenoh_bridge_ros2dds -c zenoh-bridge-vehicle2.json5 -e tcp/<IP-address>:7447
+   # Replace <IP-address> with Host 1's IP (e.g., 10.0.0.22)
+   # This should be executed after Host 1 is running
+   ```
+---
 
 ### YOLOv5 Server Setup
 
@@ -254,30 +364,10 @@ This step covers running Autoware on Host 2, and similarly, another separate Aut
 ---
 
 ### Step 4: Running Zenoh Bridge
-This step covers running the Zenoh bridge on both hosts with their respective config files to connect both ego vehicles in AWSIM to both Autoware clients.
-
 To recap, after the previous steps, the current setup is:
 - AWSIM running on Host 1
 - Autoware running on Host 2
 - Autoware running on Host 3
-
-AWSIM has been configured to simulate two ego vehicles, both publishing the same set of topics. The first vehicle, `Vehicle1_EgoVehicle`, has `/vehicle1` manually prefixed to each of its topic names, while the second vehicle, `Vehicle2_EgoVehicle`, has `/vehicle2` prefixed. This prevents conflicts between the two ego vehicles by isolating their data under separate namespaces.
-
-**Example of Host 2 Ego Vehicle (Vehicle1_EgoVehicle):**
-
-![image](https://github.com/user-attachments/assets/39639116-1c8b-48a2-88e1-d3f7cd109e05)
-
-**Example of Host 3 Ego Vehicle (Vehicle2_EgoVehicle):**
-
-![image](https://github.com/user-attachments/assets/c5a7c99a-d0b0-42b4-86f2-ea0ef9b76d84)
-
-
-The Zenoh bridge is run on both hosts to enable communication and data exchange. On host 1, the [config](https://github.com/zubxxr/Multi-Vehicle-Autonomous-Valet-Parking/blob/main/Zenoh-Setup/zenoh-bridge-awsim.json5) file has no namespace set, and the bridge is started first. This means it sends all ROS 2 topics to host 2 and host 3 without any filtering. On host 2, the bridge is started shortly after, using a [config](https://github.com/zubxxr/Multi-Vehicle-Autonomous-Valet-Parking/blob/main/Zenoh-Setup/zenoh-bridge-vehicle1.json5) that includes the namespace `/vehicle1`. As a result, it only receives data from the topics under that namespace. However, it can "see" other topics, but not recieve data from them. When these topics are listed on host 2, they appear without the `/vehicle1` prefix. The same thing applies to host 3. The bridge on host 3 can be started after, using the [config](https://github.com/zubxxr/Multi-Vehicle-Autonomous-Valet-Parking/blob/main/Zenoh-Setup/zenoh-bridge-vehicle2.json5) file that includes the namespace `/vehicle2`.
-
-This behavior works as expected and for convienience, as changing all the topics in Autoware would be challenging. Essentially, the Zenoh bridge on host 2 and host 3 respectively maps namespaced Zenoh topics to local ROS 2 topics by stripping the namespace defined in their configs.
-
-![image](https://github.com/user-attachments/assets/c12b7d85-80ef-450e-b460-aab95cfb1995)
-
 
 ### Host 1 (ROG Laptop)
 **1. Run Zenoh Bridge**
@@ -287,37 +377,10 @@ This behavior works as expected and for convienience, as changing all the topics
    zenoh_bridge_ros2dds -c zenoh-bridge-awsim.json5
    ```
 
-### Finding Your IP Address
-To set up Zenoh properly, you need the **IP address of your machine’s active network interface** (usually Wi-Fi or Ethernet).
-
-#### Run this in your terminal:
-```bash
-ip a
-```
-
-#### Look for your active network interface:
-- For **Wi-Fi**, the name usually starts with `wlp` (e.g., `wlp3s0`, `wlp0s20f3`)
-- For **Ethernet**, it usually starts with `enp` (e.g., `enp2s0`)
-- Ignore interfaces like `lo` (loopback), `docker0`, or `br-...` (Docker bridges)
-
-#### Find the line that looks like this:
-```
-inet 10.0.0.22/24 ...
-```
-
-The part before the slash (`10.0.0.22`) is your **IP address**. Use this as a command line argument when connecting to Host 1. For example:
-
-```json
-zenoh_bridge_ros2dds -e tcp/<IP-address>:7447
-zenoh_bridge_ros2dds -e tcp/10.0.0.22:7447
-```
-
-> **Tip:** If you’re unsure which interface is active, check which one shows an `inet` address in the `10.x.x.x` or `192.168.x.x` range and says `state UP`.
-
 ### Host 2 (Victus Laptop)
 **1. Run Zenoh Bridge and Connect to Host 1**
 
-Use the IP address retrieved from the above step. In this case, its 10.0.0.22.
+Use the IP address retrieved from [Find IP Address for Host 1](find-ip-address-for-host-1) step. In this case, its 10.0.0.22.
    ``` bash
    cd $HOME/zenoh-plugin-ros2dds
    source $HOME/zenoh-plugin-ros2dds/install/setup.bash
