@@ -48,7 +48,31 @@ To install Autoware, follow the instructions on [this page](https://autowarefoun
 
 ---
 
-## Installing UnityHub/AWSIM
+## Installing UnityHub
+
+Installing UnityHub requires two steps. The first is installing it through the package manager. This is required to sign in. Then it must be installed as a binary. 
+
+Follow the **"Install the Unity Hub on Linux**" section in [this page](https://docs.unity3d.com/hub/manual/InstallHub.html).
+
+
+Then launch it:
+```bash
+unityhub
+```
+
+```bash
+mkdir ~/Unity
+cd ~/Unity
+sudo apt install fuse libfuse2
+sudo modprobe fuse
+sudo groupadd fuse
+sudo usermod -a -G fuse $USER
+wget https://public-cdn.cloud.unity3d.com/hub/prod/UnityHub.AppImage
+chmod +x UnityHub.AppImage
+```
+
+
+## Installing AWSIM
 
 Follow the steps on [this page](https://autowarefoundation.github.io/AWSIM-Labs/main/GettingStarted/SetupUnityProject/).  
 > **Note:** At the time of writing, the documentation incorrectly tells you to clone:
@@ -57,7 +81,7 @@ Follow the steps on [this page](https://autowarefoundation.github.io/AWSIM-Labs/
 > ```
 > The correct repository is:
 > ```bash
-> git clone https://github.com/autowarefoundation/AWSIM-Labs.git
+> git clone ~/https://github.com/autowarefoundation/AWSIM-Labs.git
 > ```
 
 ### ⚠️ Replace the Map Package Link
@@ -70,6 +94,12 @@ Instead, **download the map package from the link below**:
 Then, follow the remaining steps in that section to import the `.unitypackage` file into Unity.
 
 ---
+
+## Installing Zenoh
+
+```bash
+git clone ~/https://github.com/eclipse-zenoh/zenoh-plugin-ros2dds -b release/1.4.0
+```
 
 ## Step 1: Launching AWSIM
 This step covers running AWSIM on Host 1.
@@ -158,8 +188,8 @@ This behavior works as expected and for convienience, as changing all the topics
 ## Host 1 (ROG Laptop)
 **1. Run Zenoh Bridge**
    ``` bash
-   cd $HOME/ZENOH/zenoh-plugin-ros2dds
-   source $HOME/ZENOH/zenoh-plugin-ros2dds/install/setup.bash
+   cd $HOME/zenoh-plugin-ros2dds
+   source $HOME/zenoh-plugin-ros2dds/install/setup.bash
    zenoh_bridge_ros2dds -c zenoh-bridge-awsim.json5
    ```
 
@@ -195,15 +225,15 @@ zenoh_bridge_ros2dds -e tcp/10.0.0.22:7447
 
 Use the IP address retrieved from the above step. In this case, its 10.0.0.22.
    ``` bash
-   cd $HOME/ZENOH/zenoh-plugin-ros2dds
-   source $HOME/ZENOH/zenoh-plugin-ros2dds/install/setup.bash
+   cd $HOME/zenoh-plugin-ros2dds
+   source $HOME/zenoh-plugin-ros2dds/install/setup.bash
    zenoh_bridge_ros2dds -c zenoh-bridge-vehicle1.json5 -e tcp/10.0.0.22:7447
    ```
 ## Host 3 (Nitro PC)
 1. Run Zenoh Bridge and Connect to Host 1
      ``` bash
-     cd $HOME/ZENOH/zenoh-plugin-ros2dds
-     source $HOME/ZENOH/zenoh-plugin-ros2dds/install/setup.bash
+     cd $HOME/zenoh-plugin-ros2dds
+     source $HOME/zenoh-plugin-ros2dds/install/setup.bash
      zenoh_bridge_ros2dds -c zenoh-bridge-vehicle2.json5 -e tcp/10.0.0.22:7447
      ```
 
