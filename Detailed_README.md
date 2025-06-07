@@ -1,8 +1,21 @@
 
 # Multi Vehicle Autonomous Valet Parking Using Three Machines
 
-[Include summary]
+This project demonstrates a simulation framework for autonomous valet parking using a distributed setup across three machines. It integrates AWSIM (Unity-based simulator), Autoware (AV Software Stack), Zenoh (communication middleware), and YOLOv5 (object detection) to simulate and coordinate multiple autonomous vehicles navigating and parking in a shared environment.
 
+Each machine is responsible for a specific role:
+- **Host 1** runs AWSIM and YOLOv5 for visual detection and publishes parking spot availability.
+- **Host 2** and **Host 3** run separate instances of Autoware, each controlling one ego vehicle.
+- **Host 1**, **Host 2** and **Host 3** all use Zenoh to communicate with each other.
+
+Topics are isolated using Zenoh namespaces to prevent conflicts, and custom map packages and detection pipelines are used to identify and manage available parking spots in real-time.
+
+This setup is ideal for testing multi-vehicle behavior, decentralized planning, and V2X communication strategies in a scalable simulated environment.
+
+This README is divided into three parts:  
+1. A brief explanation of the system setup  
+2. Instructions for installing and configuring all required software and components  
+3. Steps to launch and run the full simulation system  
 ---
 
 ## Table of Contents
