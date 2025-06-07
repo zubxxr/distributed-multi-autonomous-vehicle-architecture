@@ -142,6 +142,8 @@ After the final step **Run the demo in Editor**, you will see the simulation run
 
 ![image](https://github.com/user-attachments/assets/fffc4994-3622-4f69-a574-68b61ac352b1)
 
+> The game view is expanded by double clicking on the **Game** tab.
+
 ---
 
 ### Zenoh
