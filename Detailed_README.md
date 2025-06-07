@@ -135,7 +135,12 @@ In the **"Import external packages"** section, **do not** use the green “Downl
 
 Instead, **download the map package from this link**: [Download Zenoh-AWSIM-Labs-SIRC-June-4-2025.unitypackage](https://drive.google.com/file/d/1JXPlB_EWzItpGQwsTVuQIvlqlbNDCXrp/view?usp=sharing)
 
+#### Final Steps
 Then, follow the remaining steps in that section to import the `.unitypackage` file into Unity.
+
+After the final step **Run the demo in Editor**, you will see the simulation running (see image below), which currently simulates both ego vehicles, which will later be controlled by their own Autoware clients. 
+
+![image](https://github.com/user-attachments/assets/fffc4994-3622-4f69-a574-68b61ac352b1)
 
 ---
 
@@ -330,11 +335,7 @@ This step covers running AWSIM on Host 1.
   ```
 
 **2. Launch AWSIM**
-
-After launching UnityHub, open the project named `AWSIM-Labs-Zenoh` and click play to run the scene. This simulates both ego vehicles, which will run their own Autoware clients. 
-
-![image](https://github.com/user-attachments/assets/fffc4994-3622-4f69-a574-68b61ac352b1)
-
+See [Final Steps](final-steps).
 
 ### Step 2: Start the YOLO Server
 ```cmd
