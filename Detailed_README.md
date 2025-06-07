@@ -1,5 +1,9 @@
-
 # Multi Vehicle Autonomous Valet Parking Using Three Machines
+
+
+![ROS 2](https://img.shields.io/badge/ROS2-Humble-blue)
+![Autoware](https://img.shields.io/badge/Autoware-2024.11-brightgreen)
+![Unity](https://img.shields.io/badge/Unity-2022.3.62f1-lightgrey)
 
 This project demonstrates a simulation framework for autonomous valet parking using a distributed setup across three machines. It integrates AWSIM (Unity-based simulator), Autoware (AV Software Stack), Zenoh (communication middleware), and YOLOv5 (object detection) to simulate and coordinate multiple autonomous vehicles navigating and parking in a shared environment.
 
