@@ -155,10 +155,10 @@ source $HOME/zenoh-plugin-ros2dds/install/setup.bash
 ## Launching the Full System: AWSIM, Autoware, Zenoh, and YOLO
 Follow the steps below to launch all components required for the simulation.
 
-## Step 1: Launching AWSIM
+### Step 1: Launching AWSIM
 This step covers running AWSIM on Host 1.
 
-### Host 1 (ROG Laptop)
+#### Host 1 (ROG Laptop)
 **1. Launch UnityHub**
   ```bash
   cd ~/Unity
@@ -172,7 +172,7 @@ After launching UnityHub, open the project named `AWSIM-Labs-Zenoh` and click pl
 ![image](https://github.com/user-attachments/assets/fffc4994-3622-4f69-a574-68b61ac352b1)
 
 
-## Step 2: Start the Parking Spot Detection Node
+### Step 2: Start the Parking Spot Detection Node
 [Include description here]
 ### Launch YOLO Server
 ```cmd
@@ -191,10 +191,10 @@ A ROS2 topic is published as a result of the parking spot detection, which publi
 
 ![image](https://github.com/user-attachments/assets/fd8fad9a-dfba-4936-b6e1-dfc06943eb2d)
 
-## Step 3: Launching Autoware
+### Step 3: Launching Autoware
 This step covers running Autoware on Host 2, and similarly, another separate Autoware client on Host 3.
 
-### Host 2 (Victus Laptop)
+#### Host 2 (Victus Laptop)
 1. Launch Autoware on Host 2  
      ```bash
      cd ~/autoware
@@ -202,7 +202,7 @@ This step covers running Autoware on Host 2, and similarly, another separate Aut
      ros2 launch autoware_launch e2e_simulator.launch.xml vehicle_model:=awsim_labs_vehicle sensor_model:=awsim_labs_sensor_kit map_path:=/home/Zubair/autoware_map/sirc/ launch_vehicle_interface:=true
      ```
      
-### Host 3 (Nitro PC)
+#### Host 3 (Nitro PC)
 1. Launch Autoware
      ```bash
      cd ~/autoware
@@ -211,7 +211,7 @@ This step covers running Autoware on Host 2, and similarly, another separate Aut
      ```
 ---
 
-## Step 4: Running Zenoh Bridge
+### Step 4: Running Zenoh Bridge
 This step covers running the Zenoh bridge on both hosts with their respective config files to connect both ego vehicles in AWSIM to both Autoware clients.
 
 To recap, after the previous steps, the current setup is:
@@ -237,7 +237,7 @@ This behavior works as expected and for convienience, as changing all the topics
 ![image](https://github.com/user-attachments/assets/c12b7d85-80ef-450e-b460-aab95cfb1995)
 
 
-## Host 1 (ROG Laptop)
+### Host 1 (ROG Laptop)
 **1. Run Zenoh Bridge**
    ``` bash
    cd $HOME/zenoh-plugin-ros2dds
@@ -245,20 +245,20 @@ This behavior works as expected and for convienience, as changing all the topics
    zenoh_bridge_ros2dds -c zenoh-bridge-awsim.json5
    ```
 
-## Finding Your IP Address
+### Finding Your IP Address
 To set up Zenoh properly, you need the **IP address of your machine’s active network interface** (usually Wi-Fi or Ethernet).
 
-### Run this in your terminal:
+#### Run this in your terminal:
 ```bash
 ip a
 ```
 
-### Look for your active network interface:
+#### Look for your active network interface:
 - For **Wi-Fi**, the name usually starts with `wlp` (e.g., `wlp3s0`, `wlp0s20f3`)
 - For **Ethernet**, it usually starts with `enp` (e.g., `enp2s0`)
 - Ignore interfaces like `lo` (loopback), `docker0`, or `br-...` (Docker bridges)
 
-### Find the line that looks like this:
+#### Find the line that looks like this:
 ```
 inet 10.0.0.22/24 ...
 ```
@@ -272,7 +272,7 @@ zenoh_bridge_ros2dds -e tcp/10.0.0.22:7447
 
 > **Tip:** If you’re unsure which interface is active, check which one shows an `inet` address in the `10.x.x.x` or `192.168.x.x` range and says `state UP`.
 
-## Host 2 (Victus Laptop)
+### Host 2 (Victus Laptop)
 **1. Run Zenoh Bridge and Connect to Host 1**
 
 Use the IP address retrieved from the above step. In this case, its 10.0.0.22.
@@ -281,7 +281,7 @@ Use the IP address retrieved from the above step. In this case, its 10.0.0.22.
    source $HOME/zenoh-plugin-ros2dds/install/setup.bash
    zenoh_bridge_ros2dds -c zenoh-bridge-vehicle1.json5 -e tcp/10.0.0.22:7447
    ```
-## Host 3 (Nitro PC)
+### Host 3 (Nitro PC)
 1. Run Zenoh Bridge and Connect to Host 1
      ``` bash
      cd $HOME/zenoh-plugin-ros2dds
@@ -289,8 +289,8 @@ Use the IP address retrieved from the above step. In this case, its 10.0.0.22.
      zenoh_bridge_ros2dds -c zenoh-bridge-vehicle2.json5 -e tcp/10.0.0.22:7447
      ```
 
-## Step 5: Start the Automated Valet Parking Node
-### Launch Script Sending Available Parking Spots to Autoware
+### Step 5: Start the Automated Valet Parking Node
+#### Launch Script Sending Available Parking Spots to Autoware
 ```cmd
 cd $HOME/Multi-AVP
 source $HOME/autoware/install/setup.bash
@@ -302,3 +302,7 @@ This script can be run separately on each host. It subscribes to the empty parki
 
 
 **[Include Picture Here]**
+
+
+## Future Work
+[]
