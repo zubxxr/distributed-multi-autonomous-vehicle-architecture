@@ -64,7 +64,7 @@ Host 3 is the PC tower itself. It has a RTX 3060 GPU and 24 GB of RAM. Its outpu
 
 ## Software Installation and Setup
 
-### Installing Autoware
+### Autoware
 Read the [following](https://autowarefoundation.github.io/autoware-documentation/main/installation/) to see the hardware requirements. 
 
 The version of [Autoware](https://github.com/autowarefoundation/autoware/tree/release/2024.11) being used is `release/2024.11`. This version was forked and updated to better support the custom parking simulation use case.
@@ -85,7 +85,7 @@ To install Autoware, follow the instructions on [this page](https://autowarefoun
 
 ---
 
-### AWSIM Setup
+### AWSIM
 
 Setting up AWSIM requires the installation of Unity. Follow the **"Environment preparation"** section and carefully read the **"ROS 2"** section on [this page](https://autowarefoundation.github.io/AWSIM-Labs/main/GettingStarted/SetupUnityProject/) to get started.  
 
@@ -283,7 +283,7 @@ zenoh_bridge_ros2dds -e tcp/10.0.0.22:7447
    ```
 ---
 
-### YOLOv5 Server Setup
+### YOLOv5
 
 The YOLOv5 server runs locally on the same machine as AWSIM. It captures frames from the overhead camera in the simulation, performs vehicle detection using YOLOv5, extracts the bounding box coordinates, and sends them to Unity for further processing.
 
