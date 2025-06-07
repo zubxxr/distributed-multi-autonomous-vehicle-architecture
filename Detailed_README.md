@@ -152,6 +152,60 @@ colcon build --packages-select zenoh_bridge_ros2dds --cmake-args -DCMAKE_BUILD_T
 source $HOME/zenoh-plugin-ros2dds/install/setup.bash
 ```
 
+### YOLOv5 Server Setup
+
+
+The YOLOv5 server runs locally on the same machine as AWSIM. It captures frames from the overhead camera in the simulation, performs vehicle detection using YOLOv5, extracts the bounding box coordinates, and sends them to Unity for further processing.
+
+In Unity, custom scripts receive these bounding boxes, draws them on the overhead view, and compares them with predefined parking spot coordinates. If there is any overlap, the spot is marked as **occupied**.
+
+As a result, a ROS 2 topic is published containing a list of currently **empty parking spots**, which can be visualized in the bottom-left corner of the simulation (see image below):
+
+![image](https://github.com/user-attachments/assets/fd8fad9a-dfba-4936-b6e1-dfc06943eb2d)
+
+
+#### Download Required Files
+
+Download the following files from this repository:
+
+- [Weight File](https://github.com/zubxxr/Multi-Vehicle-Autonomous-Valet-Parking/blob/main/best.pt)
+- [YOLO Server Script](https://github.com/zubxxr/Multi-Vehicle-Autonomous-Valet-Parking/blob/main/yolo_server.py)
+- [Requirements File](https://github.com/zubxxr/Multi-Vehicle-Autonomous-Valet-Parking/blob/main/requirements.txt)
+
+
+#### Setup Instructions
+Run the following commands in your terminal to set up the YOLO server environment:
+```bash
+mkdir ~/YOLO_Server
+cd ~/YOLO_Server
+
+# Move the downloaded files
+mv ~/Downloads/best.pt .
+mv ~/Downloads/yolo_server.py .
+mv ~/Downloads/requirements.txt .
+
+# Create and activate virtual environment
+python3 -m venv yolo_server_env
+source yolo_server_env/bin/activate
+
+# Install dependencies
+pip install -r requirements.txt
+```
+
+To start the server:
+
+```bash
+cd ~/YOLO_Server
+source yolo_server_env/bin/activate
+python3 yolo_server.py
+```
+
+If everything is working correctly, you will see output similar to the image below:
+
+![image](https://github.com/user-attachments/assets/346d98c2-df20-48df-8cc1-311367c3021b)
+
+---
+
 ## Launching the Full System: AWSIM, Autoware, Zenoh, and YOLO
 Follow the steps below to launch all components required for the simulation.
 
