@@ -444,6 +444,11 @@ This script can be run separately on each host. It subscribes to the empty parki
 
 ---
 
+## Troubleshooting 
+Refer to [Issues](https://github.com/zubxxr/Multi-Vehicle-Autonomous-Valet-Parking/issues) to see if your issue has been addressed. Otherwise, feel free to open one.
+
+---
+
 ## Acknowledgements
 
 Special thanks to [Ontario Tech University], [Prof. Mohamed El-Darieby], and my lab collaborators for their guidance and support.
