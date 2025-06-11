@@ -44,12 +44,12 @@ This README is divided into three parts:
    - [YOLOv5](#yolov5)
      - [Download Required Files](#download-required-files)
      - [Setup Instructions](#setup-instructions)
+   - [Optional: Barrier (Shared Keyboard and Mouse Across Hosts)](#optional-barrier-shared-keyboard-and-mouse-across-hosts)
 3. [Launching the Full System](#launching-the-full-system-awsim-autoware-zenoh-and-yolo)  
    - [Step 1: Launching AWSIM](#step-1-launching-awsim)  
    - [Step 2: Start the YOLO Server](#step-2-start-the-yolo-server)  
    - [Step 3: Launching Autoware](#step-3-launching-autoware)  
    - [Step 4: Running Zenoh Bridge](#step-4-running-zenoh-bridge)  
-     - [Finding Your IP Address](#finding-your-ip-address)  
    - [Step 5: Start the Automated Valet Parking Node](#step-5-start-the-automated-valet-parking-node)
   
 ## System Setup
