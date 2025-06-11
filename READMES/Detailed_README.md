@@ -64,7 +64,9 @@ Its display is extended to the two adjacent monitors:
 
 - **Laptop screen**: runs terminal commands for the Zenoh Bridge, YOLOv5 server, and related processes.
 - **Center monitor**: displays the AWSIM simulation.
-- **Right monitor**: used to remotely access Host 2 and Host 3 via AnyDesk.
+- **Right monitor**: initially used to remotely access Host 2 and Host 3 via AnyDesk, while also relying on each device’s physical keyboard and mouse. However, this setup proved inefficient and disruptive when switching control across machines.
+
+To improve workflow, the software **Barrier** was installed and configured. It allows seamless mouse and keyboard sharing between Host 1, Host 2, and Host 3 using just one input set, significantly streamlining interaction during debugging and simulation.
 
 ### Host 2
 Host 2 is the laptop placed on top of the PC tower. It has a RTX 4050 GPU and 16 GB of RAM. It runs Autoware and the Zenoh Bridge independently. 
@@ -348,6 +350,34 @@ If everything is working correctly, you will see output similar to the image bel
 ![image](https://github.com/user-attachments/assets/346d98c2-df20-48df-8cc1-311367c3021b)
 
 ---
+
+### Optional: Barrier (Shared Keyboard and Mouse Across Hosts)
+
+Managing three separate machines can be cumbersome, especially when constantly switching between physical keyboards and mice. This setup initially used **AnyDesk** to remotely access Host 2 and Host 3, but **AnyDesk** comes with latency and control limitations, making it frustrating to use across multiple systems.
+
+To streamline the workflow, the software **[Barrier](https://github.com/debauchee/barrier)** was used. It allows you to use a single keyboard and mouse to control all hosts, enabling seamless cursor movement between machines as if they were part of one extended desktop.
+
+Ironically, while **AnyDesk** can be frustrating on its own, it actually plays a helpful role in setting up and maintaining **Barrier** — especially after reboots.
+
+#### Setup Workflow
+
+1. **Initial Setup**:
+   - Connect a keyboard and mouse to each system.
+   - Install and configure **AnyDesk** on all hosts.
+     - Be sure to **set a password** in AnyDesk so you can connect automatically without needing to manually accept each time.
+   - Install **Barrier** on each host.
+   - Set up Barrier:
+     - On **Host 1** (the machine with your keyboard and mouse), set Barrier to run in **server** mode.
+     - On **Host 2** and **Host 3**, configure Barrier as **clients** and connect them to Host 1.
+   - If needed, use AnyDesk from Host 1 to remotely access and configure Barrier on the other hosts.
+
+2. **Post-Reboots**:
+   If you reboot a system and **Barrier doesn’t auto-launch**, you don’t need to plug in another keyboard or mouse:
+   - Use **AnyDesk** to connect to the host.
+   - Launch **Barrier** manually from there.
+   - Once Barrier is active, you can close AnyDesk and continue using your shared keyboard and mouse setup as usual.
+
+> **Tip:** AnyDesk is useful not just during the initial setup, but also if Barrier ever fails to launch after a reboot — saving you from having to reconnect physical input devices.
 
 ## Launching the Full System: AWSIM, Autoware, Zenoh, and YOLO
 Follow the steps below to launch all components required for the simulation.
