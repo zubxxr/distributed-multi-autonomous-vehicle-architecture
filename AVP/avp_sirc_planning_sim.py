@@ -3,6 +3,7 @@ from rclpy.node import Node
 # from autoware_adapi_v1_msgs.msg import RouteState
 from tier4_planning_msgs.msg import RouteState
 from std_msgs.msg import String
+import datetime 
 
 import subprocess
 import time
@@ -12,33 +13,23 @@ class AVPCommandListener(Node):
         super().__init__('avp_command_listener')
 
         self.route_state_subscriber = route_state_subscriber
-
         self.head_to_drop_off = False
-    
+        self.status_initialized = False
         self.initiate_parking = False
-
         self.state = -1
-
         self.publisher_ = self.create_publisher(String, '/avp/status', 10)
-        self.publisher_.publish(String(data="Arrived at facility, waiting for instruction"))
-
         self.subscription = self.create_subscription(
             String,
             '/avp/command',
             self.command_callback,
             10)
     
-
     def command_callback(self, msg):
-
-        self.publisher_.publish(String(data="Arrived at facility, waiting for instruction"))
-
         if msg.data == "start":
 
             self.head_to_drop_off = True
             self.publisher_.publish(String(data="Heading to drop-off zone"))
             
-
 class ParkingSpotSubscriber(Node):
     def __init__(self):
         super().__init__('parking_spot_subscriber')
@@ -80,20 +71,19 @@ def main(args=None):
     rclpy.init(args=args)
     
     route_state_subscriber = RouteStateSubscriber()
-
-
     avp_command_listener = AVPCommandListener(route_state_subscriber)
-
-    
     parking_spot_subscriber = ParkingSpotSubscriber()
-
+    reserved_spots_publisher = avp_command_listener.create_publisher(String, '/parking_spots/reserved', 10)
 
     engage_auto_mode = "ros2 topic pub --once /autoware/engage autoware_vehicle_msgs/msg/Engage '{engage: True}' -1"
     
-    set_initial_pose = "ros2 topic pub --once /initialpose geometry_msgs/msg/PoseWithCovarianceStamped '{header: {stamp: {sec: 1749585776, nanosec: 961698513}, frame_id: 'map'}, pose: {pose: {position: {x: -61.5980224609375, y: -84.97380065917969, z: 0.0}, orientation: {x: 0.0, y: 0.0, z: 0.792272260736117, w: 0.6101677350270843}}, covariance: [0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.06853891909122467]}}'"
+    # Farther one
+    # set_initial_pose = "ros2 topic pub --once /initialpose geometry_msgs/msg/PoseWithCovarianceStamped '{header: {stamp: {sec: 1749585776, nanosec: 961698513}, frame_id: 'map'}, pose: {pose: {position: {x: -61.5980224609375, y: -84.97380065917969, z: 0.0}, orientation: {x: 0.0, y: 0.0, z: 0.792272260736117, w: 0.6101677350270843}}, covariance: [0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.06853891909122467]}}'"
+
+    # Closer one
+    set_initial_pose = "ros2 topic pub --once /initialpose geometry_msgs/msg/PoseWithCovarianceStamped '{header: {stamp: {sec: 1749608320, nanosec: 716034807}, frame_id: 'map'}, pose: {pose: {position: {x: -71.57246398925781, y: -48.895652770996094, z: 0.0}, orientation: {x: 0.0, y: 0.0, z: 0.7899923832424256, w: 0.6131166564520593}}, covariance: [0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.06853891909122467]}}'"
 
     head_to_drop_off = "ros2 topic pub /planning/mission_planning/goal geometry_msgs/msg/PoseStamped '{header: {stamp: {sec: 1749596637, nanosec: 370052949}, frame_id: 'map'}, pose: {position: {x: -57.330997467041016, y: -32.513362884521484, z: 0.0}, orientation: {x: 0.0, y: 0.0, z: 0.11762553592567591, w: 0.9930580211136696}}}' --once"
-
 
     # set_goal_pose_entrance = "ros2 topic pub /planning/mission_planning/goal geometry_msgs/msg/PoseStamped '{header: {stamp: {sec: 1708315201, nanosec: 354400841}, frame_id: 'map'}, pose: {position: {x: 3730.5029296875, y: 73724.484375, z: 0.0}, orientation: {x: 0.0, y: 0.0, z: -0.9714600644596665, w: 0.2372031685286277}}}' --once"
 
@@ -116,9 +106,6 @@ def main(args=None):
     # Simulate AWSIM initial pose
     run_ros2_command(set_initial_pose)
 
-    # if avp_command_listener. :
-    #     run_ros2_command(head_to_drop_off)
-
     initiate_parking = True
     # print("Park your car? (yes/no)")
 
@@ -136,7 +123,9 @@ def main(args=None):
 
     while rclpy.ok():
 
-        ############### START PARKING SPOT DETECTION ###############
+        if not avp_command_listener.status_initialized:
+            avp_command_listener.publisher_.publish(String(data="Arrived at location."))
+            avp_command_listener.status_initialized = True
 
         # If "Start AVP" is clicked
         if drop_off_flag and avp_command_listener.head_to_drop_off:
@@ -144,20 +133,22 @@ def main(args=None):
             run_ros2_command(engage_auto_mode)
             drop_off_flag = False
 
+
         # Simulate the drop-off sequence once car arrives at destination
         if route_state_subscriber.state == 6 and not avp_command_listener.initiate_parking:
             print("Drop-off destination reached.")
-            avp_command_listener.publisher_.publish(String(data="Arrived at drop-off zone"))
-            time.sleep(2)
+            avp_command_listener.publisher_.publish(String(data="Arrived at drop-off zone."))
+            # time.sleep(2)
             avp_command_listener.publisher_.publish(String(data="Dropping off passenger..."))
-            time.sleep(2)
-            avp_command_listener.publisher_.publish(String(data="Passenger drop-off complete"))
-            time.sleep(5)
-            avp_command_listener.publisher_.publish(String(data="Starting AVP."))
-            time.sleep(2)
+            # time.sleep(7)
+            avp_command_listener.publisher_.publish(String(data="Passenger drop-off complete."))
+            # time.sleep(2)
+            avp_command_listener.publisher_.publish(String(data="Autonomous valet parking initiated."))
+            # time.sleep(2)
             avp_command_listener.initiate_parking = True
-            avp_command_listener.publisher_.publish(String(data="Waiting for available parking spot..."))
+            avp_command_listener.publisher_.publish(String(data="Waiting for an available parking spot..."))
             
+        ############### START PARKING SPOT DETECTION ###############
 
         if avp_command_listener.initiate_parking and route_state_subscriber.state == 6:
 
@@ -183,41 +174,59 @@ def main(args=None):
 
                     # Printing the first value
                     print('\nAvailable parking spot found: %s' % first_spot_in_queue)
+
+                    avp_command_listener.publisher_.publish(String(data="Available parking spot found."))
+                    time.sleep(2)
+                    avp_command_listener.publisher_.publish(String(data=f"Parking in Spot {first_spot_in_queue}."))
                     
                     parking_spot_goal_pose_command = parking_spot_locations[first_spot_in_queue]
                     run_ros2_command(parking_spot_goal_pose_command)
                     run_ros2_command(engage_auto_mode)
+
+
+                    # Publish the reserved spot to Unity
+                    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    reserved_msg = String()
+                    reserved_msg.data = f"{timestamp}: {first_spot_in_queue}"
+                    print(reserved_msg)
+                    reserved_spots_publisher.publish(reserved_msg)
+
+                    route_state_subscriber.state = -1
+
                     print('Setting goal pose to parking spot:', first_spot_in_queue)
 
                     counter += 1
                     chosen_parking_spot = first_spot_in_queue
+
                 
             time.sleep(1)
         ############### END PARKING SPOT DETECTION #################
 
+        if route_state_subscriber.state == 6:
+            avp_command_listener.publisher_.publish(String(data="Car has been parked."))
+
         # if new_counter == 0:
         #     if route_state_subscriber.state == 6:
-        #         print("Retrieve car? (yes/no)")
+                # print("Retrieve car? (yes/no)")
 
-        #         user_input = input().lower()
+                # user_input = input().lower()
 
-        #         if user_input == "yes" or user_input == "y":
-        #             print("Going to Drop Off Zone.")
-        #             run_ros2_command(set_goal_pose_entrance)
-        #             run_ros2_command(engage_auto_mode)
-        #         elif user_input == "no" or user_input == "n":
-        #             print("Exiting the script.")
-        #             exit()
-        #         else:
-        #             print("Invalid input. Please enter 'yes' or 'no'.")
+                # if user_input == "yes" or user_input == "y":
+                #     print("Going to Drop Off Zone.")
+                #     run_ros2_command(set_goal_pose_entrance)
+                #     run_ros2_command(engage_auto_mode)
+                # elif user_input == "no" or user_input == "n":
+                #     print("Exiting the script.")
+                #     exit()
+                # else:
+                #     print("Invalid input. Please enter 'yes' or 'no'.")
 
-        #         route_state_subscriber.state = -1
-        #         new_counter += 1                  
+                # route_state_subscriber.state = -1
+                # new_counter += 1                  
         
         rclpy.spin_once(route_state_subscriber, timeout_sec=1)
         rclpy.spin_once(avp_command_listener, timeout_sec=1)
 
-        
     route_state_subscriber.destroy_node()
     parking_spot_subscriber.destroy_node()
     rclpy.shutdown()
