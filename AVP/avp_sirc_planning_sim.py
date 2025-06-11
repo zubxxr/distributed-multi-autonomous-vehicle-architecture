@@ -8,9 +8,17 @@ import subprocess
 import time
 
 class AVPCommandListener(Node):
-    def __init__(self):
+    def __init__(self, route_state_subscriber):
         super().__init__('avp_command_listener')
+
+        self.route_state_subscriber = route_state_subscriber
+
+        self.head_to_drop_off = False
+    
         self.initiate_parking = False
+
+        self.state = -1
+
         self.publisher_ = self.create_publisher(String, '/avp/status', 10)
         self.publisher_.publish(String(data="Arrived at facility, waiting for instruction"))
 
@@ -19,20 +27,17 @@ class AVPCommandListener(Node):
             '/avp/command',
             self.command_callback,
             10)
+    
 
     def command_callback(self, msg):
+
+        self.publisher_.publish(String(data="Arrived at facility, waiting for instruction"))
+
         if msg.data == "start":
-            self.initiate_parking = True
 
+            self.head_to_drop_off = True
             self.publisher_.publish(String(data="Heading to drop-off zone"))
-            time.sleep(3)  # Simulate driving
-
-            self.publisher_.publish(String(data="Arrived at drop-off zone"))
-            self.publisher_.publish(String(data="Dropping off passenger..."))
-            time.sleep(10)
-
-            self.publisher_.publish(String(data="Passenger drop-off complete"))
-            self.publisher_.publish(String(data="Waiting for available parking spot..."))
+            
 
 class ParkingSpotSubscriber(Node):
     def __init__(self):
@@ -62,7 +67,6 @@ class RouteStateSubscriber(Node):
 
     def route_state_callback(self, msg):
         if msg.state == 6:
-            self.publisher_.publish(String(data="Parked. AVP complete."))
             print("\nCar has been parked.")
             self.state = 6
     
@@ -74,16 +78,22 @@ def run_ros2_command(command):
     
 def main(args=None):
     rclpy.init(args=args)
-
-    avp_command_listener = AVPCommandListener()
-
+    
     route_state_subscriber = RouteStateSubscriber()
+
+
+    avp_command_listener = AVPCommandListener(route_state_subscriber)
+
+    
     parking_spot_subscriber = ParkingSpotSubscriber()
 
+
+    engage_auto_mode = "ros2 topic pub --once /autoware/engage autoware_vehicle_msgs/msg/Engage '{engage: True}' -1"
+    
     set_initial_pose = "ros2 topic pub --once /initialpose geometry_msgs/msg/PoseWithCovarianceStamped '{header: {stamp: {sec: 1749585776, nanosec: 961698513}, frame_id: 'map'}, pose: {pose: {position: {x: -61.5980224609375, y: -84.97380065917969, z: 0.0}, orientation: {x: 0.0, y: 0.0, z: 0.792272260736117, w: 0.6101677350270843}}, covariance: [0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.06853891909122467]}}'"
 
-    run_ros2_command(set_initial_pose)
-    engage_auto_mode = "ros2 topic pub --once /autoware/engage autoware_vehicle_msgs/msg/Engage '{engage: True}' -1"
+    head_to_drop_off = "ros2 topic pub /planning/mission_planning/goal geometry_msgs/msg/PoseStamped '{header: {stamp: {sec: 1749596637, nanosec: 370052949}, frame_id: 'map'}, pose: {position: {x: -57.330997467041016, y: -32.513362884521484, z: 0.0}, orientation: {x: 0.0, y: 0.0, z: 0.11762553592567591, w: 0.9930580211136696}}}' --once"
+
 
     # set_goal_pose_entrance = "ros2 topic pub /planning/mission_planning/goal geometry_msgs/msg/PoseStamped '{header: {stamp: {sec: 1708315201, nanosec: 354400841}, frame_id: 'map'}, pose: {position: {x: 3730.5029296875, y: 73724.484375, z: 0.0}, orientation: {x: 0.0, y: 0.0, z: -0.9714600644596665, w: 0.2372031685286277}}}' --once"
 
@@ -103,6 +113,12 @@ def main(args=None):
         19: "ros2 topic pub /planning/mission_planning/goal geometry_msgs/msg/PoseStamped '{header: {stamp: {sec: 1736235786, nanosec: 558316281}, frame_id: 'map'}, pose: {position: {x: -30.4317569732666, y: -19.839237213134766, z: 0.0}, orientation: {x: 0.0, y: 0.0, z: 0.7983271798448894, w: 0.6022239732200185}}}' --once",
     }
 
+    # Simulate AWSIM initial pose
+    run_ros2_command(set_initial_pose)
+
+    # if avp_command_listener. :
+    #     run_ros2_command(head_to_drop_off)
+
     initiate_parking = True
     # print("Park your car? (yes/no)")
 
@@ -116,10 +132,34 @@ def main(args=None):
 
     chosen_parking_spot = None
 
+    drop_off_flag = True
+
     while rclpy.ok():
 
         ############### START PARKING SPOT DETECTION ###############
-        if avp_command_listener.initiate_parking and route_state_subscriber.state != 6:
+
+        # If "Start AVP" is clicked
+        if drop_off_flag and avp_command_listener.head_to_drop_off:
+            run_ros2_command(head_to_drop_off)
+            run_ros2_command(engage_auto_mode)
+            drop_off_flag = False
+
+        # Simulate the drop-off sequence once car arrives at destination
+        if route_state_subscriber.state == 6 and not avp_command_listener.initiate_parking:
+            print("Drop-off destination reached.")
+            avp_command_listener.publisher_.publish(String(data="Arrived at drop-off zone"))
+            time.sleep(2)
+            avp_command_listener.publisher_.publish(String(data="Dropping off passenger..."))
+            time.sleep(2)
+            avp_command_listener.publisher_.publish(String(data="Passenger drop-off complete"))
+            time.sleep(5)
+            avp_command_listener.publisher_.publish(String(data="Starting AVP."))
+            time.sleep(2)
+            avp_command_listener.initiate_parking = True
+            avp_command_listener.publisher_.publish(String(data="Waiting for available parking spot..."))
+            
+
+        if avp_command_listener.initiate_parking and route_state_subscriber.state == 6:
 
             rclpy.spin_once(parking_spot_subscriber, timeout_sec=0.1)  
 
@@ -175,7 +215,7 @@ def main(args=None):
         #         new_counter += 1                  
         
         rclpy.spin_once(route_state_subscriber, timeout_sec=1)
-        rclpy.spin_once(avp_command_listener, timeout_sec=0.1)
+        rclpy.spin_once(avp_command_listener, timeout_sec=1)
 
         
     route_state_subscriber.destroy_node()
