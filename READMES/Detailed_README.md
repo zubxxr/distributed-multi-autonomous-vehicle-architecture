@@ -32,7 +32,7 @@ This README is divided into three parts:
    - [Host 2](#host-2)  
    - [Host 3](#host-3)  
 2. [Software Installation and Setup](#software-installation-and-setup)  
-   - [Installing Autoware](#installing-autoware)  
+   - [Autoware](#autoware)  
    - [AWSIM](#awsim)  
      - [Unity](#unity)  
      - [Open AWSIM Project](#open-awsim-project)  
