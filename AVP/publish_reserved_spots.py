@@ -1,19 +1,21 @@
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
+from datetime import datetime
 
 class ReservedSpotPublisher(Node):
     def __init__(self):
-        super().__init__('parking_spot_publisher')
+        super().__init__('reserved_spot_publisher')
         self.publisher_ = self.create_publisher(String, '/parking_spots/reserved', 10)
-        timer_period = 1.0  # seconds
-        self.timer = self.create_timer(timer_period, self.publish_reserved_spots)
+        self.timer = self.create_timer(1.0, self.publish_once)
 
-    def publish_reserved_spots(self):
+    def publish_once(self):
         msg = String()
-        msg.data = '2025-05-04 23:27:41: 17'
+        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        msg.data = f'{timestamp}: 17'
         self.publisher_.publish(msg)
-        self.get_logger().info(f'Published: "{msg.data}"')
+        self.get_logger().info(f'Published reservation: "{msg.data}"')
+        self.timer.cancel()  # publish once only
 
 def main(args=None):
     rclpy.init(args=args)
