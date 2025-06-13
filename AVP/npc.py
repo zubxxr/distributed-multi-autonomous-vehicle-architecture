@@ -12,6 +12,8 @@ import threading
 import time
 
 
+
+
 def generate_uuid():
     return UUID(uuid=list(uuid.uuid4().bytes))
 
@@ -22,6 +24,9 @@ def make_quaternion(yaw_rad):
 
 
 class NPCDummyCarPublisher(Node):
+
+    npc_counter = 0
+    
     def __init__(self):
         super().__init__('npc_dummy_car_publisher')
 
@@ -40,11 +45,17 @@ class NPCDummyCarPublisher(Node):
             {"path": [(-36.4, -20.6, -4.45)], "max_v": 0.0, "min_v": 0.0, "delay": None},
         ]
 
+
+
         self.index = 0
 
-        # Queue tracking and publishing
+        # Generate unique car ID
+        NPCDummyCarPublisher.npc_counter += 1
+        self.car_id = f"car_{NPCDummyCarPublisher.npc_counter}"
+
+        # Queue publishing
         self.queue_pub = self.create_publisher(String, '/avp/dropoff_queue', 10)
-        self.queue_list = ["car_npc"]
+        self.queue_list = [self.car_id]
         self.publish_queue()
 
         self.object_id = generate_uuid()
@@ -52,6 +63,12 @@ class NPCDummyCarPublisher(Node):
         time.sleep(1.0)
         self.publish_static_car()
         threading.Thread(target=self.wait_for_input, daemon=True).start()
+
+    def publish_queue(self):
+        msg = String()
+        msg.data = "Drop-off Queue: [" + ", ".join(self.queue_list) + "]"
+        self.queue_pub.publish(msg)
+        self.get_logger().info(f"📤 Published queue: {msg.data}")
 
 
 
@@ -66,8 +83,15 @@ class NPCDummyCarPublisher(Node):
             user_input = sys.stdin.readline().strip().lower()
             if user_input == 'y':
                 self.get_logger().info("✅ Received input to start parking.")
+
+                # Remove from queue
+                if self.car_id in self.queue_list:
+                    self.queue_list.remove(self.car_id)
+                    self.publish_queue()
+
                 self.run_trajectory_sequence()
                 break
+
 
     def send_delete_all(self):
         obj = DummyObject()
