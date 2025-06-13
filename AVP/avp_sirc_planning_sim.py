@@ -26,22 +26,39 @@ drop_off_queue = []
 drop_off_counter = 1
 cars_in_zone = set()
 
+def dropoff_queue_callback(msg):
+    global drop_off_queue
+    try:
+        data = msg.data.replace("Drop-off Queue: [", "").replace("]", "").strip()
+        if data:
+            drop_off_queue = [item.strip() for item in data.split(",")]
+        else:
+            drop_off_queue = []
+    except Exception as e:
+        print(f"Failed to parse drop-off queue: {e}")
+
+
+
 def update_drop_off_queue(car_id, x, y, publisher):
     global drop_off_counter
     if is_in_drop_off_zone(x, y):
         if car_id not in cars_in_zone:
-            queue_label = f"car_{drop_off_counter}"
-            drop_off_queue.append((queue_label, car_id))
-            drop_off_counter += 1
-            cars_in_zone.add(car_id)
-            print(f"{queue_label} ({car_id}) entered the drop-off zone.")
-            publish_queue(publisher)
+            # Prevent duplicate car labels for the same ID
+            existing_numbers = [int(car.replace("car_", "")) for car in drop_off_queue if car.startswith("car_")]
+            next_car_num = max(existing_numbers) + 1 if existing_numbers else 1
+            label = f"car_{next_car_num}"
+
+            if label not in drop_off_queue:
+                drop_off_queue.append(label)
+                cars_in_zone.add(car_id)
+                print(f"{label} entered the drop-off zone.")
+                publish_queue(publisher)
     else:
         if car_id in cars_in_zone:
             cars_in_zone.remove(car_id)
 
 def publish_queue(publisher):
-    queue_str = ", ".join([f"{label}:{cid}" for label, cid in drop_off_queue])
+    queue_str = ", ".join(drop_off_queue)
     msg = String()
     msg.data = f"Drop-off Queue: [{queue_str}]"
     publisher.publish(msg)
@@ -58,6 +75,13 @@ class AVPCommandListener(Node):
         self.publisher_ = self.create_publisher(String, '/avp/status', 10)
         self.queue_publisher = self.create_publisher(String, '/avp/dropoff_queue', 10)
         
+        self.create_subscription(
+            String,
+            '/avp/dropoff_queue',
+            dropoff_queue_callback,
+            10
+        )
+
         self.subscription = self.create_subscription(
             String,
             '/avp/command',
@@ -69,6 +93,8 @@ class AVPCommandListener(Node):
         self.ego_x = None
         self.ego_y = None
         self.ego_id = "ego"
+
+        
     
     def odom_callback(self, msg):
         self.ego_x = msg.pose.pose.position.x
