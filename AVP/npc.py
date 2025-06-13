@@ -45,8 +45,6 @@ class NPCDummyCarPublisher(Node):
             {"path": [(-36.4, -20.6, -4.45)], "max_v": 0.0, "min_v": 0.0, "delay": None},
         ]
 
-
-
         self.index = 0
 
         # Generate unique car ID
