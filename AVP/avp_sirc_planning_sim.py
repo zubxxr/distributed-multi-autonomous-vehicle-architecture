@@ -41,7 +41,7 @@ def dropoff_queue_callback(msg):
 
 def update_drop_off_queue(car_id, x, y, publisher):
     global drop_off_counter
-    if is_in_drop_off_zone(x, y):
+    if is_in_drop_off_zone(x, y): 
         if car_id not in cars_in_zone:
             # Prevent duplicate car labels for the same ID
             existing_numbers = [int(car.replace("car_", "")) for car in drop_off_queue if car.startswith("car_")]
