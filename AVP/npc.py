@@ -7,10 +7,14 @@ from unique_identifier_msgs.msg import UUID
 from std_msgs.msg import Header
 import uuid
 import tf_transformations
+import sys
+import threading
+import time
 
 
 def generate_uuid():
     return UUID(uuid=list(uuid.uuid4().bytes))
+
 
 def make_quaternion(yaw_rad):
     q = tf_transformations.quaternion_from_euler(0, 0, yaw_rad)
@@ -28,60 +32,51 @@ class NPCDummyCarPublisher(Node):
         )
 
         self.trajectories = [
-            {"path": [(-66.0, -34.0, 0.25)], "max_v": 3.0, "min_v": 3.0, "delay": 13.0},
-            {"path": [(-33.0, -26.4, 0.25)], "max_v": -2.0, "min_v": -2.0, "delay": 2.0},
+            {"path": [(-58.1, -32.7, 0.25)], "max_v": 0.0, "min_v": 0.0, "delay": None},
+            {"path": [(-58.1, -32.7, 0.25)], "max_v": 3.0, "min_v": 3.0, "delay": 9.0},
+            {"path": [(-33.0, -26.4, 0.25)], "max_v": -1.0, "min_v": -1.0, "delay": 2.0},
             {"path": [(-34.6, -28.1, -5.25)], "max_v": 0.0, "min_v": 0.0, "delay": 2.0},
             {"path": [(-34.3, -26.9, -4.45)], "max_v": 1.0, "min_v": 1.0, "delay": 8.0},
-            {"path": [(-36.4, -20.6, -4.45)], "max_v": 0.0, "min_v": 0.0, "delay": None},  # final
+            {"path": [(-36.4, -20.6, -4.45)], "max_v": 0.0, "min_v": 0.0, "delay": None},
         ]
 
         self.index = 0
-        self.counter = 0
         self.object_id = generate_uuid()
 
-        self.timer = self.create_timer(1.0, lambda: self.run_trajectory(0))
-        self.delete_timer = self.create_timer(self.trajectories[0]["delay"], self.send_delete_all) if self.trajectories[0]["delay"] else None
+        time.sleep(1.0)
+        self.publish_static_car()
+        threading.Thread(target=self.wait_for_input, daemon=True).start()
+
+
+
+    def publish_static_car(self):
+        traj = self.trajectories[0]
+        self.publish_pose(traj["path"][0], traj["max_v"], traj["min_v"])
+        self.get_logger().info("🚗 Published initial static car. Waiting for input...")
+
+    def wait_for_input(self):
+        self.get_logger().info("🕐 Waiting for input to start parking... (Press 'y' and Enter)")
+        while True:
+            user_input = sys.stdin.readline().strip().lower()
+            if user_input == 'y':
+                self.get_logger().info("✅ Received input to start parking.")
+                self.run_trajectory_sequence()
+                break
 
     def send_delete_all(self):
-        if self.delete_timer:
-            self.delete_timer.cancel()
-        if self.timer:
-            self.timer.cancel()
-
-        self.pub.publish(DummyObject(
-            header=Header(stamp=self.get_clock().now().to_msg(), frame_id="map"),
-            action=DummyObject.DELETEALL
-        ))
-
-        self.counter += 1
-        self.index = 0
-        self.object_id = generate_uuid()
-
-        if self.counter < len(self.trajectories):
-            traj = self.trajectories[self.counter]
-            self.timer = self.create_timer(1.0, lambda: self.run_trajectory(self.counter))
-            if traj["delay"]:
-                self.delete_timer = self.create_timer(traj["delay"], self.send_delete_all)
-
-
-
-    def run_trajectory(self, traj_index):
-        traj = self.trajectories[traj_index]
-        path = traj["path"]
-
-        if self.index >= len(path):
-            self.get_logger().info("Final pose reached. Stopping publisher.")
-            if self.timer:
-                self.timer.cancel()
-            return
-
-        x, y, yaw = path[self.index]
-        self.index += 1
-
         obj = DummyObject()
         obj.header = Header()
         obj.header.stamp = self.get_clock().now().to_msg()
         obj.header.frame_id = 'map'
+        obj.action = DummyObject.DELETEALL
+        self.pub.publish(obj)
+        self.get_logger().info("🗑️ Sent DELETE_ALL command.")
+
+    def publish_pose(self, pos_tuple, max_v, min_v):
+        x, y, yaw = pos_tuple
+
+        obj = DummyObject()
+        obj.header = Header(stamp=self.get_clock().now().to_msg(), frame_id='map')
         obj.id = self.object_id
 
         pose = Pose()
@@ -102,11 +97,25 @@ class NPCDummyCarPublisher(Node):
         shape.dimensions = Vector3(x=4.0, y=1.8, z=2.0)
         obj.shape = shape
 
-        obj.max_velocity = traj["max_v"]
-        obj.min_velocity = traj["min_v"]
+        obj.max_velocity = max_v
+        obj.min_velocity = min_v
         obj.action = DummyObject.ADD
 
         self.pub.publish(obj)
+        self.get_logger().info(f"📍 Published dummy NPC pose at x={x:.2f}, y={y:.2f}")
+
+    def run_trajectory_sequence(self):
+        for i in range(1, len(self.trajectories)):  # skip first one (already static)
+            traj = self.trajectories[i]
+
+            self.send_delete_all()
+            self.object_id = generate_uuid()
+            self.publish_pose(traj["path"][0], traj["max_v"], traj["min_v"])
+
+            delay = traj["delay"]
+            if delay is not None:
+                self.get_logger().info(f"⏱️ Waiting {delay} seconds before next move...")
+                time.sleep(delay)
 
 
 def main(args=None):
@@ -115,6 +124,7 @@ def main(args=None):
     rclpy.spin(node)
     node.destroy_node()
     rclpy.shutdown()
+
 
 if __name__ == '__main__':
     main()
