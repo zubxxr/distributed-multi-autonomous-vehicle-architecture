@@ -23,7 +23,8 @@ class ParkingSpotPublisher(Node):
     def reserved_callback(self, msg):
         try:
             spot_str = msg.data.split(':')[-1].strip()
-            self.reserved_spots = {int(s) for s in spot_str.split(',') if s.strip().isdigit()}
+            new_spots = {int(s) for s in spot_str.split(',') if s.strip().isdigit()}
+            self.reserved_spots.update(new_spots)  # ✅ Append instead of overwrite
         except Exception as e:
             self.get_logger().warn(f"Failed to parse reserved spots: {e}")
 
