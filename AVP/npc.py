@@ -4,7 +4,7 @@ from tier4_simulation_msgs.msg import DummyObject
 from autoware_perception_msgs.msg import Shape, ObjectClassification
 from geometry_msgs.msg import Pose, Quaternion, Vector3, Point
 from unique_identifier_msgs.msg import UUID
-from std_msgs.msg import Header
+from std_msgs.msg import Header, String
 import uuid
 import tf_transformations
 import sys
@@ -41,6 +41,12 @@ class NPCDummyCarPublisher(Node):
         ]
 
         self.index = 0
+
+        # Queue tracking and publishing
+        self.queue_pub = self.create_publisher(String, '/avp/dropoff_queue', 10)
+        self.queue_list = ["car_npc"]
+        self.publish_queue()
+
         self.object_id = generate_uuid()
 
         time.sleep(1.0)
