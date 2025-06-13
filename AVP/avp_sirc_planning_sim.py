@@ -1,6 +1,6 @@
 import rclpy
 from rclpy.node import Node
-# from autoware_adapi_v1_msgs.msg import RouteState
+from autoware_adapi_v1_msgs.msg import MotionState
 from tier4_planning_msgs.msg import RouteState
 from std_msgs.msg import String
 from nav_msgs.msg import Odometry
@@ -69,6 +69,7 @@ class AVPCommandListener(Node):
 
         self.route_state_subscriber = route_state_subscriber
         self.head_to_drop_off = False
+        self.start_avp = False
         self.status_initialized = False
         self.initiate_parking = False
         self.state = -1
@@ -103,9 +104,12 @@ class AVPCommandListener(Node):
 
     
     def command_callback(self, msg):
-        if msg.data == "start":
+        if msg.data == "head_to_dropoff":
             self.head_to_drop_off = True
             self.publisher_.publish(String(data="Heading to drop-off zone"))
+
+        if msg.data == "start_avp":
+            self.start_avp = True
             
 class ParkingSpotSubscriber(Node):
     def __init__(self):
@@ -137,6 +141,25 @@ class RouteStateSubscriber(Node):
         if msg.state == 6:
             print("\nCar has been parked.")
             self.state = 6
+
+
+class MotionStateSubscriber(Node):
+    def __init__(self):
+        super().__init__('motion_state_subscriber')
+        self.subscription = self.create_subscription(
+            MotionState,
+            '/api/motion/state',
+            self.motion_state_callback,
+            10)
+        self.flag = False
+        self.state = -1
+
+    def motion_state_callback(self, msg):
+        # 1 - stopped
+        # 3 - moving
+        if msg.state == 1:
+            print("\nCar has been stopped.")
+            self.state = 1
     
 def run_ros2_command(command):
     try:
@@ -148,6 +171,7 @@ def main(args=None):
     rclpy.init(args=args)
     
     route_state_subscriber = RouteStateSubscriber()
+    motion_state_subscriber = MotionStateSubscriber()
     avp_command_listener = AVPCommandListener(route_state_subscriber)
     parking_spot_subscriber = ParkingSpotSubscriber()
     reserved_spots_publisher = avp_command_listener.create_publisher(String, '/parking_spots/reserved', 10)
@@ -199,6 +223,9 @@ def main(args=None):
     drop_off_flag = True
 
     drop_off_completed = False
+ 
+    parking_complete = False
+    start_avp_clicked = False
 
     while rclpy.ok():
 
@@ -212,15 +239,6 @@ def main(args=None):
             run_ros2_command(engage_auto_mode)
             drop_off_flag = False
 
-
-        # Simulate the drop-off sequence once car arrives at destination
-        # if route_state_subscriber.state == 6 and not avp_command_listener.initiate_parking:
-
-
-        # print(avp_command_listener.ego_x)
-        # print(avp_command_listener.ego_y)
-
-
         if (    
             not avp_command_listener.initiate_parking and
             not drop_off_completed and
@@ -230,19 +248,26 @@ def main(args=None):
             print("Drop-off valet destination reached.")
             avp_command_listener.publisher_.publish(String(data="Arrived at drop-off area."))
             time.sleep(2)
+
+        if motion_state_subscriber.state == 1 and not drop_off_completed:
             avp_command_listener.publisher_.publish(String(data="Owner is exiting..."))
             time.sleep(7)
-            avp_command_listener.publisher_.publish(String(data="Owner has exited. Switching to autonomous mode."))
+            avp_command_listener.publisher_.publish(String(data="Owner has exited."))
             time.sleep(2)
-            avp_command_listener.publisher_.publish(String(data="Beginning autonomous valet parking..."))
-            time.sleep(2)
-            avp_command_listener.initiate_parking = True
             drop_off_completed = True
+            avp_command_listener.publisher_.publish(String(data="On standby..."))
+
+
+        if avp_command_listener.start_avp: 
+            # avp_command_listener.initiate_parking = True
+            # start_avp_clicked = True
+            avp_command_listener.publisher_.publish(String(data="Autonomous valet parking started..."))
+            time.sleep(2)
             avp_command_listener.publisher_.publish(String(data="Waiting for an available parking spot..."))
             
         ############### START PARKING SPOT DETECTION ###############
 
-        if avp_command_listener.initiate_parking and route_state_subscriber.state == 6:
+        # if avp_command_listener.initiate_parking and route_state_subscriber.state == 6:
 
             rclpy.spin_once(parking_spot_subscriber, timeout_sec=0.1)  
 
@@ -290,11 +315,13 @@ def main(args=None):
                     counter += 1
                     chosen_parking_spot = first_spot_in_queue
 
+                    parking_complete = True
+
                 
             time.sleep(1)
         ############### END PARKING SPOT DETECTION #################
 
-        if route_state_subscriber.state == 6:
+        if route_state_subscriber.state == 6 and parking_complete:
             avp_command_listener.publisher_.publish(String(data="Car has been parked."))
 
         # if new_counter == 0:
@@ -317,10 +344,13 @@ def main(args=None):
                 # new_counter += 1                  
         
         rclpy.spin_once(route_state_subscriber, timeout_sec=1)
+        rclpy.spin_once(motion_state_subscriber, timeout_sec=1)
         rclpy.spin_once(avp_command_listener, timeout_sec=1)
 
     route_state_subscriber.destroy_node()
+    motion_state_subscriber.destroy_node()
     parking_spot_subscriber.destroy_node()
+    avp_command_listener.destroy_node()
     rclpy.shutdown()
 
 if __name__ == '__main__':
