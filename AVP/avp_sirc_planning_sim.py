@@ -1,13 +1,50 @@
-
 import rclpy
 from rclpy.node import Node
 # from autoware_adapi_v1_msgs.msg import RouteState
 from tier4_planning_msgs.msg import RouteState
 from std_msgs.msg import String
-import datetime 
+from nav_msgs.msg import Odometry
 
+from shapely.geometry import Point, Polygon
+import datetime 
 import subprocess
 import time
+
+def is_in_drop_off_zone(x, y):
+    return drop_zone_polygon.contains(Point(x, y))
+
+DROP_OFF_ZONE_POLYGON = [
+    (-57.1, -28.6),
+    (-55.2, -35.8),
+    (-70.7, -31.9),
+    (-68.3, -39.2)
+]
+
+drop_zone_polygon = Polygon(DROP_OFF_ZONE_POLYGON)
+
+drop_off_queue = []
+drop_off_counter = 1
+cars_in_zone = set()
+
+def update_drop_off_queue(car_id, x, y, publisher):
+    global drop_off_counter
+    if is_in_drop_off_zone(x, y):
+        if car_id not in cars_in_zone:
+            queue_label = f"car_{drop_off_counter}"
+            drop_off_queue.append((queue_label, car_id))
+            drop_off_counter += 1
+            cars_in_zone.add(car_id)
+            print(f"{queue_label} ({car_id}) entered the drop-off zone.")
+            publish_queue(publisher)
+    else:
+        if car_id in cars_in_zone:
+            cars_in_zone.remove(car_id)
+
+def publish_queue(publisher):
+    queue_str = ", ".join([f"{label}:{cid}" for label, cid in drop_off_queue])
+    msg = String()
+    msg.data = f"Drop-off Queue: [{queue_str}]"
+    publisher.publish(msg)
 
 class AVPCommandListener(Node):
     def __init__(self, route_state_subscriber):
@@ -19,15 +56,28 @@ class AVPCommandListener(Node):
         self.initiate_parking = False
         self.state = -1
         self.publisher_ = self.create_publisher(String, '/avp/status', 10)
+        self.queue_publisher = self.create_publisher(String, '/avp/dropoff_queue', 10)
+        
         self.subscription = self.create_subscription(
             String,
             '/avp/command',
             self.command_callback,
             10)
+        
+
+        self.create_subscription(Odometry, '/localization/kinematic_state', self.odom_callback, 10)
+        self.ego_x = None
+        self.ego_y = None
+        self.ego_id = "ego"
+    
+    def odom_callback(self, msg):
+        self.ego_x = msg.pose.pose.position.x
+        self.ego_y = msg.pose.pose.position.y
+        update_drop_off_queue(self.ego_id, self.ego_x, self.ego_y, self.queue_publisher)
+
     
     def command_callback(self, msg):
         if msg.data == "start":
-
             self.head_to_drop_off = True
             self.publisher_.publish(String(data="Heading to drop-off zone"))
             
@@ -122,6 +172,8 @@ def main(args=None):
 
     drop_off_flag = True
 
+    drop_off_completed = False
+
     while rclpy.ok():
 
         if not avp_command_listener.status_initialized:
@@ -136,17 +188,30 @@ def main(args=None):
 
 
         # Simulate the drop-off sequence once car arrives at destination
-        if route_state_subscriber.state == 6 and not avp_command_listener.initiate_parking:
-            print("Drop-off destination reached.")
-            avp_command_listener.publisher_.publish(String(data="Arrived at drop-off zone."))
-            # time.sleep(2)
-            avp_command_listener.publisher_.publish(String(data="Dropping off passenger..."))
-            # time.sleep(7)
-            avp_command_listener.publisher_.publish(String(data="Passenger drop-off complete."))
-            # time.sleep(2)
-            avp_command_listener.publisher_.publish(String(data="Autonomous valet parking initiated."))
-            # time.sleep(2)
+        # if route_state_subscriber.state == 6 and not avp_command_listener.initiate_parking:
+
+
+        # print(avp_command_listener.ego_x)
+        # print(avp_command_listener.ego_y)
+
+
+        if (    
+            not avp_command_listener.initiate_parking and
+            not drop_off_completed and
+            avp_command_listener.ego_x is not None and
+            is_in_drop_off_zone(avp_command_listener.ego_x, avp_command_listener.ego_y)
+        ):
+            print("Drop-off valet destination reached.")
+            avp_command_listener.publisher_.publish(String(data="Arrived at drop-off area."))
+            time.sleep(2)
+            avp_command_listener.publisher_.publish(String(data="Owner is exiting..."))
+            time.sleep(7)
+            avp_command_listener.publisher_.publish(String(data="Owner has exited. Switching to autonomous mode."))
+            time.sleep(2)
+            avp_command_listener.publisher_.publish(String(data="Beginning autonomous valet parking..."))
+            time.sleep(2)
             avp_command_listener.initiate_parking = True
+            drop_off_completed = True
             avp_command_listener.publisher_.publish(String(data="Waiting for an available parking spot..."))
             
         ############### START PARKING SPOT DETECTION ###############
