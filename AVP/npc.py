@@ -36,6 +36,8 @@ class NPCDummyCarPublisher(Node):
             10
         )
 
+        
+
         self.trajectories = [
             {"path": [(-58.1, -32.7, 0.25)], "max_v": 0.0, "min_v": 0.0, "delay": None},
             {"path": [(-58.1, -32.7, 0.25)], "max_v": 3.0, "min_v": 3.0, "delay": 9.0},
@@ -52,15 +54,52 @@ class NPCDummyCarPublisher(Node):
         self.car_id = f"car_{NPCDummyCarPublisher.npc_counter}"
 
         # Queue publishing
+
+        self.queue_list = []
         self.queue_pub = self.create_publisher(String, '/avp/dropoff_queue', 10)
-        self.queue_list = [self.car_id]
-        self.publish_queue()
+
+
+        self.queue_sub = self.create_subscription(
+            String,
+            '/avp/dropoff_queue',
+            self.queue_callback,
+            10
+        )
+
+
+        # Give the subscription some time to receive the current queue
+        rclpy.spin_once(self, timeout_sec=0.5)
+
+        # Add this car to the queue only if it's not already there
+        if self.car_id not in self.queue_list:
+            self.queue_list.append(self.car_id)
+            self.publish_queue()
+            self.get_logger().info(f"✅ {self.car_id} added to queue at startup.")
+
 
         self.object_id = generate_uuid()
 
         time.sleep(1.0)
         self.publish_static_car()
         threading.Thread(target=self.wait_for_input, daemon=True).start()
+
+    def queue_callback(self, msg):
+            data = msg.data.replace("Drop-off Queue:", "").strip()
+            data = data.strip("[] ")
+            if data:
+                self.queue_list = [car.strip() for car in data.split(",")]
+            else:
+                self.queue_list = []
+
+            self.get_logger().info(f"📥 Received current queue: {self.queue_list}")
+
+            if self.car_id not in self.queue_list:
+                self.queue_list.append(self.car_id)
+                self.publish_queue()
+                self.get_logger().info(f"✅ Added {self.car_id} to queue and published.")
+
+
+
 
     def publish_queue(self):
         msg = String()
