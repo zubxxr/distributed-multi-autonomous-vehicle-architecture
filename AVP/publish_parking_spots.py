@@ -22,19 +22,24 @@ class ParkingSpotPublisher(Node):
 
     def reserved_callback(self, msg):
         try:
-            spot_str = msg.data.split(':')[-1].strip()
+            spot_str = msg.data.split(':')[-1].strip().strip('[]')
             new_spots = {int(s) for s in spot_str.split(',') if s.strip().isdigit()}
-            self.reserved_spots.update(new_spots)  # ✅ Append instead of overwrite
+            self.reserved_spots.update(new_spots)
         except Exception as e:
             self.get_logger().warn(f"Failed to parse reserved spots: {e}")
 
     def publish_parking_spots(self):
         available_spots = sorted(self.empty_spots - self.reserved_spots)
-        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         msg = String()
-        msg.data = f"{timestamp}: {','.join(str(s) for s in available_spots)}"
+
+        if available_spots:
+            msg.data = f"Available Spots: [{', '.join(str(s) for s in available_spots)}]"
+        else:
+            msg.data = "Available Spots: []"
+
         self.publisher_.publish(msg)
         self.get_logger().info(f'Published: "{msg.data}"')
+
 
 def main(args=None):
     rclpy.init(args=args)
