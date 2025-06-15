@@ -12,7 +12,7 @@ class ReservedSpotPublisher(Node):
     def publish_once(self):
         msg = String()
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        msg.data = f'{timestamp}: 17'
+        msg.data = "Reserved Spots: [17]"
         self.publisher_.publish(msg)
         self.get_logger().info(f'Published reservation: "{msg.data}"')
         self.timer.cancel()  # publish once only
