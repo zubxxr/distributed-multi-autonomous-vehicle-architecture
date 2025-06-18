@@ -12,11 +12,8 @@ import threading
 import time
 from datetime import datetime
 
-
-
 def generate_uuid():
     return UUID(uuid=list(uuid.uuid4().bytes))
-
 
 def make_quaternion(yaw_rad):
     q = tf_transformations.quaternion_from_euler(0, 0, yaw_rad)
@@ -28,28 +25,16 @@ class ReservedSpotPublisher(Node):
 
         self.received_initial_list = False
 
-        self.publisher_ = self.create_publisher(String, '/parking_spots/reserved', 10)
-        self.sub = self.create_subscription(
-            String,
-            '/parking_spots/reserved',
-            self.callback,
-            10
-        )
 
-        self.parking_spot = []  # You can change or set this externally if needed
+
+        self.request_pub = self.create_publisher(String, '/parking_spots/reserved/request', 10)
+        self.remove_pub = self.create_publisher(String, '/parking_spots/reserved/remove', 10)
+
         self.target_spot = 17
         
         self.timer = None
 
     def start_periodic_publishing(self):
-        # Wait up to 2 seconds for callback to populate list
-        wait_time = time.time() + 2.0
-        while not self.received_initial_list and time.time() < wait_time:
-            rclpy.spin_once(self, timeout_sec=0.1)
-
-        if not self.received_initial_list:
-            self.get_logger().warn("⚠️ Did not receive current reserved list before starting publisher. Starting anyway...")
-
         if self.timer is None:
             self.timer = self.create_timer(2.0, self.publish_periodically)
 
@@ -59,33 +44,13 @@ class ReservedSpotPublisher(Node):
             self.timer = None
 
     def publish_periodically(self):
-        if self.target_spot not in self.parking_spot:
-            self.parking_spot.append(self.target_spot)
-
-        msg = String()
-        msg.data = f"Reserved Spots: {self.parking_spot}"
-        self.publisher_.publish(msg)
-        self.get_logger().info(f"[NPC] 🛰 Published: {msg.data}")
-
-    def remove_spot(self, spot):
-        if spot in self.parking_spot:
-            self.parking_spot.remove(spot)
+        if self.target_spot is not None:
             msg = String()
-            msg.data = f"Reserved Spots: {self.parking_spot}"
-            self.publisher_.publish(msg)
-            self.get_logger().info(f"🗑️ Removed spot {spot}, updated list: {self.parking_spot}")
+            msg.data = str(self.target_spot)
+            self.request_pub.publish(msg)
+            self.get_logger().info(f"[NPC] 🛰 Published reservation request: {msg.data}")
 
 
-    def callback(self, msg):
-        try:
-            raw = msg.data.replace("Reserved Spots:", "").strip().strip("[] ")
-            if raw:
-                self.parking_spot = [int(x.strip()) for x in raw.split(',') if x.strip().isdigit()]
-            else:
-                self.parking_spot = []
-            self.received_initial_list = True
-        except Exception as e:
-            self.get_logger().warn(f"Error parsing reserved spots: {e}")
 
 class NPCDummyCarPublisher(Node):
 
@@ -94,7 +59,6 @@ class NPCDummyCarPublisher(Node):
     def __init__(self, reserved_spot_publisher):
         super().__init__('npc_dummy_car_publisher')
 
-        self.parking_spot = reserved_spot_publisher.parking_spot
 
         self.reserved_spot_publisher = reserved_spot_publisher
 
@@ -136,7 +100,6 @@ class NPCDummyCarPublisher(Node):
             10
         )
 
-
         # Give the subscription some time to receive the current queue
         rclpy.spin_once(self, timeout_sec=0.5)
 
@@ -146,13 +109,11 @@ class NPCDummyCarPublisher(Node):
             self.publish_queue()
             # self.get_logger().info(f"✅ {self.car_id} added to queue at startup.")
 
-
         self.object_id = generate_uuid()
 
         time.sleep(1.0)
         self.publish_static_car()
         threading.Thread(target=self.wait_for_input, daemon=True).start()
-
 
     def queue_callback(self, msg):
         data = msg.data.replace("Drop-off Queue:", "").strip()
@@ -170,16 +131,11 @@ class NPCDummyCarPublisher(Node):
             self.publish_queue()
             # self.get_logger().info(f"✅ Added {self.car_id} to queue and published.")
 
-
-
-
     def publish_queue(self):
         msg = String()
         msg.data = "Drop-off Queue: [" + ", ".join(self.queue_list) + "]"
         self.queue_pub.publish(msg)
         # self.get_logger().info(f"📤 Published queue: {msg.data}")
-
-
 
     def publish_static_car(self):
         traj = self.trajectories[0]
@@ -201,7 +157,6 @@ class NPCDummyCarPublisher(Node):
 
                 self.run_trajectory_sequence()
                 break
-
 
     def send_delete_all(self):
         obj = DummyObject()
@@ -242,7 +197,6 @@ class NPCDummyCarPublisher(Node):
         obj.action = DummyObject.ADD
 
         self.pub.publish(obj)
-        # self.get_logger().info(f"📍 Published dummy NPC pose at x={x:.2f}, y={y:.2f}")
 
     def run_trajectory_sequence(self):
         for i in range(1, len(self.trajectories)):  # skip first one (already static)
@@ -254,21 +208,25 @@ class NPCDummyCarPublisher(Node):
 
             delay = traj["delay"]
             if delay is not None:
-                # self.get_logger().info(f"⏱️ Waiting {delay} seconds before next move...")
                 time.sleep(delay)
 
-        if self.parking_spot:
-            removed = self.parking_spot[0]
-            self.reserved_spot_publisher.remove_spot(removed)
-            time.sleep(2)    
-            self.reserved_spot_publisher.stop_periodic_publishing()
+        removed = self.reserved_spot_publisher.target_spot
 
 
-            # delay to let it remove spot and publishing that message before stopping the publishing
-            # time.sleep(0.5)            
+
+        # ✅ 1. Stop publishing first
+        self.reserved_spot_publisher.stop_periodic_publishing()
+        time.sleep(0.1)  # optional buffer to avoid race
+
+        # ✅ 2. Then send remove request
+        msg = String()
+        msg.data = str(removed)
+        self.reserved_spot_publisher.remove_pub.publish(msg)
+        self.get_logger().info(f"🗑️ Requested to remove reserved spot: {msg.data}")        
+
+
+
                 
-
-
 def main(args=None):
     rclpy.init(args=args)
 
@@ -285,7 +243,5 @@ def main(args=None):
 
     rclpy.shutdown()
     
-
-
 if __name__ == '__main__':
     main()
