@@ -95,12 +95,17 @@ class AVPCommandListener(Node):
         
         self.reserved_pub = self.create_publisher(String, '/parking_spots/reserved', 10)
 
+
+        self.reserved_timer = None
+        self.current_reserved_spot = None
+
         self.create_subscription(
             String,
             '/avp/dropoff_queue',
             dropoff_queue_callback,
             10
         )
+        
 
         self.subscription = self.create_subscription(
             String,
@@ -124,6 +129,26 @@ class AVPCommandListener(Node):
         except Exception as e:
             self.get_logger().warn(f"Error parsing reserved spots: {e}")
     
+    def start_reserved_publisher(self, spot):
+        self.current_reserved_spot = spot
+        if self.reserved_timer is None:
+            self.reserved_timer = self.create_timer(2.0, self.publish_reserved_spot)
+
+    def stop_reserved_publisher(self):
+        if self.reserved_timer is not None:
+            self.reserved_timer.cancel()
+            self.reserved_timer = None
+            self.current_reserved_spot = None
+
+    
+    def publish_reserved_spot(self):
+        if self.current_reserved_spot is not None and self.current_reserved_spot not in self.reserved_spots_list:
+            self.reserved_spots_list.append(self.current_reserved_spot)
+        msg = String()
+        msg.data = f"Reserved Spots: {self.reserved_spots_list}"
+        self.reserved_pub.publish(msg)
+        self.get_logger().info(f"[AVP] 🔄 Periodic publish: {msg.data}")
+
     def odom_callback(self, msg):
         self.ego_x = msg.pose.pose.position.x
         self.ego_y = msg.pose.pose.position.y
@@ -302,9 +327,9 @@ def main(args=None):
             is_in_drop_off_zone(avp_command_listener.ego_x, avp_command_listener.ego_y)
         ):
             avp_command_listener.publisher_.publish(String(data="Owner is exiting..."))
-            time.sleep(7)
+            # time.sleep(7)
             avp_command_listener.publisher_.publish(String(data="Owner has exited."))
-            time.sleep(2)
+            # time.sleep(2)
             drop_off_completed = True
             avp_command_listener.publisher_.publish(String(data="On standby..."))
 
@@ -373,6 +398,10 @@ def main(args=None):
                     else:
                         print(f"[AVP] ℹ️ Spot {first_spot_in_queue} already reserved.")
 
+                    
+                    avp_command_listener.start_reserved_publisher(first_spot_in_queue)
+
+
 
                     route_state_subscriber.state = -1
 
@@ -390,6 +419,7 @@ def main(args=None):
         if route_state_subscriber.state == 6 and parking_complete and not reserved_cleared:
             avp_command_listener.publisher_.publish(String(data="Car has been parked."))
 
+
             if chosen_parking_spot in reserved_spots_list:
                 reserved_spots_list.remove(chosen_parking_spot)
 
@@ -398,6 +428,9 @@ def main(args=None):
             reserved_spots_publisher.publish(reserved_msg)
 
             reserved_cleared = True
+
+            avp_command_listener.stop_reserved_publisher()
+
 
         if avp_command_listener.retrieve_vehicle and not retrieve_vehicle_complete:
             print("Going to Drop Off Zone.")
