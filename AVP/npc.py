@@ -25,12 +25,31 @@ def make_quaternion(yaw_rad):
 class ReservedSpotPublisher(Node):
     def __init__(self):
         super().__init__('reserved_spot_publisher')
+
+        self.received_initial_list = False
+
         self.publisher_ = self.create_publisher(String, '/parking_spots/reserved', 10)
-        self.parking_spot = [17]  # You can change or set this externally if needed
+        self.sub = self.create_subscription(
+            String,
+            '/parking_spots/reserved',
+            self.callback,
+            10
+        )
+
+        self.parking_spot = []  # You can change or set this externally if needed
+        self.target_spot = 17
         
         self.timer = None
 
     def start_periodic_publishing(self):
+        # Wait up to 2 seconds for callback to populate list
+        wait_time = time.time() + 2.0
+        while not self.received_initial_list and time.time() < wait_time:
+            rclpy.spin_once(self, timeout_sec=0.1)
+
+        if not self.received_initial_list:
+            self.get_logger().warn("⚠️ Did not receive current reserved list before starting publisher. Starting anyway...")
+
         if self.timer is None:
             self.timer = self.create_timer(2.0, self.publish_periodically)
 
@@ -40,14 +59,33 @@ class ReservedSpotPublisher(Node):
             self.timer = None
 
     def publish_periodically(self):
+        if self.target_spot not in self.parking_spot:
+            self.parking_spot.append(self.target_spot)
+
         msg = String()
         msg.data = f"Reserved Spots: {self.parking_spot}"
         self.publisher_.publish(msg)
+        self.get_logger().info(f"[NPC] 🛰 Published: {msg.data}")
 
     def remove_spot(self, spot):
         if spot in self.parking_spot:
             self.parking_spot.remove(spot)
-            # self.get_logger().info(f"🗑️ Removed spot {spot} from reserved list.")
+            msg = String()
+            msg.data = f"Reserved Spots: {self.parking_spot}"
+            self.publisher_.publish(msg)
+            self.get_logger().info(f"🗑️ Removed spot {spot}, updated list: {self.parking_spot}")
+
+
+    def callback(self, msg):
+        try:
+            raw = msg.data.replace("Reserved Spots:", "").strip().strip("[] ")
+            if raw:
+                self.parking_spot = [int(x.strip()) for x in raw.split(',') if x.strip().isdigit()]
+            else:
+                self.parking_spot = []
+            self.received_initial_list = True
+        except Exception as e:
+            self.get_logger().warn(f"Error parsing reserved spots: {e}")
 
 class NPCDummyCarPublisher(Node):
 
@@ -221,8 +259,13 @@ class NPCDummyCarPublisher(Node):
 
         if self.parking_spot:
             removed = self.parking_spot[0]
-            self.reserved_spot_publisher.stop_periodic_publishing()
             self.reserved_spot_publisher.remove_spot(removed)
+            time.sleep(2)    
+            self.reserved_spot_publisher.stop_periodic_publishing()
+
+
+            # delay to let it remove spot and publishing that message before stopping the publishing
+            # time.sleep(0.5)            
                 
 
 
