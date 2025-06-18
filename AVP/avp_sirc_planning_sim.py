@@ -74,6 +74,8 @@ class AVPCommandListener(Node):
     def __init__(self, route_state_subscriber):
         super().__init__('avp_command_listener')
 
+        self.reserved_spots_list = []
+        
         self.route_state_subscriber = route_state_subscriber
         self.head_to_drop_off = False
         self.start_avp = False
@@ -84,16 +86,9 @@ class AVPCommandListener(Node):
         self.state = -1
         self.publisher_ = self.create_publisher(String, '/avp/status', 10)
         self.queue_publisher = self.create_publisher(String, '/avp/dropoff_queue', 10)
-        
-        self.reserved_spots_list = []
-        self.reserved_sub = self.create_subscription(
-            String,
-            '/parking_spots/reserved',
-            self.reserved_callback,
-            10
-        )
-        
-        self.reserved_pub = self.create_publisher(String, '/parking_spots/reserved', 10)
+
+        self.request_pub = self.create_publisher(String, '/parking_spots/reserved/request', 10)
+        self.remove_pub = self.create_publisher(String, '/parking_spots/reserved/remove', 10)
 
 
         self.reserved_timer = None
@@ -118,36 +113,6 @@ class AVPCommandListener(Node):
         self.ego_x = None
         self.ego_y = None
         self.ego_id = "ego"
-
-    def reserved_callback(self, msg):
-        try:
-            raw = msg.data.replace("Reserved Spots:", "").strip().strip("[] ")
-            if raw:
-                self.reserved_spots_list = [int(x.strip()) for x in raw.split(',') if x.strip().isdigit()]
-            else:
-                self.reserved_spots_list = []
-        except Exception as e:
-            self.get_logger().warn(f"Error parsing reserved spots: {e}")
-    
-    def start_reserved_publisher(self, spot):
-        self.current_reserved_spot = spot
-        if self.reserved_timer is None:
-            self.reserved_timer = self.create_timer(2.0, self.publish_reserved_spot)
-
-    def stop_reserved_publisher(self):
-        if self.reserved_timer is not None:
-            self.reserved_timer.cancel()
-            self.reserved_timer = None
-            self.current_reserved_spot = None
-
-    
-    def publish_reserved_spot(self):
-        if self.current_reserved_spot is not None and self.current_reserved_spot not in self.reserved_spots_list:
-            self.reserved_spots_list.append(self.current_reserved_spot)
-        msg = String()
-        msg.data = f"Reserved Spots: {self.reserved_spots_list}"
-        self.reserved_pub.publish(msg)
-        self.get_logger().info(f"[AVP] 🔄 Periodic publish: {msg.data}")
 
     def odom_callback(self, msg):
         self.ego_x = msg.pose.pose.position.x
@@ -242,7 +207,6 @@ def main(args=None):
     dropoff_queue_msg.data = "Drop-off Queue: []"
     avp_command_listener.queue_publisher.publish(dropoff_queue_msg)
 
-    reserved_spots_list = []
 
     engage_auto_mode = "ros2 topic pub --once /autoware/engage autoware_vehicle_msgs/msg/Engage '{engage: True}' -1"
     
@@ -390,17 +354,13 @@ def main(args=None):
 
 
                     if first_spot_in_queue not in avp_command_listener.reserved_spots_list:
+                        msg = String()
+                        msg.data = str(first_spot_in_queue)
+                        avp_command_listener.request_pub.publish(msg)
                         avp_command_listener.reserved_spots_list.append(first_spot_in_queue)
-                        reserved_msg = String()
-                        reserved_msg.data = f"Reserved Spots: {avp_command_listener.reserved_spots_list}"
-                        avp_command_listener.reserved_pub.publish(reserved_msg)
-                        print(f"[AVP] ✅ Appended and published: {reserved_msg.data}")
+                        print(f"[AVP] ✅ Sent reservation request: {msg.data}")
                     else:
-                        print(f"[AVP] ℹ️ Spot {first_spot_in_queue} already reserved.")
-
-                    
-                    avp_command_listener.start_reserved_publisher(first_spot_in_queue)
-
+                        print(f"[AVP] ℹ️ Spot {first_spot_in_queue} already requested.")
 
 
                     route_state_subscriber.state = -1
@@ -420,17 +380,12 @@ def main(args=None):
             avp_command_listener.publisher_.publish(String(data="Car has been parked."))
 
 
-            if chosen_parking_spot in reserved_spots_list:
-                reserved_spots_list.remove(chosen_parking_spot)
-
-            reserved_msg = String()
-            reserved_msg.data = f"Reserved Spots: {reserved_spots_list}"
-            reserved_spots_publisher.publish(reserved_msg)
+            msg = String()
+            msg.data = str(chosen_parking_spot)
+            avp_command_listener.remove_pub.publish(msg)
+            print(f"[AVP] 🗑 Sent removal request: {msg.data}")
 
             reserved_cleared = True
-
-            avp_command_listener.stop_reserved_publisher()
-
 
         if avp_command_listener.retrieve_vehicle and not retrieve_vehicle_complete:
             print("Going to Drop Off Zone.")
