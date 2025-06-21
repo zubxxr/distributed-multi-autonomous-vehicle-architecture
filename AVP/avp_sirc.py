@@ -2,8 +2,10 @@ import rclpy
 from rclpy.node import Node
 from autoware_adapi_v1_msgs.msg import MotionState
 from tier4_planning_msgs.msg import RouteState
-from std_msgs.msg import String, Header
+from std_msgs.msg import String, Header, Int32
 from nav_msgs.msg import Odometry
+
+import argparse
 
 from unique_identifier_msgs.msg import UUID
 import uuid
@@ -23,6 +25,8 @@ DROP_OFF_ZONE_POLYGON = [
     (-68.3, -39.2)
 ]
 
+vehicle_count = 0
+
 drop_zone_polygon = Polygon(DROP_OFF_ZONE_POLYGON)
 
 drop_off_queue = []
@@ -32,6 +36,11 @@ car_id_to_label = {}
 
 def generate_uuid():
     return UUID(uuid=list(uuid.uuid4().bytes))
+
+
+def vehicle_count_callback(msg):
+    global vehicle_count
+    vehicle_count = msg.data
 
 def dropoff_queue_callback(msg):
     global drop_off_queue
@@ -50,9 +59,7 @@ def update_drop_off_queue(car_id, x, y, publisher):
     if is_in_drop_off_zone(x, y): 
         if car_id not in cars_in_zone:
             # Prevent duplicate car labels for the same ID
-            existing_numbers = [int(car.replace("car_", "")) for car in drop_off_queue if car.startswith("car_")]
-            next_car_num = max(existing_numbers) + 1 if existing_numbers else 1
-            label = f"car_{next_car_num}"
+            label = car_id_to_label.get(car_id, car_id)
 
             if label not in drop_off_queue:
                 drop_off_queue.append(label)
@@ -71,7 +78,7 @@ def publish_queue(publisher):
     publisher.publish(msg)
 
 class AVPCommandListener(Node):
-    def __init__(self, route_state_subscriber):
+    def __init__(self, route_state_subscriber, args):
         super().__init__('avp_command_listener')
 
         self.reserved_spots_list = []
@@ -86,6 +93,10 @@ class AVPCommandListener(Node):
         self.state = -1
         self.publisher_ = self.create_publisher(String, '/avp/status', 10)
         self.queue_publisher = self.create_publisher(String, '/avp/dropoff_queue', 10)
+
+
+        self.create_subscription(Int32, '/vehicle_count', vehicle_count_callback, 10)
+        self.vehicle_count_publisher = self.create_publisher(Int32, '/vehicle_count', 10)
 
         self.request_pub = self.create_publisher(String, '/parking_spots/reserved/request', 10)
         self.remove_pub = self.create_publisher(String, '/parking_spots/reserved/remove', 10)
@@ -112,7 +123,7 @@ class AVPCommandListener(Node):
         self.create_subscription(Odometry, '/localization/kinematic_state', self.odom_callback, 10)
         self.ego_x = None
         self.ego_y = None
-        self.ego_id = "ego"
+        self.ego_id = f"car_{args.vehicle_id}"
 
     def odom_callback(self, msg):
         self.ego_x = msg.pose.pose.position.x
@@ -187,13 +198,35 @@ def run_ros2_command(command):
         print(f"Error executing command: {e}")
     
 def main(args=None):
-    rclpy.init(args=args)
+    
+    parser = argparse.ArgumentParser(description="Run AVP with a specific vehicle ID.")
+    parser.add_argument('--vehicle_id', type=str, required=True, help="Vehicle ID number only (e.g., 1 or 2)")
+    args = parser.parse_args()
+
+    rclpy.init(args=None)
     
     route_state_subscriber = RouteStateSubscriber()
     motion_state_subscriber = MotionStateSubscriber()
-    avp_command_listener = AVPCommandListener(route_state_subscriber)
+    avp_command_listener = AVPCommandListener(route_state_subscriber, args)
     parking_spot_subscriber = ParkingSpotSubscriber()
     reserved_spots_publisher = avp_command_listener.create_publisher(String, '/parking_spots/reserved', 10)
+
+
+    rclpy.spin_once(avp_command_listener, timeout_sec=2.0)  # Give Zenoh time to sync
+
+    # Wait for existing count from /vehicle_count topic
+    rclpy.spin_once(avp_command_listener, timeout_sec=1.0)
+
+    global vehicle_count
+    vehicle_count += 1
+
+    
+    count_msg = Int32()
+    count_msg.data = vehicle_count
+    avp_command_listener.vehicle_count_publisher.publish(count_msg)
+
+    print(f"[INIT] Vehicle count incremented and published: {vehicle_count}")
+
 
     
     # Send initial "N/A" reserved spot
