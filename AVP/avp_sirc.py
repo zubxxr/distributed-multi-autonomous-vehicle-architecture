@@ -25,8 +25,6 @@ DROP_OFF_ZONE_POLYGON = [
     (-68.3, -39.2)
 ]
 
-vehicle_count = 0
-
 drop_zone_polygon = Polygon(DROP_OFF_ZONE_POLYGON)
 
 drop_off_queue = []
@@ -38,9 +36,6 @@ def generate_uuid():
     return UUID(uuid=list(uuid.uuid4().bytes))
 
 
-def vehicle_count_callback(msg):
-    global vehicle_count
-    vehicle_count = msg.data
 
 def dropoff_queue_callback(msg):
     global drop_off_queue
@@ -95,8 +90,8 @@ class AVPCommandListener(Node):
         self.queue_publisher = self.create_publisher(String, '/avp/dropoff_queue', 10)
 
 
-        self.create_subscription(Int32, '/vehicle_count', vehicle_count_callback, 10)
-        self.vehicle_count_publisher = self.create_publisher(Int32, '/vehicle_count', 10)
+        self.vehicle_count_request_pub = self.create_publisher(String, '/vehicle_count_request', 10)
+
 
         self.request_pub = self.create_publisher(String, '/parking_spots/reserved/request', 10)
         self.remove_pub = self.create_publisher(String, '/parking_spots/reserved/remove', 10)
@@ -217,15 +212,13 @@ def main(args=None):
     # Wait for existing count from /vehicle_count topic
     rclpy.spin_once(avp_command_listener, timeout_sec=1.0)
 
-    global vehicle_count
-    vehicle_count += 1
 
-    
-    count_msg = Int32()
-    count_msg.data = vehicle_count
-    avp_command_listener.vehicle_count_publisher.publish(count_msg)
+    msg = String()
+    msg.data = "add_me"
+    avp_command_listener.vehicle_count_request_pub.publish(msg)
+    print("[REQUEST] Sent vehicle_count_request to manager")
 
-    print(f"[INIT] Vehicle count incremented and published: {vehicle_count}")
+
 
 
     
