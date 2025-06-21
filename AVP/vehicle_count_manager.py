@@ -1,100 +1,87 @@
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String, Int32
-import ast
-import sys
 from rclpy.parameter import Parameter
 from rcl_interfaces.msg import ParameterDescriptor, ParameterType
+import sys
 
 if '--help' in sys.argv or '-h' in sys.argv:
     print("""
 🚗 Vehicle Count Manager Help
 
-This node listens for vehicle count requests and publishes vehicle counts per namespace.
+Listens for vehicle count requests and broadcasts count to all vehicle_count topics.
 
 ✅ Example usage:
-    ros2 run multi_avp vehicle_count_manager.py --ros-args -p namespaces:='["vehicle1", "vehicle2"]'
+    ros2 run multi_avp vehicle_count_manager --ros-args -p namespaces:='["main", "vehicle2"]'
 
 📌 Parameters:
-    - namespaces: List of namespaces (e.g., ["vehicle1", "vehicle2"])
-    - Use "main" as namespace to publish directly to root-level topics (e.g., /vehicle_count)
-
-💡 Tip: You must bridge vehicle_count topics via Zenoh across hosts.
+    - namespaces: List of namespaces (e.g., ["main", "vehicle2"])
     """)
     sys.exit(0)
 
 def get_topic(namespace, topic):
     return f"/{topic}" if namespace == "main" else f"/{namespace}/{topic}"
-    
+
 class VehicleCountManager(Node):
     def __init__(self):
         super().__init__('vehicle_count_manager')
+        self.valid = False
 
-        self.valid = False  # Prevent spin if setup fails
-
-        # Declare parameter with correct descriptor
         self.declare_parameter(
             'namespaces',
-            ['main'],  # ← default must be a list of strings
+            ['main'],
             ParameterDescriptor(type=ParameterType.PARAMETER_STRING_ARRAY)
         )
 
-        # Retrieve and parse namespaces
         try:
             self.namespaces = self.get_parameter('namespaces').value
             if not isinstance(self.namespaces, list) or not all(isinstance(ns, str) for ns in self.namespaces):
                 raise ValueError("Invalid type inside namespaces")
         except Exception as e:
             self.get_logger().error(f"❌ Invalid 'namespaces' parameter. Must be a list of strings. Error: {e}")
-            print("\n✅ Example usage:")
-            print("    ros2 run multi_avp vehicle_count_manager --ros-args -p namespaces:='[\"vehicle1\", \"vehicle2\"]'")
-            print("💡 Tip: Run with --help to see more options.\n")
             return
 
         self.get_logger().info(f"✅ Managing vehicle_count for: {self.namespaces}")
 
-        self.vehicle_counts = {}
+        self.vehicle_count = 0
         self.count_publishers = {}
 
         for ns in self.namespaces:
-            self.vehicle_counts[ns] = 0
-            count_topic = get_topic(ns, "vehicle_count")
-            request_topic = get_topic(ns, "vehicle_count_request")
+            topic = get_topic(ns, "vehicle_count")
+            self.count_publishers[ns] = self.create_publisher(Int32, topic, 10)
 
-            self.count_publishers[ns] = self.create_publisher(Int32, count_topic, 10)
+            request_topic = get_topic(ns, "vehicle_count_request")
             self.create_subscription(String, request_topic, self.generate_callback(ns), 10)
+            self.get_logger().info(f"🛰️ Listening on: {request_topic}")
 
         self.timer = self.create_timer(1.0, self.publish_all_counts)
-        self.valid = True  # Node setup complete
+        self.valid = True
 
-        
-    def generate_callback(self, triggering_namespace):
+    def generate_callback(self, incoming_ns):
         def callback(msg):
             if msg.data == "add_me":
-                self.vehicle_counts[triggering_namespace] += 1
-                new_count = self.vehicle_counts[triggering_namespace]
-                self.get_logger().info(f"[{triggering_namespace}] Vehicle joined → Count: {new_count}")
+                self.vehicle_count += 1
+                self.get_logger().info(f"[{incoming_ns}] 🚗 New vehicle joined. Total: {self.vehicle_count}")
 
-                # Forward this new count to ALL namespaces
+                # Publish new count to all namespaces
                 msg_out = Int32()
-                msg_out.data = new_count
-                for ns in self.namespaces:
-                    self.count_publishers[ns].publish(msg_out)
-                    self.get_logger().info(f"🔁 Forwarded count {new_count} to /{ns}/vehicle_count")
+                msg_out.data = self.vehicle_count
+                for ns, pub in self.count_publishers.items():
+                    pub.publish(msg_out)
+                    self.get_logger().info(f"🔁 Forwarded count {self.vehicle_count} to {get_topic(ns, 'vehicle_count')}")
         return callback
 
     def publish_all_counts(self):
-        for ns in self.namespaces:
-            msg = Int32()
-            msg.data = self.vehicle_counts[ns]
-            self.count_publishers[ns].publish(msg)
+        msg = Int32()
+        msg.data = self.vehicle_count
+        for ns, pub in self.count_publishers.items():
+            pub.publish(msg)
 
 def main(args=None):
     rclpy.init(args=args)
     node = VehicleCountManager()
 
     if not getattr(node, 'valid', False):
-        # No need to spin or shutdown again
         node.destroy_node()
         return
 
