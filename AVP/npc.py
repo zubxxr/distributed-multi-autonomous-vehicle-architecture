@@ -36,12 +36,20 @@ class ReservedSpotPublisher(Node):
         self.timer = None
 
         self.queue_request_pub = self.create_publisher(String, '/queue_manager/request', 10)
+        self.remove_queue_pub = self.create_publisher(String, '/queue_manager/remove', 10)
+
 
     def send_queue_request(self, car_id):
         msg = String()
         msg.data = car_id
         self.queue_request_pub.publish(msg)
         self.get_logger().info(f"[NPC] 📥 Sent queue request: {msg.data}")
+
+    def send_queue_remove(self, car_id):
+        msg = String()
+        msg.data = car_id
+        self.remove_queue_pub.publish(msg)
+        self.get_logger().info(f"[NPC] 🗑️ Sent queue remove request: {msg.data}")
 
 
     def start_periodic_publishing(self):
@@ -130,6 +138,8 @@ class NPCDummyCarPublisher(Node):
                 self.active = False
 
 
+                # ✅ Remove from queue
+                self.reserved_spot_publisher.send_queue_remove(self.car_id)
                 self.run_trajectory_sequence()
                 break
 
