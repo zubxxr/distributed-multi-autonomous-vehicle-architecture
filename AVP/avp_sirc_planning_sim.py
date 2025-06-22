@@ -36,42 +36,6 @@ def generate_uuid():
     return UUID(uuid=list(uuid.uuid4().bytes))
 
 
-
-def dropoff_queue_callback(msg):
-    global drop_off_queue
-    try:
-        data = msg.data.replace("Drop-off Queue: [", "").replace("]", "").strip()
-        if data:
-            drop_off_queue = [item.strip() for item in data.split(",")]
-        else:
-            drop_off_queue = []
-    except Exception as e:
-        print(f"Failed to parse drop-off queue: {e}")
-
-
-def update_drop_off_queue(car_id, x, y, publisher):
-    global drop_off_counter
-    if is_in_drop_off_zone(x, y): 
-        if car_id not in cars_in_zone:
-            # Prevent duplicate car labels for the same ID
-            label = car_id_to_label.get(car_id, car_id)
-
-            if label not in drop_off_queue:
-                drop_off_queue.append(label)
-                cars_in_zone.add(car_id)
-                car_id_to_label[car_id] = label
-                print(f"{label} entered the drop-off zone.")
-                publish_queue(publisher)
-    else:
-        if car_id in cars_in_zone:
-            cars_in_zone.remove(car_id)
-
-def publish_queue(publisher):
-    queue_str = ", ".join(drop_off_queue)
-    msg = String()
-    msg.data = f"Drop-off Queue: [{queue_str}]"
-    publisher.publish(msg)
-
 class AVPCommandListener(Node):
     def __init__(self, route_state_subscriber, args):
         super().__init__('avp_command_listener')
@@ -87,7 +51,6 @@ class AVPCommandListener(Node):
         self.initiate_parking = False
         self.state = -1
         self.publisher_ = self.create_publisher(String, '/avp/status', 10)
-        self.queue_publisher = self.create_publisher(String, '/avp/dropoff_queue', 10)
         
         self.queue_request_pub = self.create_publisher(String, '/queue_manager/request', 10)
 
@@ -98,16 +61,12 @@ class AVPCommandListener(Node):
         self.request_pub = self.create_publisher(String, '/parking_spots/reserved/request', 10)
         self.remove_pub = self.create_publisher(String, '/parking_spots/reserved/remove', 10)
 
+        self.queue_remove_pub = self.create_publisher(String, '/queue_manager/remove', 10)
 
         self.reserved_timer = None
         self.current_reserved_spot = None
 
-        self.create_subscription(
-            String,
-            '/avp/dropoff_queue',
-            dropoff_queue_callback,
-            10
-        )
+
         
 
         self.subscription = self.create_subscription(
@@ -242,7 +201,6 @@ def main(args=None):
     # Send initial "N/A" drop-off queue
     dropoff_queue_msg = String()
     dropoff_queue_msg.data = "Drop-off Queue: []"
-    avp_command_listener.queue_publisher.publish(dropoff_queue_msg)
 
 
     engage_auto_mode = "ros2 topic pub --once /autoware/engage autoware_vehicle_msgs/msg/Engage '{engage: True}' -1"
@@ -375,20 +333,11 @@ def main(args=None):
                     run_ros2_command(parking_spot_goal_pose_command)
                     run_ros2_command(engage_auto_mode)
 
-                    # Find ego's label in the queue
-                    car_leaving = car_id_to_label.get(avp_command_listener.ego_id)
-                    for label in drop_off_queue:
-                        if label in cars_in_zone:
-                            car_leaving = label
-                            break
 
-                    if car_leaving:
-                        print(f"[INFO] Ego vehicle matched to '{car_leaving}' in queue. Removing it.")
-                        drop_off_queue.remove(car_leaving)
-                        publish_queue(avp_command_listener.queue_publisher)
-                    else:
-                        print("[WARN] Ego vehicle's label not found in queue. Nothing removed.")
-
+                    queue_msg = String()
+                    queue_msg.data = avp_command_listener.ego_id
+                    avp_command_listener.queue_remove_pub.publish(queue_msg)
+                    print(f"[QUEUE] 🚫 Sent queue removal request for {queue_msg.data}")
 
                     if first_spot_in_queue not in avp_command_listener.reserved_spots_list:
                         msg = String()
