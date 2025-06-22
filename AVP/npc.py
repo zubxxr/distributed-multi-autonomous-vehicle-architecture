@@ -29,10 +29,20 @@ class ReservedSpotPublisher(Node):
 
         self.request_pub = self.create_publisher(String, '/parking_spots/reserved/request', 10)
         self.remove_pub = self.create_publisher(String, '/parking_spots/reserved/remove', 10)
+        
 
         self.target_spot = 17
         
         self.timer = None
+
+        self.queue_request_pub = self.create_publisher(String, '/queue_manager/request', 10)
+
+    def send_queue_request(self, car_id):
+        msg = String()
+        msg.data = car_id
+        self.queue_request_pub.publish(msg)
+        self.get_logger().info(f"[NPC] 📥 Sent queue request: {msg.data}")
+
 
     def start_periodic_publishing(self):
         if self.timer is None:
@@ -64,11 +74,15 @@ class NPCDummyCarPublisher(Node):
 
         self.reserved_spot_publisher.start_periodic_publishing()
 
+
+
         self.pub = self.create_publisher(
             DummyObject,
             '/simulation/dummy_perception_publisher/object_info',
             10
         )
+
+        
 
         self.active = True
 
@@ -87,27 +101,12 @@ class NPCDummyCarPublisher(Node):
         NPCDummyCarPublisher.npc_counter += 1
         self.car_id = f"car_{NPCDummyCarPublisher.npc_counter}"
 
-        # Queue publishing
-
-        self.queue_list = []
-        self.queue_pub = self.create_publisher(String, '/avp/dropoff_queue', 10)
 
 
-        self.queue_sub = self.create_subscription(
-            String,
-            '/avp/dropoff_queue',
-            self.queue_callback,
-            10
-        )
+        self.reserved_spot_publisher.send_queue_request(self.car_id)
 
         # Give the subscription some time to receive the current queue
         rclpy.spin_once(self, timeout_sec=0.5)
-
-        # Add this car to the queue only if it's not already there
-        if self.car_id not in self.queue_list and self.active:
-            self.queue_list.append(self.car_id)
-            self.publish_queue()
-            # self.get_logger().info(f"✅ {self.car_id} added to queue at startup.")
 
         self.object_id = generate_uuid()
 
@@ -115,27 +114,6 @@ class NPCDummyCarPublisher(Node):
         self.publish_static_car()
         threading.Thread(target=self.wait_for_input, daemon=True).start()
 
-    def queue_callback(self, msg):
-        data = msg.data.replace("Drop-off Queue:", "").strip()
-        data = data.strip("[] ")
-        if data:
-            self.queue_list = [car.strip() for car in data.split(",")]
-        else:
-            self.queue_list = []
-
-        # self.get_logger().info(f"📥 Received current queue: {self.queue_list}")
-
-        # Only add if car is active (i.e., still in drop-off zone)
-        if self.active and self.car_id not in self.queue_list:
-            self.queue_list.append(self.car_id)
-            self.publish_queue()
-            # self.get_logger().info(f"✅ Added {self.car_id} to queue and published.")
-
-    def publish_queue(self):
-        msg = String()
-        msg.data = "Drop-off Queue: [" + ", ".join(self.queue_list) + "]"
-        self.queue_pub.publish(msg)
-        # self.get_logger().info(f"📤 Published queue: {msg.data}")
 
     def publish_static_car(self):
         traj = self.trajectories[0]
@@ -151,9 +129,6 @@ class NPCDummyCarPublisher(Node):
 
                 self.active = False
 
-                # Remove ALL instances of self.car_id from the queue
-                self.queue_list = [car for car in self.queue_list if car != self.car_id]
-                self.publish_queue()
 
                 self.run_trajectory_sequence()
                 break
