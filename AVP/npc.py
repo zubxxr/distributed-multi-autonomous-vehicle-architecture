@@ -39,6 +39,12 @@ class ReservedSpotPublisher(Node):
         self.remove_queue_pub = self.create_publisher(String, '/queue_manager/remove', 10)
 
 
+    def send_reservation_request(self, spot_id):
+        msg = String()
+        msg.data = str(spot_id)
+        self.request_pub.publish(msg)
+        self.get_logger().info(f"[NPC] 🛰 Sent reservation request for spot: {msg.data}")
+
     def send_queue_request(self, car_id):
         msg = String()
         msg.data = car_id
@@ -52,23 +58,6 @@ class ReservedSpotPublisher(Node):
         self.get_logger().info(f"[NPC] 🗑️ Sent queue remove request: {msg.data}")
 
 
-    def start_periodic_publishing(self):
-        if self.timer is None:
-            self.timer = self.create_timer(2.0, self.publish_periodically)
-
-    def stop_periodic_publishing(self):
-        if self.timer is not None:
-            self.timer.cancel()
-            self.timer = None
-
-    def publish_periodically(self):
-        if self.target_spot is not None:
-            msg = String()
-            msg.data = str(self.target_spot)
-            self.request_pub.publish(msg)
-            self.get_logger().info(f"[NPC] 🛰 Published reservation request: {msg.data}")
-
-
 
 class NPCDummyCarPublisher(Node):
 
@@ -79,8 +68,6 @@ class NPCDummyCarPublisher(Node):
 
 
         self.reserved_spot_publisher = reserved_spot_publisher
-
-        self.reserved_spot_publisher.start_periodic_publishing()
 
 
 
@@ -110,6 +97,8 @@ class NPCDummyCarPublisher(Node):
         self.car_id = f"car_{NPCDummyCarPublisher.npc_counter}"
 
 
+
+        self.reserved_spot_publisher.send_reservation_request(self.reserved_spot_publisher.target_spot)
 
         self.reserved_spot_publisher.send_queue_request(self.car_id)
 
