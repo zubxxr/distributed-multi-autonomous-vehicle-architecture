@@ -20,7 +20,7 @@ def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument(
             'avp_file',
-            default_value='avp_node_planning_simulator.py',
+            default_value='avp_node',
             description='Which AVP file to run'
         ),
         DeclareLaunchArgument(
@@ -39,10 +39,16 @@ def generate_launch_description():
             description='Echo AVP-related topics if needed (true, false, or auto)'
         ),
         DeclareLaunchArgument(
+            'namespaces',
+            default_value='[main, vehicle2]',
+            description='List of namespaces to manage'
+        ),
+
+        DeclareLaunchArgument(
 	    'echo_avp_script_path',
 	    default_value='/home/zubair/Multi-AVP/echo_avp_topics.sh',
 	    description='Path to the echo script'
-	),
+	    ),
 
         # Only runs if enable_managers is false and echo_avp is true or auto
         ExecuteProcess(
@@ -57,7 +63,7 @@ def generate_launch_description():
             executable='queue_manager',
             name='queue_manager',
             output='screen',
-            arguments=['--ros-args', '-p', 'namespaces:=[main, vehicle2]'],
+            arguments=['--ros-args', '-p', ['namespaces:=', LaunchConfiguration('namespaces')]],
             condition=IfCondition(enable_managers)
         ),
         Node(
@@ -65,7 +71,7 @@ def generate_launch_description():
             executable='reservation_manager',
             name='reservation_manager',
             output='screen',
-            arguments=['--ros-args', '-p', 'namespaces:=[main, vehicle2]'],
+            arguments=['--ros-args', '-p', ['namespaces:=', LaunchConfiguration('namespaces')]],
             condition=IfCondition(enable_managers)
         ),
         Node(
@@ -73,7 +79,7 @@ def generate_launch_description():
             executable='vehicle_count_manager',
             name='vehicle_count_manager',
             output='screen',
-            arguments=['--ros-args', '-p', 'namespaces:=[main, vehicle2]'],
+            arguments=['--ros-args', '-p', ['namespaces:=', LaunchConfiguration('namespaces')]],
             condition=IfCondition(enable_managers)
         ),
 
@@ -86,3 +92,4 @@ def generate_launch_description():
             arguments=['--vehicle_id', vehicle_id],
         ),
     ])
+
