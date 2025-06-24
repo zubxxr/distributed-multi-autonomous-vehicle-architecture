@@ -36,42 +36,6 @@ def generate_uuid():
     return UUID(uuid=list(uuid.uuid4().bytes))
 
 
-
-def dropoff_queue_callback(msg):
-    global drop_off_queue
-    try:
-        data = msg.data.replace("Drop-off Queue: [", "").replace("]", "").strip()
-        if data:
-            drop_off_queue = [item.strip() for item in data.split(",")]
-        else:
-            drop_off_queue = []
-    except Exception as e:
-        print(f"Failed to parse drop-off queue: {e}")
-
-
-def update_drop_off_queue(car_id, x, y, publisher):
-    global drop_off_counter
-    if is_in_drop_off_zone(x, y): 
-        if car_id not in cars_in_zone:
-            # Prevent duplicate car labels for the same ID
-            label = car_id_to_label.get(car_id, car_id)
-
-            if label not in drop_off_queue:
-                drop_off_queue.append(label)
-                cars_in_zone.add(car_id)
-                car_id_to_label[car_id] = label
-                print(f"{label} entered the drop-off zone.")
-                publish_queue(publisher)
-    else:
-        if car_id in cars_in_zone:
-            cars_in_zone.remove(car_id)
-
-def publish_queue(publisher):
-    queue_str = ", ".join(drop_off_queue)
-    msg = String()
-    msg.data = f"Drop-off Queue: [{queue_str}]"
-    publisher.publish(msg)
-
 class AVPCommandListener(Node):
     def __init__(self, route_state_subscriber, args):
         super().__init__('avp_command_listener')
@@ -87,7 +51,8 @@ class AVPCommandListener(Node):
         self.initiate_parking = False
         self.state = -1
         self.publisher_ = self.create_publisher(String, '/avp/status', 10)
-        self.queue_publisher = self.create_publisher(String, '/avp/dropoff_queue', 10)
+        
+        self.queue_request_pub = self.create_publisher(String, '/queue_manager/request', 10)
 
 
         self.vehicle_count_request_pub = self.create_publisher(String, '/vehicle_count_request', 10)
@@ -96,16 +61,12 @@ class AVPCommandListener(Node):
         self.request_pub = self.create_publisher(String, '/parking_spots/reserved/request', 10)
         self.remove_pub = self.create_publisher(String, '/parking_spots/reserved/remove', 10)
 
+        self.queue_remove_pub = self.create_publisher(String, '/queue_manager/remove', 10)
 
         self.reserved_timer = None
         self.current_reserved_spot = None
 
-        self.create_subscription(
-            String,
-            '/avp/dropoff_queue',
-            dropoff_queue_callback,
-            10
-        )
+
         
 
         self.subscription = self.create_subscription(
@@ -123,7 +84,16 @@ class AVPCommandListener(Node):
     def odom_callback(self, msg):
         self.ego_x = msg.pose.pose.position.x
         self.ego_y = msg.pose.pose.position.y
-        update_drop_off_queue(self.ego_id, self.ego_x, self.ego_y, self.queue_publisher)
+        if is_in_drop_off_zone(self.ego_x, self.ego_y): 
+            if self.ego_id not in cars_in_zone:
+                cars_in_zone.add(self.ego_id)
+                msg = String()
+                msg.data = self.ego_id
+                self.queue_request_pub.publish(msg)
+                print(f"[QUEUE REQUEST] Sent drop-off request for {self.ego_id}")
+        else:
+            if self.ego_id in cars_in_zone:
+                cars_in_zone.remove(self.ego_id)
 
     
     def command_callback(self, msg):
@@ -196,7 +166,7 @@ def main(args=None):
     
     parser = argparse.ArgumentParser(description="Run AVP with a specific vehicle ID.")
     parser.add_argument('--vehicle_id', type=str, required=True, help="Vehicle ID number only (e.g., 1 or 2)")
-    args = parser.parse_args()
+    args, unknown = parser.parse_known_args()
 
     rclpy.init(args=None)
     
@@ -231,7 +201,6 @@ def main(args=None):
     # Send initial "N/A" drop-off queue
     dropoff_queue_msg = String()
     dropoff_queue_msg.data = "Drop-off Queue: []"
-    avp_command_listener.queue_publisher.publish(dropoff_queue_msg)
 
 
     engage_auto_mode = "ros2 topic pub --once /autoware/engage autoware_vehicle_msgs/msg/Engage '{engage: True}' -1"
@@ -240,7 +209,7 @@ def main(args=None):
     # set_initial_pose = "ros2 topic pub --once /initialpose geometry_msgs/msg/PoseWithCovarianceStamped '{header: {stamp: {sec: 1749585776, nanosec: 961698513}, frame_id: 'map'}, pose: {pose: {position: {x: -61.5980224609375, y: -84.97380065917969, z: 0.0}, orientation: {x: 0.0, y: 0.0, z: 0.792272260736117, w: 0.6101677350270843}}, covariance: [0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.06853891909122467]}}'"
 
     # Closer one
-    # set_initial_pose = "ros2 topic pub --once /initialpose geometry_msgs/msg/PoseWithCovarianceStamped '{header: {stamp: {sec: 1749608320, nanosec: 716034807}, frame_id: 'map'}, pose: {pose: {position: {x: -71.57246398925781, y: -48.895652770996094, z: 0.0}, orientation: {x: 0.0, y: 0.0, z: 0.7899923832424256, w: 0.6131166564520593}}, covariance: [0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.06853891909122467]}}'"
+    #set_initial_pose = "ros2 topic pub --once /initialpose geometry_msgs/msg/PoseWithCovarianceStamped '{header: {stamp: {sec: 1749608320, nanosec: 716034807}, frame_id: 'map'}, pose: {pose: {position: {x: -71.57246398925781, y: -48.895652770996094, z: 0.0}, orientation: {x: 0.0, y: 0.0, z: 0.7899923832424256, w: 0.6131166564520593}}, covariance: [0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.06853891909122467]}}'"
 
     head_to_drop_off = "ros2 topic pub /planning/mission_planning/goal geometry_msgs/msg/PoseStamped '{header: {stamp: {sec: 1749596637, nanosec: 370052949}, frame_id: 'map'}, pose: {position: {x: -57.330997467041016, y: -32.513362884521484, z: 0.0}, orientation: {x: 0.0, y: 0.0, z: 0.11762553592567591, w: 0.9930580211136696}}}' --once"
 
@@ -263,7 +232,7 @@ def main(args=None):
     }
 
     # Simulate AWSIM initial pose
-    # run_ros2_command(set_initial_pose)
+    #run_ros2_command(set_initial_pose)
 
     initiate_parking = True
     # print("Park your car? (yes/no)")
@@ -364,20 +333,11 @@ def main(args=None):
                     run_ros2_command(parking_spot_goal_pose_command)
                     run_ros2_command(engage_auto_mode)
 
-                    # Find ego's label in the queue
-                    car_leaving = car_id_to_label.get(avp_command_listener.ego_id)
-                    for label in drop_off_queue:
-                        if label in cars_in_zone:
-                            car_leaving = label
-                            break
 
-                    if car_leaving:
-                        print(f"[INFO] Ego vehicle matched to '{car_leaving}' in queue. Removing it.")
-                        drop_off_queue.remove(car_leaving)
-                        publish_queue(avp_command_listener.queue_publisher)
-                    else:
-                        print("[WARN] Ego vehicle's label not found in queue. Nothing removed.")
-
+                    queue_msg = String()
+                    queue_msg.data = avp_command_listener.ego_id
+                    avp_command_listener.queue_remove_pub.publish(queue_msg)
+                    print(f"[QUEUE] 🚫 Sent queue removal request for {queue_msg.data}")
 
                     if first_spot_in_queue not in avp_command_listener.reserved_spots_list:
                         msg = String()
