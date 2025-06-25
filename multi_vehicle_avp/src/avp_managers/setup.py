@@ -1,27 +1,30 @@
-from setuptools import find_packages, setup
+from setuptools import setup
+import os
+from glob import glob
 
-package_name = 'multi_avp_nodes'
+package_name = 'avp_managers'
 
 setup(
     name=package_name,
     version='0.0.0',
-    packages=find_packages(exclude=['test']),
+    packages=[package_name],
     data_files=[
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
-        ('share/' + package_name + '/launch', ['launch/multi_avp_launch.py']),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
     maintainer='ovin',
     maintainer_email='ovin@todo.todo',
-    description='Multi-AVP Node Scripts',
+    description='AVP Manager Nodes',
     license='MIT',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'avp_node = multi_avp_nodes.avp_node:main',
+            'drop_off_zone_queue_manager = avp_managers.drop_off_zone_queue_manager:main',
+            'parking_spot_reservation_manager = avp_managers.parking_spot_reservation_manager:main',
+            'vehicle_count_manager = avp_managers.vehicle_count_manager:main',
         ],
     },
 )

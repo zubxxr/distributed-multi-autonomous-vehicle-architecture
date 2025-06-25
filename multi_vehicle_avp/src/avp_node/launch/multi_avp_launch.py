@@ -68,7 +68,7 @@ def generate_launch_description():
         # Manager Nodes
         Node(
             package='multi_avp_managers',
-            executable='queue_manager',
+            executable='drop_off_zone_queue_manager',
             name='queue_manager',
             output='screen',
             arguments=['--ros-args', '-p', ['namespaces:=', LaunchConfiguration('namespaces')]],
@@ -76,7 +76,7 @@ def generate_launch_description():
         ),
         Node(
             package='multi_avp_managers',
-            executable='reservation_manager',
+            executable='parking_spot_reservation_manager',
             name='reservation_manager',
             output='screen',
             arguments=['--ros-args', '-p', ['namespaces:=', LaunchConfiguration('namespaces')]],

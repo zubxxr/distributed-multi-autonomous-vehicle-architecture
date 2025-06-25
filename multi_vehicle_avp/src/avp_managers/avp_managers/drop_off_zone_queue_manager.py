@@ -1,32 +1,24 @@
 import rclpy
 from rclpy.node import Node
-from std_msgs.msg import String
-from shapely.geometry import Point, Polygon
 from rcl_interfaces.msg import ParameterDescriptor, ParameterType
 from rclpy.parameter import Parameter
-
+from std_msgs.msg import String
+from shapely.geometry import Point, Polygon
 import sys
 
 if '--help' in sys.argv or '-h' in sys.argv:
     print("""
-🚗 Vehicle Count Manager Help
+🚗 Drop Off Zone Queue Manager Help
 
-Listens for vehicle count requests and broadcasts count to all vehicle_count topics.
+Listens for vehicle queue requests and broadcasts queue to all avp/queue topics.
 
 ✅ Example usage:
-    ros2 run multi_avp vehicle_count_manager --ros-args -p namespaces:='["main", "vehicle2"]'
+    ros2 run multi_avp drop_off_zone_queue_manager --ros-args -p namespaces:='["main", "vehicle2"]'
 
 📌 Parameters:
     - namespaces: List of namespaces (e.g., ["main", "vehicle2"])
     """)
     sys.exit(0)
-    
-DROP_OFF_ZONE_POLYGON = [
-    (-57.1, -28.6),
-    (-55.2, -35.8),
-    (-70.7, -31.9),
-    (-68.3, -39.2)
-]
 
 def get_topic(namespace, base_topic):
     return f"/{base_topic}" if namespace == "main" else f"/{namespace}/{base_topic}"
@@ -34,9 +26,10 @@ def get_topic(namespace, base_topic):
 class QueueManager(Node):
     def __init__(self):
         super().__init__('queue_manager')
+        
         self.valid = False
         self.queue = []
-        self.dropoff_polygon = Polygon(DROP_OFF_ZONE_POLYGON)
+        self.queue_publishers = {}
 
         self.declare_parameter(
             'namespaces',
@@ -52,11 +45,10 @@ class QueueManager(Node):
             self.get_logger().error(f"❌ Invalid 'namespaces' parameter. Error: {e}")
             return
 
-        self.queue_publishers = {}
         for ns in self.namespaces:
-            req_topic = get_topic(ns, "queue_manager/request")
-            rem_topic = get_topic(ns, "queue_manager/remove")
-            pub_topic = get_topic(ns, "avp/dropoff_queue")
+            req_topic = get_topic(ns, "avp/queue/request")
+            rem_topic = get_topic(ns, "avp/queue/remove")
+            pub_topic = get_topic(ns, "avp/queue")
 
             self.create_subscription(String, req_topic, self.queue_request_callback, 10)
             self.create_subscription(String, rem_topic, self.queue_remove_callback, 10)

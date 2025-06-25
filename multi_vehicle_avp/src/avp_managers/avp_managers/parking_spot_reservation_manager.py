@@ -5,15 +5,14 @@ from rcl_interfaces.msg import ParameterDescriptor, ParameterType
 from std_msgs.msg import String
 import sys
 
-
 if '--help' in sys.argv or '-h' in sys.argv:
     print("""
-🚗 Vehicle Count Manager Help
+Parking Spot Reservation Manager Help
 
 Listens for vehicle count requests and broadcasts count to all vehicle_count topics.
 
 ✅ Example usage:
-    ros2 run multi_avp vehicle_count_manager --ros-args -p namespaces:='["main", "vehicle2"]'
+    ros2 run multi_avp reservation_manager --ros-args -p namespaces:='["main", "vehicle2"]'
 
 📌 Parameters:
     - namespaces: List of namespaces (e.g., ["main", "vehicle2"])
@@ -26,6 +25,7 @@ def get_topic(namespace, topic):
 class ReservationManager(Node):
     def __init__(self):
         super().__init__('reservation_manager')
+
         self.valid = False
         self.reserved_spots = set()
         self.reserved_publishers = {}
@@ -52,9 +52,9 @@ class ReservationManager(Node):
 
         # Setup topics for each namespace
         for ns in self.namespaces:
-            request_topic = get_topic(ns, "parking_spots/reserved/request")
-            remove_topic = get_topic(ns, "parking_spots/reserved/remove")
-            reserved_topic = get_topic(ns, "parking_spots/reserved")
+            request_topic = get_topic(ns, "avp/reserved_parking_spots/request")
+            remove_topic = get_topic(ns, "avp/reserved_parking_spots/remove")
+            reserved_topic = get_topic(ns, "avp/reserved_parking_spots")
 
             self.create_subscription(String, request_topic, self.generate_request_callback(ns), 10)
             self.create_subscription(String, remove_topic, self.generate_remove_callback(ns), 10)
