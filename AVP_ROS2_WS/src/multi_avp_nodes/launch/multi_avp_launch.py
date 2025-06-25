@@ -51,6 +51,13 @@ def generate_launch_description():
 	    description='Path to the echo script'
 	    ),
 
+        DeclareLaunchArgument(
+            'manual_localization',
+            default_value='false',
+            description='Set to true to manually inject initial pose'
+        ),
+
+
         # Only runs if enable_managers is false and echo_avp is true or auto
         ExecuteProcess(
             cmd=['bash', LaunchConfiguration('echo_avp_script_path')],
@@ -88,9 +95,11 @@ def generate_launch_description():
         Node(
             package='multi_avp_nodes',
             executable=avp_file,
-            name='avp_script',
             output='screen',
-            arguments=['--vehicle_id', vehicle_id],
+            arguments=[
+                '--vehicle_id', vehicle_id,
+                '--manual_localization', LaunchConfiguration('manual_localization')
+            ],
         ),
     ])
 
