@@ -22,7 +22,6 @@ setup(
     entry_points={
         'console_scripts': [
             'avp_node = multi_avp_nodes.avp_node:main',
-            'avp_node_planning_simulator = multi_avp_nodes.avp_node_planning_simulator:main',
         ],
     },
 )
