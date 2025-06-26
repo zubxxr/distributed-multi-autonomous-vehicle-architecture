@@ -1,21 +1,38 @@
 {
-    "plugins": {
+  "plugins": {
     "ros2dds": {
       "nodename": "zenoh_vehicle2_bridge",
-      "namespace": "/vehicle2"
-    },
+      "namespace": "/vehicle2",
+        "pub_priorities": [
+          "/initialpose=1:express",
+          "/tf=1:express",
+          "/tf_static=1:express",
+          "/clock=1:express",
+          "/localization/.*=2",
+          "/sensing/.*=3",
+          "/vehicle_count=4",
+          "/parking_spots/empty=4",
+          "/avp/dropoff_queue=4",
+          "/parking_spots/reserved=4",
+          "/rosout=7"
+        ]
+    }
   },
-  transport: {
-    link: {
-      tx: {
-        queue:{
-          /// Perform batching of messages if they are smaller of the batch_size
-          batching: {
-            /// Default works well in most cases. If performance problems arise, remove the comment to disable batching.
-            // enabled: false,
-          }
+  "transport": {
+    "link": {
+      "tx": {
+        "queue": {
+          "batching": {}
         }
       }
+    }
+  },
+  scouting: {
+    multicast: {
+      enabled: false
+    },
+    gossip: {
+      enabled: false
     }
   }
 }
