@@ -10,10 +10,10 @@
           "/clock=1:express",
           "/localization/.*=2",
           "/sensing/.*=3",
-          "/vehicle_count=4",
-          "/parking_spots/empty=4",
-          "/avp/dropoff_queue=4",
-          "/parking_spots/reserved=4",
+          "/avp/vehicle_count=4",
+          "/avp/parking_spots=4",
+          "/avp/queue=4",
+          "/avp/reserved_parking_spots=4",
           "/rosout=7"
         ]
     }
