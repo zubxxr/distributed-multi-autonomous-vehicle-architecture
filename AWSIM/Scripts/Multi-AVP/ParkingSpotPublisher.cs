@@ -12,7 +12,7 @@ namespace AWSIM
     public class ParkingSpotRos2Publisher2 : MonoBehaviour
     {
         [Tooltip("List of ROS 2 topic names to publish to.")]
-        public List<string> topicNames = new List<string> { "/parking_spots/empty" };
+        public List<string> topicNames = new List<string> { "/avp/parking_spots" };
 
         public QoSSettings qosSettings = new QoSSettings()
         {
@@ -44,7 +44,7 @@ namespace AWSIM
             ConnectYoloIntegration();
 
             _removalSub = SimulatorROS2Node.CreateSubscription<std_msgs.msg.String>(
-                "/parking_spots/reserved/remove",
+                "avp/reserved_parking_spots/remove",
                 msg =>
                 {
                     if (int.TryParse(msg.Data.Trim(), out int spotToRemove))
@@ -59,7 +59,7 @@ namespace AWSIM
                 });
                 
             _reservationSub = SimulatorROS2Node.CreateSubscription<std_msgs.msg.String>(
-                "/parking_spots/reserved",
+                "/avp/reserved_parking_spots",
                 msg =>
                 {
                     string data = msg.Data;
