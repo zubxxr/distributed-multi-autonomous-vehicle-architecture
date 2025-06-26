@@ -2,10 +2,10 @@
 
 # Define only the localization-relevant topics
 TOPICS=(
-  "/vehicle_count"
-  "/parking_spots/empty"
-  "/avp/dropoff_queue"
-  "/parking_spots/reserved"
+  "/avp/vehicle_count"
+  "/avp/parking_spots"
+  "/avp/queue"
+  "/avp/reserved_parking_spots"
 )
 
 # Loop through each topic and echo it silently

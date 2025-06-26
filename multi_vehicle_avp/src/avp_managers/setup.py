@@ -2,7 +2,7 @@ from setuptools import setup
 import os
 from glob import glob
 
-package_name = 'multi_avp_managers'
+package_name = 'avp_managers'
 
 setup(
     name=package_name,
@@ -22,9 +22,9 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'queue_manager = multi_avp_managers.queue_manager:main',
-            'reservation_manager = multi_avp_managers.reservation_manager:main',
-            'vehicle_count_manager = multi_avp_managers.vehicle_count_manager:main',
+            'drop_off_zone_queue_manager = avp_managers.drop_off_zone_queue_manager:main',
+            'parking_spot_reservation_manager = avp_managers.parking_spot_reservation_manager:main',
+            'vehicle_count_manager = avp_managers.vehicle_count_manager:main',
         ],
     },
 )
