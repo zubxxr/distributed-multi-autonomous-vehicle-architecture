@@ -33,7 +33,7 @@ class ParkingSpotPublisher(Node):
         msg = String()
 
         if available_spots:
-            msg.data = f"Available Spots: [{', '.join(str(s) for s in available_spots)}]"
+            msg.data = f"[{', '.join(str(s) for s in available_spots)}]"
         else:
             msg.data = "Available Spots: []"
 
