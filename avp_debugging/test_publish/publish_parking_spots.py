@@ -6,10 +6,10 @@ from datetime import datetime
 class ParkingSpotPublisher(Node):
     def __init__(self):
         super().__init__('parking_spot_publisher')
-        self.publisher_ = self.create_publisher(String, '/parking_spots/empty', 10)
+        self.publisher_ = self.create_publisher(String, '/avp/parking_spots', 10)
         self.subscription = self.create_subscription(
             String,
-            '/parking_spots/reserved',
+            '/avp/reserved_parking_spots',
             self.reserved_callback,
             10
         )
