@@ -12,7 +12,7 @@ def generate_ros2_command(data):
     pose_orientation_w = data['pose']['pose']['orientation']['w']
     covariance = data['pose']['covariance']
 
-    command = "ros2 topic pub --once /initialpose geometry_msgs/msg/PoseWithCovarianceStamped '{header: {stamp: {sec: " + str(header_sec) + ", nanosec: " + str(header_nanosec) + "}, frame_id: \"" + frame_id + "\"}, pose: {pose: {position: {x: " + str(pose_position_x) + ", y: " + str(pose_position_y) + ", z: " + str(pose_position_z) + "}, orientation: {x: 0.0, y: 0.0, z: " + str(pose_orientation_z) + ", w: " + str(pose_orientation_w) + "}}, covariance: " + str(covariance) + "}}'"
+    command = "ros2 topic pub --once /initialpose geometry_msgs/msg/PoseWithCovarianceStamped '{header: {stamp: {sec: " + str(header_sec) + ", nanosec: " + str(header_nanosec) + "}, frame_id: '" + frame_id + "'}, pose: {pose: {position: {x: " + str(pose_position_x) + ", y: " + str(pose_position_y) + ", z: " + str(pose_position_z) + "}, orientation: {x: 0.0, y: 0.0, z: " + str(pose_orientation_z) + ", w: " + str(pose_orientation_w) + "}}, covariance: " + str(covariance) + "}}'"
     return command
 
 if __name__ == "__main__":
@@ -34,4 +34,3 @@ if __name__ == "__main__":
 
     command = generate_ros2_command(data)
     print(command)
-
