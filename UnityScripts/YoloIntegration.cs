@@ -1,5 +1,7 @@
 // YoloIntegration.cs
+using System;
 using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -23,6 +25,10 @@ public class YoloIntegration : MonoBehaviour
 
     public List<string> emptyParkingSpots = new List<string>(); // List of empty parking spot IDs
 
+    public event Action<string> OnParkingSpotsUpdated;
+
+    private bool isCoroutineRunning = false;
+
     void Start()
     {
         Debug.Log($"Parking Spots Found: {parkingSpots.Count}");
@@ -30,9 +36,28 @@ public class YoloIntegration : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Y)) // Press 'Y' to capture and send image
+        // if (Input.GetKeyDown(KeyCode.Y)) // Press 'Y' to capture and send image
+        // {
+        //     CaptureAndSend();
+        // }
+        
+        
+        // Start calling CaptureAndSend every 2 seconds, with an initial delay of 0 seconds.
+        if (!isCoroutineRunning)
         {
-            CaptureAndSend();
+            StartCoroutine(CaptureAndSendRoutine());
+            isCoroutineRunning = true;
+        }
+    }
+
+    private IEnumerator CaptureAndSendRoutine()
+    {   
+        yield return new WaitForSeconds(2f);
+
+        while (true) // This will loop indefinitely
+        {
+            CaptureAndSend();  // Call the function
+            yield return new WaitForSeconds(2f); // Wait for 2 seconds before calling again
         }
     }
 
@@ -114,6 +139,7 @@ public class YoloIntegration : MonoBehaviour
         // Check detections for each parking spot
         foreach (ParkingSpot spot in parkingSpots)
         {   
+            if (spot == null) continue;
             spot.UpdateColor(); // Update the spot color
             spot.DrawInCameraView(); // Draw the spot in the overhead camera view
             spot.IsOccupiedByYOLO(detections.ToList(), imageWidth, imageHeight, spot.id);
@@ -123,14 +149,6 @@ public class YoloIntegration : MonoBehaviour
                 emptyParkingSpots.Add(spot.id);
             }
         }
-
-        // Update parking spot colors based on occupancy status
-        foreach (ParkingSpot spot in parkingSpots)
-        {
-            spot.UpdateColor();  // Call a method in ParkingSpot to update the color
-        }
-
-        Debug.Log($"Empty Parking Spots: {string.Join(", ", emptyParkingSpots)}");
 
         foreach (Detection detection in detections)
         {
@@ -190,6 +208,10 @@ public class YoloIntegration : MonoBehaviour
 
             boundingBoxes.Add(box);
         }
+
+        Debug.Log($"Empty Parking Spots: {string.Join(", ", emptyParkingSpots)}");
+        OnParkingSpotsUpdated?.Invoke(string.Join(",", emptyParkingSpots));  // Pass a comma-separated string
+        
     }
 }
 
