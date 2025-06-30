@@ -1,8 +1,11 @@
 import yaml
 
-def parse_pose_yaml(input_str):
+def split_yaml_docs(full_input):
+    return [doc.strip() for doc in full_input.split('---') if doc.strip()]
+
+def parse_pose(doc):
     try:
-        data = yaml.safe_load(input_str)
+        data = yaml.safe_load(doc)
         x = round(data['pose']['position']['x'], 2)
         y = round(data['pose']['position']['y'], 2)
         z = round(data['pose']['position']['z'], 2)
@@ -10,39 +13,44 @@ def parse_pose_yaml(input_str):
         ow = round(data['pose']['orientation']['w'], 4)
         return {"x": x, "y": y, "z": z, "oz": oz, "ow": ow}
     except Exception as e:
-        print("⚠️  Failed to parse input. Error:", e)
+        print(f"⚠️ Failed to parse doc:\n{doc}\nError: {e}")
         return None
 
 def main():
     try:
-        count = int(input("How many parking spots do you have? "))
+        expected = int(input("How many parking spots do you have? "))
     except ValueError:
-        print("❌ Please enter a valid number.")
+        print("❌ Invalid number.")
         return
 
-    parking_spot_goals = {}
-
-    for i in range(1, count + 1):
-        print(f"\n📥 Enter topic output for parking spot #{i} (press Enter twice to finish):")
-        lines = []
-        while True:
+    print("\n📥 Paste the full ros2 topic echo message dump below.\nWhen you're done, press Enter *twice*:\n")
+    lines = []
+    while True:
+        try:
             line = input()
             if line.strip() == "":
                 break
             lines.append(line)
-        full_input = "\n".join(lines)
-        parsed = parse_pose_yaml(full_input)
+        except EOFError:
+            break
+
+    full_input = "\n".join(lines)
+    docs = split_yaml_docs(full_input)
+
+    if len(docs) != expected:
+        print(f"\n⚠️ Warning: You entered {expected} as the expected count, but {len(docs)} entries were detected.\n")
+
+    result = {}
+    for i, doc in enumerate(docs, start=1):
+        parsed = parse_pose(doc)
         if parsed:
-            parking_spot_goals[i] = parsed
-        else:
-            print(f"❌ Skipping spot #{i} due to parsing error.")
+            result[i] = parsed
 
     print("\n✅ Final dictionary:\n")
     print("parking_spot_goals = {")
-    for key, val in parking_spot_goals.items():
-        print(f"    {key}: {val},")
+    for k, v in result.items():
+        print(f"    {k}: {v},")
     print("}")
 
 if __name__ == "__main__":
     main()
-
