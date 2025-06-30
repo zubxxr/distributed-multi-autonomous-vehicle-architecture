@@ -24,3 +24,6 @@ Do step 2 - 6 again. Get all 4 coordinates.
 ![image](https://github.com/user-attachments/assets/2c25aade-8694-4895-8462-c98730884d7f)
 
 7. edit the drop off code in the avp node file.
+![image](https://github.com/user-attachments/assets/9e3afe2b-f9cc-4269-bdd3-3c2be3632b17)
+
+8. rebuild and run. Test to see if queueing works and allllllllllllat
