@@ -13,17 +13,17 @@ def parse_pose(doc):
         ow = round(data['pose']['orientation']['w'], 4)
         return {"x": x, "y": y, "z": z, "oz": oz, "ow": ow}
     except Exception as e:
-        print(f"⚠️ Failed to parse doc:\n{doc}\nError: {e}")
+        print(f"\Failed to parse doc:\n{doc}\nError: {e}")
         return None
 
 def main():
     try:
         expected = int(input("How many parking spots do you have? "))
     except ValueError:
-        print("❌ Invalid number.")
+        print("Invalid number.")
         return
 
-    print("\n📥 Paste the full ros2 topic echo message dump below.\nWhen you're done, press Enter *twice*:\n")
+    print("\nPaste the full ros2 topic echo message dump below.\nWhen you're done, press Enter *twice*:\n")
     lines = []
     while True:
         try:
@@ -38,7 +38,7 @@ def main():
     docs = split_yaml_docs(full_input)
 
     if len(docs) != expected:
-        print(f"\n⚠️ Warning: You entered {expected} as the expected count, but {len(docs)} entries were detected.\n")
+        print(f"\nWarning: You entered {expected} as the expected count, but {len(docs)} entries were detected.\n")
 
     result = {}
     for i, doc in enumerate(docs, start=1):
@@ -46,7 +46,7 @@ def main():
         if parsed:
             result[i] = parsed
 
-    print("\n✅ Final dictionary:\n")
+    print("\nFinal dictionary:\n")
     print("parking_spot_goals = {")
     for k, v in result.items():
         print(f"    {k}: {v},")
@@ -54,3 +54,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
