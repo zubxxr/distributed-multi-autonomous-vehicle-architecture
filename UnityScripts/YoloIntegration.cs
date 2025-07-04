@@ -138,11 +138,13 @@ public class YoloIntegration : MonoBehaviour
 
         // Check detections for each parking spot
         foreach (ParkingSpot spot in parkingSpots)
-        {   
+        {
             if (spot == null) continue;
-            spot.UpdateColor(); // Update the spot color
-            spot.DrawInCameraView(); // Draw the spot in the overhead camera view
-            spot.IsOccupiedByYOLO(detections.ToList(), imageWidth, imageHeight, spot.id);
+
+            spot.IsOccupiedByYOLO(detections.ToList(), imageWidth, imageHeight, spot.id); // sets IsOccupied and calls UpdateColor()
+
+            // Now draw the UI rectangle after it's updated
+            spot.DrawInCameraView();
 
             if (!spot.IsOccupied)
             {
