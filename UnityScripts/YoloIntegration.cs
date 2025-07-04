@@ -50,6 +50,25 @@ public class YoloIntegration : MonoBehaviour
         }
     }
 
+    void Awake()
+    {
+        // Find all ParkingSpot components in the scene
+        ParkingSpot[] allSpots = FindObjectsOfType<ParkingSpot>();
+
+        // Sort by number extracted from GameObject name (e.g., ParkingSpot_12 → 12)
+        parkingSpots = allSpots
+            .OrderBy(spot =>
+            {
+                string[] parts = spot.name.Split('_');
+                if (parts.Length == 2 && int.TryParse(parts[1], out int number))
+                    return number;
+                return int.MaxValue; // if format invalid, push to end
+            })
+            .ToList();
+
+        Debug.Log($"[YoloIntegration] Auto-filled and sorted {parkingSpots.Count} parking spots.");
+    }
+
     private IEnumerator CaptureAndSendRoutine()
     {   
         yield return new WaitForSeconds(2f);
