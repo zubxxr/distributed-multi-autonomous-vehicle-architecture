@@ -254,7 +254,7 @@ public class ParkingSpot : MonoBehaviour
             size.y
         );
 
-        Debug.Log($"[ParkingSpot] spotID = {spotID},  UI Bounds: {uiBounds}");
+        // Debug.Log($"[ParkingSpot] spotID = {spotID},  UI Bounds: {uiBounds}");
 
         // Check for overlap with YOLO detections
         bool isOccupied = false;
