@@ -17,45 +17,67 @@ public class ParkingSpot : MonoBehaviour
     
     private void Awake()
     {
-        // Automatically find the Camera GameObject and assign it first
+        // Assign camera if missing
         if (overheadCamera == null)
         {
             GameObject cameraObject = GameObject.Find("Camera");
             if (cameraObject != null)
-            {
                 overheadCamera = cameraObject.GetComponent<Camera>();
-                // Debug.Log("Camera assigned successfully.");
-            }
-            else
-            {
-                Debug.LogWarning("Camera GameObject could not be found.");
-            }
         }
 
-        // Automatically find the OverheadCameraView GameObject and assign its RectTransform
+        // Assign overheadCameraView if missing
         if (overheadCameraView == null)
         {
             GameObject viewObject = GameObject.Find("OverheadCameraView");
             if (viewObject != null)
-            {
                 overheadCameraView = viewObject.GetComponent<RectTransform>();
-                // Debug.Log("OverheadCameraView assigned successfully.");
+        }
+
+        // -----------------------------
+        // AUTOMATIC ID AND LINE SETUP
+        // -----------------------------
+        // Extract number from GameObject name
+        string name = gameObject.name.ToLower(); // e.g., "parkingspot_2"
+        string[] parts = name.Split('_');
+
+        if (parts.Length == 2 && int.TryParse(parts[1], out int spotNumber))
+        {
+            id = spotNumber.ToString();
+            Debug.Log($"[AutoSetup] Parsed spotNumber = {spotNumber}");
+
+            // Check if the parent is Row2
+            Transform grandParent = transform.parent?.parent;
+            bool isRow2 = grandParent != null && grandParent.name.ToLower().Contains("row2");
+            Debug.Log($"[AutoSetup] Grandparent GameObject: {(grandParent != null ? grandParent.name : "NULL")}");
+            Debug.Log($"[AutoSetup] isRow2 = {isRow2}");
+
+            int lineIndex1 = isRow2 ? spotNumber + 1 : spotNumber;
+            int lineIndex2 = isRow2 ? spotNumber + 2 : spotNumber + 1;
+
+            string lineName1 = $"ParkingLine_{lineIndex1}";
+            string lineName2 = $"ParkingLine_{lineIndex2}";
+
+            Debug.Log($"[AutoSetup] Line Names: {lineName1}, {lineName2}");
+
+            GameObject lineObj1 = GameObject.Find(lineName1);
+            GameObject lineObj2 = GameObject.Find(lineName2);
+
+            parkingLines = new GameObject[2];
+            parkingLines[0] = lineObj1;
+            parkingLines[1] = lineObj2;
+
+            if (lineObj1 == null || lineObj2 == null)
+            {
+                Debug.LogWarning($"[AutoSetup] One or both parking lines not found — Tried {lineName1} and {lineName2}");
             }
             else
             {
-                Debug.LogWarning("OverheadCameraView GameObject could not be found.");
+                Debug.Log("[AutoSetup] Parking lines assigned successfully.");
             }
         }
-
-        // Debug logs to confirm success or failure
-        if (overheadCamera == null)
+        else
         {
-            Debug.LogWarning("Camera GameObject could not be found. Please ensure a GameObject named 'Camera' is present in the scene.");
-        }
-
-        if (overheadCameraView == null)
-        {
-            Debug.LogWarning("OverheadCameraView GameObject could not be found. Please ensure a GameObject named 'OverheadCameraView' is present in the scene.");
+            Debug.LogWarning($"[AutoSetup] Invalid GameObject name format: {gameObject.name}. Expected format: ParkingSpot_X");
         }
     }
 
@@ -155,7 +177,7 @@ public class ParkingSpot : MonoBehaviour
         // UnityEngine.UI.Image image = rectangle.AddComponent<UnityEngine.UI.Image>();
         // image.color = IsOccupied ? new Color(1, 0, 0, 0.5f) : new Color(0, 1, 0, 0.5f); // Red for occupied, green for empty
 	
-	// -------------------------------
+	    // -------------------------------
         // ADDING TEXT LABEL FOR SPOT ID
         // -------------------------------
         GameObject labelGO = new GameObject($"Label_{id}", typeof(RectTransform));
@@ -232,7 +254,7 @@ public class ParkingSpot : MonoBehaviour
             size.y
         );
 
-        // Debug.Log($"[ParkingSpot] spotID = {spotID},  UI Bounds: {uiBounds}");
+        Debug.Log($"[ParkingSpot] spotID = {spotID},  UI Bounds: {uiBounds}");
 
         // Check for overlap with YOLO detections
         bool isOccupied = false;
@@ -302,15 +324,27 @@ public class ParkingSpot : MonoBehaviour
 
     void Start()
     {
-        
         renderers = new Renderer[parkingLines.Length];
         for (int i = 0; i < parkingLines.Length; i++)
         {
-            renderers[i] = parkingLines[i].GetComponent<Renderer>();
+            if (parkingLines[i] == null)
+            {
+                Debug.LogWarning($"[Init] parkingLines[{i}] is null in {gameObject.name}");
+                continue;
+            }
+
+            Renderer r = parkingLines[i].GetComponent<Renderer>();
+            if (r == null)
+            {
+                Debug.LogWarning($"[Init] parkingLines[{i}] has no Renderer in {gameObject.name}");
+            }
+
+            renderers[i] = r;
         }
 
-        // Calculate combined bounds from parking lines
         bounds = CalculateBounds();
+
+        // For Debugging
         // CreateFillPlane();
     }
 
@@ -377,18 +411,41 @@ public class ParkingSpot : MonoBehaviour
 
     public void UpdateColor()
     {
-        Color color = IsOccupied ? Color.red : Color.green;
-        foreach (Renderer renderer in renderers)
+        if (renderers == null || renderers.Length == 0)
         {
-            renderer.material.color = color;
+            // Debug.LogWarning($"[UpdateColor] Renderer array is not initialized for {id}. Skipping color update.");
+            return;
         }
 
-        // Optionally, update the fill plane color as well
+        Color color = IsOccupied ? Color.red : Color.green;
+
+        for (int i = 0; i < renderers.Length; i++)
+        {
+            if (renderers[i] == null)
+            {
+                Debug.LogWarning($"[UpdateColor] Renderer[{i}] is null for spot {id}. Skipping.");
+                continue;
+            }
+
+            if (renderers[i].material == null)
+            {
+                Debug.LogWarning($"[UpdateColor] Material is null on Renderer[{i}] for spot {id}. Skipping.");
+                continue;
+            }
+
+            renderers[i].material.color = color;
+        }
+
         if (fillPlane != null)
         {
-            fillPlane.GetComponent<Renderer>().material.color = color;
+            Renderer fillR = fillPlane.GetComponent<Renderer>();
+            if (fillR != null && fillR.material != null)
+            {
+                fillR.material.color = color;
+            }
         }
     }
+
     private void CreateFillPlane()
     {
         if (bounds.width <= 0 || bounds.height <= 0)
