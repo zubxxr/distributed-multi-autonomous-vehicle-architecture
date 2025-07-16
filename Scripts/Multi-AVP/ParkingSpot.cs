@@ -20,7 +20,7 @@ public class ParkingSpot : MonoBehaviour
         // Assign camera if missing
         if (overheadCamera == null)
         {
-            GameObject cameraObject = GameObject.Find("Camera");
+            GameObject cameraObject = GameObject.Find("OverheadCamera");
             if (cameraObject != null)
                 overheadCamera = cameraObject.GetComponent<Camera>();
         }

@@ -11,9 +11,7 @@ using System.Linq; // For LINQ methods like OrderBy
 public class YoloIntegration : MonoBehaviour
 {   
     public Camera cameraToCapture; // The camera capturing the view
-    public RawImage debugImage;    // Optional: For showing captured image in UI
     public GameObject boundingBoxPrefab; // Prefab for bounding boxes
-    public Transform canvasTransform;   // The parent canvas for the bounding box prefabs
     [SerializeField] private RectTransform overheadCameraView;
 
     private string serverUrl = "http://127.0.0.1:5000/detect"; // YOLO server URL
@@ -101,11 +99,6 @@ public class YoloIntegration : MonoBehaviour
         RenderTexture.active = renderTexture;
         tex.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0);
         tex.Apply();
-
-        if (debugImage != null)
-        {
-            debugImage.texture = tex;
-        }
 
         Texture2D resizedTex = ResizeTexture(tex, 416, 416);
         byte[] imageBytes = tex.EncodeToPNG();
@@ -235,5 +228,3 @@ public class YoloIntegration : MonoBehaviour
         
     }
 }
-
-
