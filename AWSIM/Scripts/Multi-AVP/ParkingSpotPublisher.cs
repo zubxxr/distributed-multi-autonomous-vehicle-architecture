@@ -9,7 +9,7 @@ namespace AWSIM
     /// <summary>
     /// Publish the list of empty parking spots to multiple ROS2 topics as a comma-separated string.
     /// </summary>
-    public class ParkingSpotRos2Publisher2 : MonoBehaviour
+    public class ParkingSpotRos2Publisher : MonoBehaviour
     {
         [Tooltip("List of ROS 2 topic names to publish to.")]
         public List<string> topicNames = new List<string> { "/avp/parking_spots" };
@@ -52,7 +52,7 @@ namespace AWSIM
                         if (_currentEmptySpots.Contains(spotToRemove))
                         {
                             _currentEmptySpots.Remove(spotToRemove);
-                            Debug.Log($"🗑️ Removed spot {spotToRemove} from Unity list.");
+                            Debug.Log($"Removed spot {spotToRemove} from Unity list.");
                             Republish();
                         }
                     }
