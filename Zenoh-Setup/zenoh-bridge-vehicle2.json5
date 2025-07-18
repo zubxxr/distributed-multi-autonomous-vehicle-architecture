@@ -1,5 +1,18 @@
 {
-    "plugins": {
+  "transport": {
+    "link": {
+      "tx": {
+        "queue": {
+          // Perform batching of messages if they are smaller than the batch_size
+          "batching": {
+            // Default works well in most cases. If performance problems arise, remove the comment to disable batching.
+            // "enabled": false
+          }
+        }
+      }
+    }
+  },
+  "plugins": {
     "ros2dds": {
       "nodename": "zenoh_vehicle2_bridge",
       "namespace": "/vehicle2",
@@ -17,20 +30,7 @@
       deny: {
       subscribers: ["/sensing/camera/traffic_light/camera_info", "/vehicle2/sensing/camera/traffic_light/image_raw"],
       publishers: ["/sensing/camera/traffic_light/camera_info", "/vehicle2/sensing/camera/traffic_light/image_raw"], 
-      },
-    },
-  },
-  transport: {
-    link: {
-      tx: {
-        queue:{
-          /// Perform batching of messages if they are smaller of the batch_size
-          batching: {
-            /// Default works well in most cases. If performance problems arise, remove the comment to disable batching.
-            // enabled: false,
-          }
-        }
       }
     }
   }
-} 
+}
