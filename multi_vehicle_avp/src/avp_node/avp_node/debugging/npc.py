@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import rclpy
 from rclpy.node import Node
 from tier4_simulation_msgs.msg import DummyObject
@@ -31,7 +33,7 @@ class ReservedSpotPublisher(Node):
         self.remove_pub = self.create_publisher(String, '/parking_spots/reserved/remove', 10)
         
 
-        self.target_spot = 17
+        self.target_spot = 18
         
         self.timer = None
 
@@ -43,19 +45,19 @@ class ReservedSpotPublisher(Node):
         msg = String()
         msg.data = str(spot_id)
         self.request_pub.publish(msg)
-        self.get_logger().info(f"[NPC] 🛰 Sent reservation request for spot: {msg.data}")
+        self.get_logger().info(f"[NPC] Sent reservation request for spot: {msg.data}")
 
     def send_queue_request(self, car_id):
         msg = String()
         msg.data = car_id
         self.queue_request_pub.publish(msg)
-        self.get_logger().info(f"[NPC] 📥 Sent queue request: {msg.data}")
+        self.get_logger().info(f"[NPC] Sent queue request: {msg.data}")
 
     def send_queue_remove(self, car_id):
         msg = String()
         msg.data = car_id
         self.remove_queue_pub.publish(msg)
-        self.get_logger().info(f"[NPC] 🗑️ Sent queue remove request: {msg.data}")
+        self.get_logger().info(f"[NPC] Sent queue remove request: {msg.data}")
 
 
 
@@ -96,7 +98,7 @@ class NPCDummyCarPublisher(Node):
         NPCDummyCarPublisher.npc_counter += 1
         self.car_id = f"car_{NPCDummyCarPublisher.npc_counter}"
 
-
+        print(self.reserved_spot_publisher.target_spot)
 
         self.reserved_spot_publisher.send_reservation_request(self.reserved_spot_publisher.target_spot)
 

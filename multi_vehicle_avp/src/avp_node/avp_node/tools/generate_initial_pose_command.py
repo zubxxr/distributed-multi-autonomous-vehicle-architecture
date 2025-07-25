@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import sys
 import yaml
 
@@ -15,7 +17,7 @@ def generate_ros2_command(data):
     command = "ros2 topic pub --once /initialpose geometry_msgs/msg/PoseWithCovarianceStamped '{header: {stamp: {sec: " + str(header_sec) + ", nanosec: " + str(header_nanosec) + "}, frame_id: '" + frame_id + "'}, pose: {pose: {position: {x: " + str(pose_position_x) + ", y: " + str(pose_position_y) + ", z: " + str(pose_position_z) + "}, orientation: {x: 0.0, y: 0.0, z: " + str(pose_orientation_z) + ", w: " + str(pose_orientation_w) + "}}, covariance: " + str(covariance) + "}}'"
     return command
 
-if __name__ == "__main__":
+def main():
     if len(sys.argv) != 2:
         print("Usage: python script.py '<pose_data_as_string>'")
         sys.exit(1)
@@ -34,3 +36,7 @@ if __name__ == "__main__":
 
     command = generate_ros2_command(data)
     print(command)
+
+if __name__ == "__main__":
+    main()
+

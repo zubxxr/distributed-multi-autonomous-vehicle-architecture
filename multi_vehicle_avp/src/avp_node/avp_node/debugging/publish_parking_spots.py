@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
@@ -17,7 +19,7 @@ class ParkingSpotPublisher(Node):
         self.timer = self.create_timer(1.0, self.publish_parking_spots)
 
         # Initial state
-        self.empty_spots = {17, 18, 19, 28}
+        self.empty_spots = {4, 11, 16, 22}
         self.reserved_spots = set()
 
     def reserved_callback(self, msg):

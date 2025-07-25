@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import yaml
 
 def split_yaml_docs(full_input):

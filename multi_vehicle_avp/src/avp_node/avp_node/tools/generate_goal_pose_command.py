@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import sys
 import yaml
 
@@ -16,7 +18,7 @@ def generate_ros2_command(data):
     command = f"ros2 topic pub /planning/mission_planning/goal geometry_msgs/msg/PoseStamped '{{header: {{stamp: {{sec: {header_sec}, nanosec: {header_nanosec}}}, frame_id: \'{frame_id}\'}}, pose: {{position: {{x: {pose_position_x}, y: {pose_position_y}, z: {pose_position_z}}}, orientation: {{x: {pose_orientation_x}, y: {pose_orientation_y}, z: {pose_orientation_z}, w: {pose_orientation_w}}}}}}}' --once"
     return command
 
-if __name__ == "__main__":
+def main():
     if len(sys.argv) != 2:
         print("Usage: python script.py '<pose_data_as_string>'")
         sys.exit(1)
@@ -35,3 +37,6 @@ if __name__ == "__main__":
 
     command = generate_ros2_command(data)
     print(command)
+
+if __name__ == "__main__":
+    main()
