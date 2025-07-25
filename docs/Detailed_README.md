@@ -1,29 +1,33 @@
-# Multi Vehicle Autonomous Valet Parking Using Three Machines
+# Multi-Vehicle Autonomous Valet Parking System
 
-![ROS 2](https://img.shields.io/badge/ROS2-Humble-blue)
-![Autoware](https://img.shields.io/badge/Autoware-2024.11-brightgreen)
-![Unity](https://img.shields.io/badge/Unity-2022.3.62f1-lightgrey)
-![YOLOv5](https://img.shields.io/badge/YOLO-v5-red)
-![Zenoh](https://img.shields.io/badge/Zenoh-1.4.0-purple)
-![Multi-Host](https://img.shields.io/badge/Topology-3_Host_Setup-yellow)
-![License](https://img.shields.io/badge/License-MIT-blue)
+![ROS 2](https://img.shields.io/badge/ROS2-Humble-blue?logo=ros)
+![Autoware](https://img.shields.io/badge/Autoware-2024.11-brightgreen?logo=autodesk)
+![AWSIM Labs](https://img.shields.io/badge/AWSIM_Labs-2022.3.62f1-lightgrey?logo=unity)
+![YOLOv5](https://img.shields.io/badge/YOLO-v5-red?logo=github)
+![Zenoh](https://img.shields.io/badge/Zenoh-1.4.0-purple?logo=apache)
+![AVP Node](https://img.shields.io/badge/AVP_Node-Orchestrator-black?logo=robotframework)
+![Multi-Host](https://img.shields.io/badge/Topology-2_Host_Setup-yellow?logo=windows)
+![License](https://img.shields.io/badge/License-MIT-blue?logo=open-source-initiative)
 
-This project demonstrates a simulation framework for autonomous valet parking using a distributed setup across three machines. It integrates AWSIM (Unity-based simulator), Autoware (AV Software Stack), Zenoh (communication middleware), and YOLOv5 (object detection) to simulate and coordinate multiple autonomous vehicles navigating and parking in a shared environment.
+<p align="center">
+  <img src="https://raw.githubusercontent.com/ros/ros2/rolling/ros2_logo.png" alt="ROS 2" height="40"/>
+  <img src="https://raw.githubusercontent.com/autowarefoundation/autoware.ai/master/docs/media/autoware_logo.png" alt="Autoware" height="40"/>
+  <img src="https://upload.wikimedia.org/wikipedia/commons/c/c4/Unity_2021.svg" alt="Unity" height="40"/>
+  <img src="https://raw.githubusercontent.com/AWSIM-Labs/awsim_docs/main/static/img/logo_dark.svg" alt="AWSIM Labs" height="40"/>
+  <img src="https://raw.githubusercontent.com/ultralytics/yolov5/master/docs/images/logo.png" alt="YOLOv5" height="40"/>
+  <img src="https://zenoh.io/img/zenoh-logo.svg" alt="Zenoh" height="40"/>
+  <img src="https://www.python.org/static/community_logos/python-logo.png" alt="Python" height="40"/>
+</p>
 
-Each machine is responsible for a specific role:
-- **Host 1** runs AWSIM and YOLOv5 for visual detection and publishes parking spot availability.
-- **Host 2** and **Host 3** run separate instances of Autoware, each controlling one ego vehicle.
-- **Host 1**, **Host 2** and **Host 3** all use Zenoh to communicate with each other.
-
-Topics are isolated using Zenoh namespaces to prevent conflicts, and custom map packages and detection pipelines are used to identify and manage available parking spots in real-time.
-
-This setup is ideal for testing multi-vehicle behavior, decentralized planning, and V2X communication strategies in a scalable simulated environment.
+A distributed, simulation-based system for autonomous valet parking using a distributed setup across two machines, integrating **AWSIM Labs** (Unity-based simulator), **Autoware** (AV Software Stack), **Zenoh** (communication middleware), and **YOLOv5** (object detection) to simulate and coordinate multiple autonomous vehicles navigating and parking in a shared environment.
 
 This README is divided into three parts:  
 1. A brief explanation of the system setup  
 2. Instructions for installing and configuring all required software and components  
 3. Steps to launch and run the full simulation system  
 ---
+
+Topics are isolated using Zenoh namespaces to prevent conflicts, and custom map packages and detection pipelines are used to identify and manage available parking spots in real-time.
 
 ## Table of Contents
 
@@ -52,31 +56,96 @@ This README is divided into three parts:
    - [Step 4: Running Zenoh Bridge](#step-4-running-zenoh-bridge)  
    - [Step 5: Start the Automated Valet Parking Node](#step-5-start-the-automated-valet-parking-node)
   
-## System Setup
-The image below shows all the machines involved in this project. All systems are running Ubuntu 22.04.
+## System Architecture
+This section outlines the software stack, hardware specifications, and machine roles used throughout the project. The architecture is built around a distributed, multi-host setup where each host is responsible for specific tasks such as simulation, perception, control, or coordination.
 
-![image](https://github.com/user-attachments/assets/466b95f2-8b8e-4e33-910b-87cc5aba8b10)
+### Software Stack and Version Overview
 
-### Host 1
-Host 1 is the laptop on the far left. It has a RTX 2060 Max-Q GPU and 24 GB of RAM.
+| **Component**              | **Name**                                | **Version / Branch**                               |
+|---------------------------|-----------------------------------------|----------------------------------------------------|
+| Operating System           | Ubuntu                                  | 22.04 LTS                                          |
+| ROS 2 Distribution         | ROS 2                                   | Humble Hawksbill                                   |
+| Autonomy Stack             | Autoware Universe                       | `release/2024.11` (forked and modified)            |
+| Simulation Engine          | AWSIM Labs                              | Internal version (modified since Nov 2024)         |
+| Middleware Bridge          | Zenoh Bridge for ROS 2                  | `release/1.4.0`                                    |
+| Parking Spot Detection     | YOLO                                     | v5 (Ultralytics, custom-trained)                  |
+| AVP Orchestration Module   | Multi-Vehicle AVP Node (Custom)         | Internal GitHub version (2025)                     |
 
-Its display is extended to the two adjacent monitors:
 
-- **Laptop screen**: runs terminal commands for the Zenoh Bridge, YOLOv5 server, and related processes.
-- **Center monitor**: displays the AWSIM simulation.
-- **Right monitor**: initially used to remotely access Host 2 and Host 3 via AnyDesk, while also relying on each device’s physical keyboard and mouse. However, this setup proved inefficient and disruptive when switching control across machines.
 
-To improve workflow, the software **Barrier** was installed and configured. It allows seamless mouse and keyboard sharing between Host 1, Host 2, and Host 3 using just one input set, significantly streamlining interaction during debugging and simulation.
+### Hardware Specifications of Host Machines Used During Development
 
-### Host 2
-Host 2 is the laptop placed on top of the PC tower. It has a RTX 4050 GPU and 16 GB of RAM. It runs Autoware and the Zenoh Bridge independently. 
+| **Host**        | **Model**                      | **CPU**                    | **GPU**                   | **RAM**  | **OS**          |
+|----------------|--------------------------------|----------------------------|---------------------------|----------|-----------------|
+| Nitro PC        | Acer Nitro N50-640             | Intel Core i7-12700F       | GeForce RTX 3060          | 24 GB    | Ubuntu 22.04    |
+| ROG Laptop      | ASUS ROG Zephyrus G15 GA502IV  | AMD Ryzen 7 4800HS         | GeForce RTX 2060 Max-Q    | 24 GB    | Ubuntu 22.04    |
 
-### Host 3
-Host 3 is the PC tower itself. It has a RTX 3060 GPU and 24 GB of RAM. Its output is shown on the far-right monitor and runs Autoware and the Zenoh Bridge for a second ego vehicle.
+<img width="700" height="500" alt="image" src="https://github.com/user-attachments/assets/f329880a-004f-4e7c-bf47-3b05aeceb701" />
+
+
+### Roles of Each Machine
+
+Each host machine is responsible for a specific set of modules in the distributed AVP system:
+
+- **Host 1 (Nitro PC)** runs:
+  - AWSIM Labs simulation (Unity-based)
+  - YOLOv5-based parking spot detection server
+  - Autoware (vehicle 1 stack)
+  - AVP orchestration node (with **manager nodes** enabled)
+  - Zenoh Bridge (in router mode)
+
+- **Host 2 (ROG Laptop)** runs:
+  - Autoware (vehicle 2 stack, with `/vehicle2` namespace)
+  - A second AVP orchestration node (**no managers**, namespace-aware)
+  - Zenoh Bridge (in router mode)
+
+This setup is ideal for testing multi-vehicle behavior, decentralized planning, and V2X communication strategies in a scalable simulated environment.
 
 ---
 
 ## Software Installation and Setup
+
+Before installing any softwares start by cloning this repository:
+
+```bash
+cd ~
+git clone https://github.com/zubxxr/Multi-Vehicle-Autonomous-Valet-Parking.git
+```
+
+### Barrier & AnyDesk (Shared Control and Remote File Access Across Hosts)
+Managing multiple machines can be tedious, especially when frequently switching between keyboards, mice, or needing to transfer files across systems.
+
+This setup originally used **AnyDesk** for remote control but eventually integrated **Barrier** for a more seamless, hardware-free workflow. While Barrier is ideal for controlling multiple machines with one keyboard and mouse, **AnyDesk remained essential for remote access and file transfer**, particularly after reboots.
+
+#### Barrier: Shared Keyboard and Mouse Across Hosts
+
+Barrier allows a single keyboard and mouse to control multiple systems by moving your cursor between screens as if they were part of one extended desktop. It greatly improves usability when running Autoware and other tools across multiple hosts.
+
+#### Setup Workflow
+
+1. **Initial Setup**:
+   - Connect a keyboard and mouse to each system.
+   - Install and configure **[AnyDesk](https://anydesk.com/en)** on all hosts.
+     - Be sure to **set a password** in AnyDesk so you can connect automatically without needing to manually accept each time.
+   - Install **[Barrier](https://github.com/debauchee/barrier)** on each host.
+   - Set up Barrier:
+     - On **Host 1** (the machine with your keyboard and mouse), set Barrier to run in **server** mode.
+     - On **Host 2**, configure Barrier as a **client** and connect it to Host 1.
+
+2. **Post-Reboot Recovery**:
+   - Barrier may not auto-launch on reboot.
+   - Instead of reconnecting physical peripherals, use **AnyDesk** to remotely access the host and launch Barrier.
+   - Once Barrier is active, full keyboard/mouse control is restored.
+  
+#### AnyDesk: Remote Access and File Transfer
+
+AnyDesk played a crucial supporting role throughout development:
+
+- Remote Access: Host 1 (Nitro PC) operated without a dedicated keyboard or mouse. After reboots, the ROG laptop accessed it via AnyDesk to relaunch Barrier or terminal sessions.
+- File Transfers: AnyDesk made it easy to share files, avoiding USB drives or external cloud services.
+- Lightweight & Convenient: Its low overhead and persistent session features made it ideal for quick setup tasks and ongoing coordination.
+
+> **Note**: While AnyDesk and Barrier are not part of the AVP runtime stack, they were vital for a smooth multi-host development experience. They helped reduce downtime, avoid errors, and speed up debugging during intensive multi-machine coordination.
 
 ### Autoware
 Read the [following](https://autowarefoundation.github.io/autoware-documentation/main/installation/) to see the hardware requirements. 
@@ -99,15 +168,14 @@ To install Autoware, follow the instructions on [this page](https://autowarefoun
 
 ---
 
-### AWSIM
+### AWSIM Labs
 
-Setting up AWSIM requires the installation of Unity. Follow the **"Environment preparation"** section and carefully read the **"ROS 2"** section on [this page](https://autowarefoundation.github.io/AWSIM-Labs/main/GettingStarted/SetupUnityProject/) to get started.  
+Setting up AWSIM Labs requires the installation of Unity. Follow the **"Environment preparation"** section and carefully read the **"ROS 2"** section on [this page](https://autowarefoundation.github.io/AWSIM-Labs/main/GettingStarted/SetupUnityProject/) to get started.  
 
 > The **"ROS 2"** section mentions that your environment should not have ROS 2 sourced.  
 > It is recommended to **remove any ROS 2 sourcing lines from your `~/.bashrc`**, and instead **manually source ROS 2 only when needed**, to avoid environment conflicts.
 
 #### Unity Installation
-
 
 ##### **1. Install Unity Hub from the Package Manager**
 
@@ -143,10 +211,8 @@ cd ~/Unity
 
 These two steps complete the **"Unity installation**" section in [this page](https://autowarefoundation.github.io/AWSIM-Labs/main/GettingStarted/SetupUnityProject/).
 
-
-#### Open AWSIM Project 
-
-Follow the **"Open AWSIM project**" step in [this page](https://autowarefoundation.github.io/AWSIM-Labs/main/GettingStarted/SetupUnityProject/).  
+#### Open AWSIM Labs Project 
+Follow the **"Open AWSIM Labs project**" step in [this page](https://autowarefoundation.github.io/AWSIM Labs-Labs/main/GettingStarted/SetupUnityProject/).  
 
 > **Note:** At the time of writing, the documentation incorrectly tells you to clone:
 > ```bash
@@ -174,40 +240,23 @@ After the final step **Run the demo in Editor**, you will see the simulation run
 ---
 
 ### Zenoh
-This step covers setting up the Zenoh bridge on both hosts using their respective config files. This enables communication between the two ego vehicles simulated in AWSIM and their corresponding Autoware clients.
+This step covers setting up the Zenoh bridge on both hosts using their respective config files. This enables communication between the two ego vehicles simulated in AWSIM Labs and their corresponding Autoware clients.
 
-AWSIM is configured to simulate two ego vehicles, both publishing the same set of ROS 2 topics. To prevent conflicts, each vehicle's topics are manually namespaced:
-- `Vehicle1_EgoVehicle` uses the `/vehicle1` prefix
-- `Vehicle2_EgoVehicle` uses the `/vehicle2` prefix
+AWSIM Labs is configured to simulate two ego vehicles, both publishing identical sets of ROS 2 topics. To avoid topic collisions, the second vehicle is manually namespaced:
+
+- `EgoVehicle_1` runs locally on the same host as AWSIM Labs and does **not** require a namespace (default `/`).
+- `EgoVehicle_2` is bridged to a second machine running Autoware and uses the `/vehicle2` namespace.
 
 This isolates their data and avoids topic collisions.
 
-
-**Example of Host 2 Ego Vehicle (Vehicle1_EgoVehicle):**
+**Example of Host 1 Ego Vehicle (EgoVehicle_1):**
 
 ![image](https://github.com/user-attachments/assets/39639116-1c8b-48a2-88e1-d3f7cd109e05)
 
-**Example of Host 3 Ego Vehicle (Vehicle2_EgoVehicle):**
+**Example of Host 2 Ego Vehicle (EgoVehicle_2):**
 
 ![image](https://github.com/user-attachments/assets/c5a7c99a-d0b0-42b4-86f2-ea0ef9b76d84)
 
-
-#### How Zenoh Bridges Work
-
-The Zenoh bridge is launched on each host to enable bidirectional communication of ROS 2 topics across machines.
-
-- **Host 1 (AWSIM machine)** starts the bridge **first**, using this [config](https://github.com/zubxxr/Multi-Vehicle-Autonomous-Valet-Parking/blob/main/Zenoh-Setup/zenoh-bridge-awsim.json5). It **does not include a namespace**, so it sends *all* topics (for both vehicles) without filtering.
-
-- **Host 2 (Vehicle 1)** starts the bridge **second**, using this [config](https://github.com/zubxxr/Multi-Vehicle-Autonomous-Valet-Parking/blob/main/Zenoh-Setup/zenoh-bridge-vehicle1.json5), which includes the namespace `/vehicle1`. This means:
-  - It **only receives topics** under `/vehicle1`
-  - It can still “see” other topics (like `/vehicle2`), but **cannot subscribe to or use them**
-  - Topics appear without the `/vehicle1` prefix locally, due to Zenoh stripping it automatically
-
-- **Host 3 (Vehicle 2)** follows the same process using the [config](https://github.com/zubxxr/Multi-Vehicle-Autonomous-Valet-Parking/blob/main/Zenoh-Setup/zenoh-bridge-vehicle2.json5) with the `/vehicle2` namespace.
-
-This behavior is intentional and convenient — changing topic names in Autoware directly would be far more complex. Zenoh handles the mapping by stripping the namespace from incoming Zenoh topics before exposing them to the ROS 2 layer.
-
-![image](https://github.com/user-attachments/assets/c12b7d85-80ef-450e-b460-aab95cfb1995)
 
 #### Installing Zenoh ROS 2 Bridge
 
@@ -216,12 +265,13 @@ This behavior is intentional and convenient — changing topic names in Autoware
 2. Clone and build the Zenoh bridge on all hosts:
 
 ```bash
-git clone ~/https://github.com/eclipse-zenoh/zenoh-plugin-ros2dds -b release/1.4.0
+cd ~
+git clone https://github.com/eclipse-zenoh/zenoh-plugin-ros2dds -b release/1.4.0
 cd ~/zenoh-plugin-ros2dds
 rustup update
 rosdep install --from-paths . --ignore-src -r -y
 colcon build --packages-select zenoh_bridge_ros2dds --cmake-args -DCMAKE_BUILD_TYPE=Release
-source $HOME/zenoh-plugin-ros2dds/install/setup.bash
+source ~/zenoh-plugin-ros2dds/install/setup.bash
 ```
 
 3. Find IP Address for Host 1
@@ -240,67 +290,45 @@ Look for your active network interface:
 
 Find the line that looks like this:
 ```
-inet 10.0.0.22/24 ...
+inet 10.0.0.172/24 ...
 ```
 
-The IP address before the slash (`10.0.0.22`) is what you’ll use to connect from the other hosts:
+The IP address before the slash (`10.0.0.172`) is what you’ll use to connect to Host 1 from the other hosts:
 
 ```json
 zenoh_bridge_ros2dds -e tcp/<IP-address>:7447
-zenoh_bridge_ros2dds -e tcp/10.0.0.22:7447
+zenoh_bridge_ros2dds -e tcp/10.0.0.172:7447
 ```
 
 > **Tip:** If you’re unsure which interface is active, check which one shows an `inet` address in the `10.x.x.x` or `192.168.x.x` range and says `state UP`.
 
 
 3. **Launch the Zenoh bridge with host-specific configuration:**
-   ##### A) Host 1 (Running AWSIM)
    
-   Download the config file: [zenoh-bridge-awsim.json5](https://github.com/zubxxr/Multi-Vehicle-Autonomous-Valet-Parking/blob/main/Zenoh-Setup/zenoh-bridge-awsim.json5)
-   
-   ```bash
-   cd ~/zenoh-plugin-ros2dds
-   mv ~/Downloads/zenoh-bridge-awsim.json5 .
-   source $HOME/zenoh-plugin-ros2dds/install/setup.bash
+   Both configs are available in the repository previously cloned. 
+   ##### A) Host 1
 
-   # Test to see if it works
-   zenoh_bridge_ros2dds -c zenoh-bridge-awsim.json5 # This should be executed first
+   ```bash
+   # This should be executed before Host 2
+   source ~/zenoh-plugin-ros2dds/install/setup.bash
+   zenoh_bridge_ros2dds -c ~/Multi-Vehicle-Autonomous-Valet-Parking/zenoh_configs/zenoh-bridge-awsim.json5
    ```
    
-   ##### B) Host 2 (Vehicle 1 / Autoware 1)
-   
-   Download the config file: [zenoh-bridge-vehicle1.json5](https://github.com/zubxxr/Multi-Vehicle-Autonomous-Valet-Parking/blob/main/Zenoh-Setup/zenoh-bridge-vehicle1.json5)
+   ##### B) Host 2
    
    ```bash
-   cd ~/zenoh-plugin-ros2dds
-   mv ~/Downloads/zenoh-bridge-vehicle1.json5 .
-   source $HOME/zenoh-plugin-ros2dds/install/setup.bash
-
-   # Test to see if it works
-   zenoh_bridge_ros2dds -c zenoh-bridge-vehicle1.json5 -e tcp/<IP-address>:7447
-   # Replace <IP-address> with Host 1's IP (e.g., 10.0.0.22)
    # This should be executed after Host 1 is running
+   source ~/zenoh-plugin-ros2dds/install/setup.bash
+   zenoh_bridge_ros2dds -c ~/Multi-Vehicle-Autonomous-Valet-Parking/zenoh_configs/zenoh-bridge-vehicle2.json5 -e tcp/10.0.0.172:7447
    ```
-   
-   ##### C) Host 3 (Vehicle 2 / Autoware 2)
-   
-   Download the config file: [zenoh-bridge-vehicle2.json5](https://github.com/zubxxr/Multi-Vehicle-Autonomous-Valet-Parking/blob/main/Zenoh-Setup/zenoh-bridge-vehicle2.json5)
-   
-   ```bash
-   cd ~/zenoh-plugin-ros2dds
-   mv ~/Downloads/zenoh-bridge-vehicle2.json5 .
-   source $HOME/zenoh-plugin-ros2dds/install/setup.bash
 
-   # Test to see if it works
-   zenoh_bridge_ros2dds -c zenoh-bridge-vehicle2.json5 -e tcp/<IP-address>:7447
-   # Replace <IP-address> with Host 1's IP (e.g., 10.0.0.22)
-   # This should be executed after Host 1 is running
-   ```
+> **Note:** The IP address `10.0.0.172` used in the example above is from my local network setup.  
+> You **must replace it with your own Host 1 IP address** obtained from the `ip a` command.
+
 ---
 
 ### YOLOv5
-
-The YOLOv5 server runs locally on the same machine as AWSIM. It captures frames from the overhead camera in the simulation, performs vehicle detection using YOLOv5, extracts the bounding box coordinates, and sends them to Unity for further processing.
+The YOLOv5 server runs locally on the same machine as AWSIM Labs. It captures frames from the overhead camera in the simulation, performs vehicle detection using YOLOv5, extracts the bounding box coordinates, and sends them to Unity for further processing.
 
 In Unity, custom scripts receive these bounding boxes, draws them on the overhead view, and compares them with predefined parking spot coordinates. If there is any overlap, the spot is marked as **occupied**.
 
@@ -309,39 +337,10 @@ As a result, a ROS 2 topic is published containing a list of currently **empty p
 ![image](https://github.com/user-attachments/assets/fd8fad9a-dfba-4936-b6e1-dfc06943eb2d)
 
 
-#### Download Required Files
-
-Download the following files from this repository:
-
-- [Weight File](https://github.com/zubxxr/Multi-Vehicle-Autonomous-Valet-Parking/blob/main/best.pt)
-- [YOLO Server Script](https://github.com/zubxxr/Multi-Vehicle-Autonomous-Valet-Parking/blob/main/yolo_server.py)
-- [Requirements File](https://github.com/zubxxr/Multi-Vehicle-Autonomous-Valet-Parking/blob/main/requirements.txt)
-
-
 #### Setup Instructions
-Run the following commands in your terminal to set up the YOLO server environment:
+Run the following commands in your terminal to start the YOLOv5 server:
 ```bash
-mkdir ~/YOLO_Server
-cd ~/YOLO_Server
-
-# Move the downloaded files
-mv ~/Downloads/best.pt .
-mv ~/Downloads/yolo_server.py .
-mv ~/Downloads/requirements.txt .
-
-# Create and activate virtual environment
-python3 -m venv yolo_server_env
-source yolo_server_env/bin/activate
-
-# Install dependencies
-pip install -r requirements.txt
-```
-
-To start the server:
-
-```bash
-cd ~/YOLO_Server
-source yolo_server_env/bin/activate
+source ~/Multi-Vehicle-Autonomous-Valet-Parking/yolo_detection_server/venv/bin/activate
 python3 yolo_server.py
 ```
 
@@ -351,39 +350,11 @@ If everything is working correctly, you will see output similar to the image bel
 
 ---
 
-### Optional: Barrier (Shared Keyboard and Mouse Across Hosts)
-
-Managing three separate machines can be cumbersome, especially when constantly switching between physical keyboards and mice. This setup initially used **AnyDesk** to remotely access Host 2 and Host 3, but **AnyDesk** comes with latency and control limitations, making it frustrating to use across multiple systems.
-
-To streamline the workflow, the software **[Barrier](https://github.com/debauchee/barrier)** was used. It allows you to use a single keyboard and mouse to control all hosts, enabling seamless cursor movement between machines as if they were part of one extended desktop.
-
-Ironically, while **AnyDesk** can be frustrating on its own, it actually plays a helpful role in setting up and maintaining **Barrier** — especially after reboots.
-
-#### Setup Workflow
-
-1. **Initial Setup**:
-   - Connect a keyboard and mouse to each system.
-   - Install and configure **AnyDesk** on all hosts.
-     - Be sure to **set a password** in AnyDesk so you can connect automatically without needing to manually accept each time.
-   - Install **Barrier** on each host.
-   - Set up Barrier:
-     - On **Host 1** (the machine with your keyboard and mouse), set Barrier to run in **server** mode.
-     - On **Host 2** and **Host 3**, configure Barrier as **clients** and connect them to Host 1.
-   - If needed, use AnyDesk from Host 1 to remotely access and configure Barrier on the other hosts.
-
-2. **Post-Reboots**:
-   If you reboot a system and **Barrier doesn’t auto-launch**, you don’t need to plug in another keyboard or mouse:
-   - Use **AnyDesk** to connect to the host.
-   - Launch **Barrier** manually from there.
-   - Once Barrier is active, you can close AnyDesk and continue using your shared keyboard and mouse setup as usual.
-
-> **Tip:** AnyDesk is useful not just during the initial setup, but also if Barrier ever fails to launch after a reboot — saving you from having to reconnect physical input devices.
-
-## Launching the Full System: AWSIM, Autoware, Zenoh, and YOLO
+## Launching the Full System: AWSIM Labs, Autoware, Zenoh, and YOLO
 Follow the steps below to launch all components required for the simulation.
 
-### Step 1: Launching AWSIM
-This step covers running AWSIM on Host 1.
+### Step 1: Launching AWSIM Labs
+This step covers running AWSIM Labs on Host 1.
 
 #### Host 1 (ROG Laptop)
 **1. Launch UnityHub**
@@ -392,7 +363,7 @@ This step covers running AWSIM on Host 1.
   ./UnityHub.AppImage
   ```
 
-**2. Launch AWSIM**
+**2. Launch AWSIM Labs**
 See [Final Steps](final-steps).
 
 ### Step 2: Start the YOLO Server
@@ -424,15 +395,15 @@ This step covers running Autoware on Host 2, and similarly, another separate Aut
 
 ### Step 4: Running Zenoh Bridge
 To recap, after the previous steps, the current setup is:
-- AWSIM running on Host 1
+- AWSIM Labs running on Host 1
 - Autoware running on Host 2
 - Autoware running on Host 3
 
 ### Host 1 (ROG Laptop)
 **1. Run Zenoh Bridge**
    ``` bash
-   cd $HOME/zenoh-plugin-ros2dds
-   source $HOME/zenoh-plugin-ros2dds/install/setup.bash
+   cd ~/zenoh-plugin-ros2dds
+   source ~/zenoh-plugin-ros2dds/install/setup.bash
    zenoh_bridge_ros2dds -c zenoh-bridge-awsim.json5
    ```
 
@@ -441,23 +412,23 @@ To recap, after the previous steps, the current setup is:
 
 Use the IP address retrieved from [Installing Zenoh ROS 2 Bridge](#installing-zenoh-ros-2-bridge) step 3. In this case, its 10.0.0.22.
    ``` bash
-   cd $HOME/zenoh-plugin-ros2dds
-   source $HOME/zenoh-plugin-ros2dds/install/setup.bash
+   cd ~/zenoh-plugin-ros2dds
+   source ~/zenoh-plugin-ros2dds/install/setup.bash
    zenoh_bridge_ros2dds -c zenoh-bridge-vehicle1.json5 -e tcp/10.0.0.22:7447
    ```
 ### Host 3 (Nitro PC)
 1. Run Zenoh Bridge and Connect to Host 1
      ``` bash
-     cd $HOME/zenoh-plugin-ros2dds
-     source $HOME/zenoh-plugin-ros2dds/install/setup.bash
+     cd ~/zenoh-plugin-ros2dds
+     source ~/zenoh-plugin-ros2dds/install/setup.bash
      zenoh_bridge_ros2dds -c zenoh-bridge-vehicle2.json5 -e tcp/10.0.0.22:7447
      ```
 
 ### Step 5: Start the Automated Valet Parking Node
 #### Launch Script Sending Available Parking Spots to Autoware
 ```cmd
-cd $HOME/Multi-AVP
-source $HOME/autoware/install/setup.bash
+cd ~/Multi-AVP
+source ~/autoware/install/setup.bash
 source /opt/ros/humble/setup.bash
 source env/bin/activate
 python3 avp_sirc.py
