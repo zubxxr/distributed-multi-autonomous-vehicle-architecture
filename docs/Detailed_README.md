@@ -105,7 +105,7 @@ This setup is ideal for testing multi-vehicle behavior, decentralized planning, 
 
 ## Software Installation and Setup
 
-Before installing any softwares start by cloning this repository:
+Before installing any softwares, start by cloning this repository:
 
 ```bash
 cd ~
@@ -120,6 +120,14 @@ This setup originally used **AnyDesk** for remote control but eventually integra
 #### Barrier: Shared Keyboard and Mouse Across Hosts
 
 Barrier allows a single keyboard and mouse to control multiple systems by moving your cursor between screens as if they were part of one extended desktop. It greatly improves usability when running Autoware and other tools across multiple hosts.
+
+#### AnyDesk: Remote Access and File Transfer
+
+AnyDesk played a crucial supporting role throughout development:
+
+- Remote Access: Host 1 (Nitro PC) operated without a dedicated keyboard or mouse. After reboots, the ROG laptop accessed it via AnyDesk to relaunch Barrier or terminal sessions.
+- File Transfers: AnyDesk made it easy to share files, avoiding USB drives or external cloud services.
+- Lightweight & Convenient: Its low overhead and persistent session features made it ideal for quick setup tasks and ongoing coordination.
 
 #### Setup Workflow
 
@@ -137,14 +145,6 @@ Barrier allows a single keyboard and mouse to control multiple systems by moving
    - Instead of reconnecting physical peripherals, use **AnyDesk** to remotely access the host and launch Barrier.
    - Once Barrier is active, full keyboard/mouse control is restored.
   
-#### AnyDesk: Remote Access and File Transfer
-
-AnyDesk played a crucial supporting role throughout development:
-
-- Remote Access: Host 1 (Nitro PC) operated without a dedicated keyboard or mouse. After reboots, the ROG laptop accessed it via AnyDesk to relaunch Barrier or terminal sessions.
-- File Transfers: AnyDesk made it easy to share files, avoiding USB drives or external cloud services.
-- Lightweight & Convenient: Its low overhead and persistent session features made it ideal for quick setup tasks and ongoing coordination.
-
 > **Note**: While AnyDesk and Barrier are not part of the AVP runtime stack, they were vital for a smooth multi-host development experience. They helped reduce downtime, avoid errors, and speed up debugging during intensive multi-machine coordination.
 
 ### Autoware
@@ -170,16 +170,17 @@ To install Autoware, follow the instructions on [this page](https://autowarefoun
 
 ### AWSIM Labs
 
-Setting up AWSIM Labs requires the installation of Unity. Follow the **"Environment preparation"** section and carefully read the **"ROS 2"** section on [this page](https://autowarefoundation.github.io/AWSIM-Labs/main/GettingStarted/SetupUnityProject/) to get started.  
+Setting up AWSIM Labs requires the installation of Unity. This whole section will reference the [AWSIM Labs Unity Setup](https://autowarefoundation.github.io/AWSIM-Labs/main/GettingStarted/SetupUnityProject/).
+
+Follow the **"Environment preparation"** section and carefully read the **"ROS 2"** section to get started.
 
 > The **"ROS 2"** section mentions that your environment should not have ROS 2 sourced.  
 > It is recommended to **remove any ROS 2 sourcing lines from your `~/.bashrc`**, and instead **manually source ROS 2 only when needed**, to avoid environment conflicts.
 
 #### Unity Installation
 
-##### **1. Install Unity Hub from the Package Manager**
-
-Start by installing Unity Hub to enable login. Follow the **"Install the Unity Hub on Linux"** section on [this page](https://docs.unity3d.com/hub/manual/InstallHub.html).
+1. Install Unity Hub from the Package Manager
+Start by installing Unity Hub to enable login. Follow the **"Install the Unity Hub on Linux"** section in [this page](https://docs.unity3d.com/hub/manual/InstallHub.html).
 
 After installation, launch Unity Hub with:
 
@@ -188,7 +189,7 @@ unityhub
 ```
 Sign in or create a Unity account as prompted.
 
-##### **2. Install Unity Editor Binary**
+2. Install Unity Editor Binary
 Run the following commands to install the Unity Editor:
 ```bash
 mkdir ~/Unity
@@ -205,14 +206,13 @@ The final command installs Unity version `2022.3.62f1`, which at the time of wri
 
 For future use, to launch Unity Hub later, run the following commands in a terminal that does not have ROS 2 sourced:
 ```bash
-cd ~/Unity
-./UnityHub.AppImage
+~/Unity/UnityHub.AppImage
 ```
 
-These two steps complete the **"Unity installation**" section in [this page](https://autowarefoundation.github.io/AWSIM-Labs/main/GettingStarted/SetupUnityProject/).
+These two steps complete the **"Unity installation**" section in the **AWSIM Labs Unity Setup**.
 
 #### Open AWSIM Labs Project 
-Follow the **"Open AWSIM Labs project**" step in [this page](https://autowarefoundation.github.io/AWSIM Labs-Labs/main/GettingStarted/SetupUnityProject/).  
+Follow the **"Open AWSIM Labs project**" step in the **AWSIM Labs Unity Setup**. 
 
 > **Note:** At the time of writing, the documentation incorrectly tells you to clone:
 > ```bash
@@ -228,10 +228,12 @@ In the **"Import external packages"** section, **do not** use the green “Downl
 
 Instead, **download the map package from this link**: [Download Zenoh-AWSIM-Labs-SIRC-June-4-2025.unitypackage](https://drive.google.com/file/d/1JXPlB_EWzItpGQwsTVuQIvlqlbNDCXrp/view?usp=sharing)
 
-#### Final Steps
-Then, follow the remaining steps in that section to import the `.unitypackage` file into Unity.
+Then, follow the remaining steps to import the `.unitypackage` file into Unity.
 
-After the final step **Run the demo in Editor**, you will see the simulation running (see image below), which currently simulates both ego vehicles, which will later be controlled by their own Autoware clients. 
+#### Running the Demo
+Lastly, follow the **Run the demo in Editor** section in the **AWSIM Labs Unity Setup** to run AWSIM Labs.
+
+After successful completion, the simulation will be running (see image below), which will simulates two ego vehicles. These vehicles will later be controlled by their own Autoware clients. 
 
 ![image](https://github.com/user-attachments/assets/fffc4994-3622-4f69-a574-68b61ac352b1)
 
@@ -348,13 +350,13 @@ pip install -r requirements.txt
 
 ---
 
-## Launching the Full System: AWSIM Labs, Autoware, Zenoh, and YOLO
+## Launching the Full System: AWSIM Labs, Autoware, Zenoh, YOLOv5, and AVP Orchestration Node
 Follow the steps below to launch all components required for the simulation.
 
 ### Step 1: Launching AWSIM Labs
 This step covers running AWSIM Labs on Host 1.
 
-#### Host 1 (ROG Laptop)
+#### Host 1
 **1. Launch UnityHub**
   ```bash
   ~/Unity/UnityHub.AppImage
@@ -370,9 +372,7 @@ python3 yolo_server.py
 ```
 
 If everything is working correctly, you will see output similar to the image below:
-
 ![image](https://github.com/user-attachments/assets/346d98c2-df20-48df-8cc1-311367c3021b)
-
 
 ### Step 3: Launching Autoware
 This step covers running Autoware on Host 1 and 2.
@@ -406,7 +406,7 @@ zenoh_bridge_ros2dds -c ~/Multi-Vehicle-Autonomous-Valet-Parking/zenoh_configs/z
 ```
 > Use the IP address retrieved from [Installing Zenoh ROS 2 Bridge](#installing-zenoh-ros-2-bridge) step 3. In this case, its 10.0.0.172.
   
-### Step 5: Start the Automated Valet Parking Node
+### Step 5: Start the Automated Valet Parking Nodes
 
 #### Host 1
 ```bash
