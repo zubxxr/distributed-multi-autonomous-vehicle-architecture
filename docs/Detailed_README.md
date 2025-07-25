@@ -338,15 +338,13 @@ As a result, a ROS 2 topic is published containing a list of currently **empty p
 
 
 #### Setup Instructions
-Run the following commands in your terminal to start the YOLOv5 server:
+Run the following commands to create the virtual environment and install requirements:
 ```bash
+cd ~/Multi-Vehicle-Autonomous-Valet-Parking/yolo_detection_server 
+python3 -m venv venv
 source ~/Multi-Vehicle-Autonomous-Valet-Parking/yolo_detection_server/venv/bin/activate
-python3 yolo_server.py
+pip install -r requirements.txt
 ```
-
-If everything is working correctly, you will see output similar to the image below:
-
-![image](https://github.com/user-attachments/assets/346d98c2-df20-48df-8cc1-311367c3021b)
 
 ---
 
@@ -359,82 +357,72 @@ This step covers running AWSIM Labs on Host 1.
 #### Host 1 (ROG Laptop)
 **1. Launch UnityHub**
   ```bash
-  cd ~/Unity
-  ./UnityHub.AppImage
+  ~/Unity/UnityHub.AppImage
   ```
 
 **2. Launch AWSIM Labs**
 See [Final Steps](final-steps).
 
 ### Step 2: Start the YOLO Server
-```cmd
-cd ~/YOLO_Server
-source yolo_server_env/bin/activate
+```bash
+source ~/Multi-Vehicle-Autonomous-Valet-Parking/yolo_detection_server/venv/bin/activate
 python3 yolo_server.py
 ```
 
-### Step 3: Launching Autoware
-This step covers running Autoware on Host 2, and similarly, another separate Autoware client on Host 3.
+If everything is working correctly, you will see output similar to the image below:
 
-#### Host 2 (Victus Laptop)
-1. Launch Autoware on Host 2  
-     ```bash
-     cd ~/autoware
-     source install/setup.bash
-     ros2 launch autoware_launch e2e_simulator.launch.xml vehicle_model:=awsim_labs_vehicle sensor_model:=awsim_labs_sensor_kit map_path:=/home/Zubair/autoware_map/sirc/ launch_vehicle_interface:=true
-     ```
+![image](https://github.com/user-attachments/assets/346d98c2-df20-48df-8cc1-311367c3021b)
+
+
+### Step 3: Launching Autoware
+This step covers running Autoware on Host 1 and 2.
+
+#### Host 1
+```bash
+source /opt/ros/humble/setup.bash
+source ~/autoware/install/setup.bash
+ros2 launch autoware_launch e2e_simulator.launch.xml vehicle_model:=awsim_labs_vehicle sensor_model:=awsim_labs_sensor_kit map_path:=$HOME/autoware_map/sirc/ launch_vehicle_interface:=true
+```
      
-#### Host 3 (Nitro PC)
-1. Launch Autoware
-     ```bash
-     cd ~/autoware
-     source install/setup.bash
-     ros2 launch autoware_launch e2e_simulator.launch.xml vehicle_model:=awsim_labs_vehicle sensor_model:=awsim_labs_sensor_kit map_path:=/home/ovin/autoware_map/sirc/ launch_vehicle_interface:=true
-     ```
+#### Host 2
+```bash
+source /opt/ros/humble/setup.bash
+source ~/autoware/install/setup.bash
+ros2 launch autoware_launch e2e_simulator.launch.xml vehicle_model:=awsim_labs_vehicle sensor_model:=awsim_labs_sensor_kit map_path:=$HOME/autoware_map/sirc/ launch_vehicle_interface:=true
+```
 ---
 
 ### Step 4: Running Zenoh Bridge
-To recap, after the previous steps, the current setup is:
-- AWSIM Labs running on Host 1
-- Autoware running on Host 2
-- Autoware running on Host 3
-
-### Host 1 (ROG Laptop)
-**1. Run Zenoh Bridge**
-   ``` bash
-   cd ~/zenoh-plugin-ros2dds
-   source ~/zenoh-plugin-ros2dds/install/setup.bash
-   zenoh_bridge_ros2dds -c zenoh-bridge-awsim.json5
-   ```
-
-### Host 2 (Victus Laptop)
-**1. Run Zenoh Bridge and Connect to Host 1**
-
-Use the IP address retrieved from [Installing Zenoh ROS 2 Bridge](#installing-zenoh-ros-2-bridge) step 3. In this case, its 10.0.0.22.
-   ``` bash
-   cd ~/zenoh-plugin-ros2dds
-   source ~/zenoh-plugin-ros2dds/install/setup.bash
-   zenoh_bridge_ros2dds -c zenoh-bridge-vehicle1.json5 -e tcp/10.0.0.22:7447
-   ```
-### Host 3 (Nitro PC)
-1. Run Zenoh Bridge and Connect to Host 1
-     ``` bash
-     cd ~/zenoh-plugin-ros2dds
-     source ~/zenoh-plugin-ros2dds/install/setup.bash
-     zenoh_bridge_ros2dds -c zenoh-bridge-vehicle2.json5 -e tcp/10.0.0.22:7447
-     ```
-
-### Step 5: Start the Automated Valet Parking Node
-#### Launch Script Sending Available Parking Spots to Autoware
-```cmd
-cd ~/Multi-AVP
-source ~/autoware/install/setup.bash
-source /opt/ros/humble/setup.bash
-source env/bin/activate
-python3 avp_sirc.py
+#### Host 1
+```bash
+source ~/zenoh-plugin-ros2dds/install/setup.bash
+zenoh_bridge_ros2dds -c ~/Multi-Vehicle-Autonomous-Valet-Parking/zenoh_configs/zenoh-bridge-awsim.json5
 ```
-This script can be run separately on each host. It subscribes to the empty parking spot ROS2 topic, takes the first parking spot from the list, sets a destination in that parking spot, and parks.
 
+#### Host 2
+```bash
+source ~/zenoh-plugin-ros2dds/install/setup.bash
+zenoh_bridge_ros2dds -c ~/Multi-Vehicle-Autonomous-Valet-Parking/zenoh_configs/zenoh-bridge-vehicle2.json5 -e tcp/10.0.0.172:7447
+```
+> Use the IP address retrieved from [Installing Zenoh ROS 2 Bridge](#installing-zenoh-ros-2-bridge) step 3. In this case, its 10.0.0.172.
+  
+### Step 5: Start the Automated Valet Parking Node
+
+#### Host 1
+```bash
+source /opt/ros/humble/setup.bash
+source ~/autoware/install/setup.bash
+source ~/Multi-AVP/multi_vehicle_avp/install/setup.bash
+ros2 launch avp_node multi_avp_launch.py vehicle_id:=1 enable_managers:=true namespaces:="['vehicle2']"
+```
+
+#### Host 2
+```bash
+source /opt/ros/humble/setup.bash
+source ~/autoware/install/setup.bash
+source ~/Multi-AVP/multi_vehicle_avp/install/setup.bash
+ros2 launch avp_node multi_avp_launch.py vehicle_id:=2
+```
 
 **[Include Picture Here]**
 
