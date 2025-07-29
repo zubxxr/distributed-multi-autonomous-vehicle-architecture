@@ -16,12 +16,26 @@
     "ros2dds": {
       "nodename": "zenoh_vehicle2_bridge",
       "namespace": "/vehicle2",
-      
-      // Set publish priorities to reduce latency for critical topics
       deny: {
       subscribers: ["/sensing/camera/traffic_light/camera_info", "/sensing/camera/traffic_light/image_raw"],
       publishers: ["/sensing/camera/traffic_light/camera_info", "/sensing/camera/traffic_light/image_raw"], 
-      }
+      service_servers: [
+          ".*/set_parameters",
+          ".*/set_parameters_atomically",
+          ".*/describe_parameters",
+          ".*/get_parameter_types",
+          ".*/list_parameters",
+          ".*/get_parameters"
+      ],
+      service_clients: [
+          ".*/set_parameters",
+          ".*/set_parameters_atomically",
+          ".*/describe_parameters",
+          ".*/get_parameter_types",
+          ".*/list_parameters",
+          ".*/get_parameters"
+      ],
+      },
     }
   },
   mode: "client",
