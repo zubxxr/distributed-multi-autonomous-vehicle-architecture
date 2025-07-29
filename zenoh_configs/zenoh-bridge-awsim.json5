@@ -17,24 +17,25 @@
   },
   "plugins": {
     "ros2dds": {
-      "pub_priorities": [
-        "/clock=1:express",
-        "/sensing/lidar/top/pointcloud_raw=2",
-        "/sensing/lidar/top/pointcloud_raw_ex=2",
-        "/sensing/imu/tamagawa/imu_raw=3",
-        "/sensing/gnss/pose=3",
-        "/sensing/gnss/pose_with_covariance=3",
-        "/vehicle/status/velocity_status=4",
-        "/vehicle/status/actuation_status=4",
-        "/vehicle/status/control_mode=4",
-        "/vehicle/status/gear_status=5",
-        "/vehicle/status/steering_status=5",
-        "/vehicle/status/turn_indicators_status=6",
-        "/vehicle/status/hazard_lights_status=6"
-      ],
       deny: {
       subscribers: ["/sensing/camera/traffic_light/camera_info", "/sensing/camera/traffic_light/image_raw"],
       publishers: ["/sensing/camera/traffic_light/camera_info", "/sensing/camera/traffic_light/image_raw"], 
+      service_servers: [
+          ".*/set_parameters",
+          ".*/set_parameters_atomically",
+          ".*/describe_parameters",
+          ".*/get_parameter_types",
+          ".*/list_parameters",
+          ".*/get_parameters"
+      ],
+      service_clients: [
+          ".*/set_parameters",
+          ".*/set_parameters_atomically",
+          ".*/describe_parameters",
+          ".*/get_parameter_types",
+          ".*/list_parameters",
+          ".*/get_parameters"
+      ],
       }
     }
   }
