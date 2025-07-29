@@ -33,8 +33,8 @@
         "/vehicle/status/hazard_lights_status=6"
       ],
       deny: {
-      subscribers: ["/sensing/camera/traffic_light/camera_info", "/vehicle2/sensing/camera/traffic_light/image_raw"],
-      publishers: ["/sensing/camera/traffic_light/camera_info", "/vehicle2/sensing/camera/traffic_light/image_raw"], 
+      subscribers: ["/sensing/camera/traffic_light/camera_info", "/sensing/camera/traffic_light/image_raw"],
+      publishers: ["/sensing/camera/traffic_light/camera_info", "/sensing/camera/traffic_light/image_raw"], 
       }
     }
   }
