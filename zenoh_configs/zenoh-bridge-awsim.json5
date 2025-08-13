@@ -1,3 +1,7 @@
+# Configuration created by Zubair Islam
+# Informed by examples from the Zenoh documentation (Apache License 2.0)
+# and community-shared configurations
+
 {
   "connect": {
     "endpoints": ["tcp/0.0.0.0:7447"]
