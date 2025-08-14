@@ -324,8 +324,6 @@ In Step 2, the Unity Hub AppImage is installed and used for all subsequent proje
     
     <img width="1850" height="973" alt="image" src="https://github.com/user-attachments/assets/7b8835b0-19ca-42c7-8366-dfd3499369a2" />
 
-
-    
     > The game view is expanded by double clicking on the **Game** tab.
 
 ---
@@ -436,13 +434,17 @@ Ensure the following components are set up on each host:
 ### 3.2 Launch Sequence
 1. **Launch AWSIM Labs** (Host 1)
    
-   See [Section 2.3.3 – Step 3](https://github.com/zubxxr/multi-vehicle-framework/tree/main?tab=readme-ov-file#233-awsim-labs-setup) for detailed instructions.
+   See [Section 2.3.3 – Step 3](https://github.com/zubxxr/multi-vehicle-framework/tree/main?tab=readme-ov-file#234-awsim-labs-setup) for detailed instructions.
+
+   <img width="1850" height="973" alt="image" src="https://github.com/user-attachments/assets/7b8835b0-19ca-42c7-8366-dfd3499369a2" />
 
 ---
 
 2. **Launch Autoware**
 
-    **Host 1**  
+    **Host 1**
+   
+    Run the following command:
     ```bash
     source /opt/ros/humble/setup.bash
     source ~/autoware/install/setup.bash
@@ -453,7 +455,9 @@ Ensure the following components are set up on each host:
     <img width="1472" height="802" alt="image" src="https://github.com/user-attachments/assets/247377c5-0288-40a9-8a21-5c3458788c24" />
 
 
-    **Host 2**  
+    **Host 2**
+   
+    Run the following command:
     ```bash
     source /opt/ros/humble/setup.bash
     source ~/autoware/install/setup.bash
@@ -465,14 +469,18 @@ Ensure the following components are set up on each host:
 ---
 
 3. **Run the Zenoh Bridges**
-
-   **Host 1**  
+   
+   **Host 1**
+   
+   Run the following command:
    ```bash
    source ~/zenoh-plugin-ros2dds/install/setup.bash
    zenoh_bridge_ros2dds -c ~/multi-vehicle-avp/zenoh_configs/zenoh-bridge-awsim.json5
    ```
-
-   **Host 2**  
+   
+   **Host 2**
+   
+   Run the following command:
    ```bash
    source ~/zenoh-plugin-ros2dds/install/setup.bash
    zenoh_bridge_ros2dds -c ~/multi-vehicle-avp/zenoh_configs/zenoh-bridge-vehicle2.json5 -e tcp/<IP-address>:7447
@@ -481,6 +489,14 @@ Ensure the following components are set up on each host:
 
    Once both Zenoh Bridges are connected, Autoware on Host 2 immediately receives the initial pose and localizes successfully.
    <img width="1600" height="877" alt="image" src="https://github.com/user-attachments/assets/fc7cf011-eab7-4749-848c-466394413f09" />
+
+### 3.3 Demonstration Scenarios: Goal Navigation & Parking
+
+**Goal:** demonstrate two example scenarios—first, both vehicles navigating to distinct goal poses; second, both vehicles performing parking maneuvers.
+
+1. **Set Distinct Goals**
+   - **Vehicle 1:** use **Goal** tool and engage.
+   - **Vehicle 2:** switch RViz to `/vehicle2` displays and use **Goal** tool again; then engage `/vehicle2`.
 
 ---
 
