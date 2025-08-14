@@ -511,7 +511,7 @@ Ensure the following components are set up on each host:
 This framework was designed to be extended into additional autonomous driving capabilities beyond the current scope. Below are some potential directions for expansion.
 
 ### 4.1 Automated Valet Parking (AVP) — Implemented
-This framework was already extened to develop a complete multi-vehicle AVP implementation, using namespaced Autoware stacks, Zenoh bridging, and parking goal execution.  
+This framework was already extended to develop a complete multi-vehicle AVP implementation, using namespaced Autoware stacks, Zenoh bridging, and parking goal execution.  
 Source code and documentation: [Multi-Vehicle AVP Repository](https://github.com/zubxxr/multi-vehicle-avp)
 
 ### 4.2 Adaptive Cruise Control (ACC)
