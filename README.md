@@ -1,9 +1,12 @@
 # Multi-Host Autonomous Vehicle Simulation Framework
 
-![Autoware](https://img.shields.io/badge/Autoware-2024.11-blue)
-![AWSIM Labs](https://img.shields.io/badge/AWSIM%20Labs-Unity-green)
-![ROS 2 Humble](https://img.shields.io/badge/ROS2-Humble-purple)
-![Zenoh](https://img.shields.io/badge/Zenoh-Middleware-orange)
+![Autoware](https://img.shields.io/badge/Autoware-2024.11-blue?logo=autoware)
+![AWSIM Labs](https://img.shields.io/badge/AWSIM%20Labs-Unity-green?logo=unity)
+![ROS 2 Humble](https://img.shields.io/badge/ROS2-Humble-purple?logo=ros)
+![Zenoh](https://img.shields.io/badge/Zenoh-1.4.0-orange?logo=zenoh)
+![License](https://img.shields.io/badge/License-Apache%202.0-blue?logo=apache)
+
+
 
 This repository provides a setup for running **Autoware** and **AWSIM Labs** in a multi-host, multi-vehicle simulation environment. It includes installation and configuration instructions for:
 - Autoware Universe
