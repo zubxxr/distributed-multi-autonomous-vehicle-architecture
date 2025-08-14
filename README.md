@@ -15,21 +15,30 @@ The framework allows for the simulation of multiple autonomous vehicles across d
 ---
 
 ## Table of Contents
+1. **[System Architecture](#1-system-architecture)**  
+   &nbsp;&nbsp;1.1 [Software Stack and Version Overview](#11-software-stack-and-version-overview)  
+   &nbsp;&nbsp;1.2 [Hardware Specifications](#12-hardware-specifications-of-host-machines-used-during-development)  
+   &nbsp;&nbsp;1.3 [Design Considerations](#13-design-considerations)  
 
-1. [System Architecture](#1-system-architecture)  
-    1.1 [Software Stack and Version Overview](#11-software-stack-and-version-overview)  
-    1.2 [Hardware Specifications](#12-hardware-specifications-of-host-machines-used-during-development)  
-    1.3 [Design Considerations](#13-design-considerations)  
+2. **[Software Installation](#2-software-installation)**  
+   &nbsp;&nbsp;2.1 [Repository](#21-repository)  
+   &nbsp;&nbsp;2.2 [Autoware Universe](#22-autoware-universe)  
+   &nbsp;&nbsp;&nbsp;&nbsp;*2.2.1 [Hardware Requirements](#221-hardware-requirements)*  
+   &nbsp;&nbsp;&nbsp;&nbsp;*2.2.2 [Version Used](#222-version-used)*  
+   &nbsp;&nbsp;&nbsp;&nbsp;*2.2.3 [Increase Swap Memory (Optional but Recommended)](#223-increase-swap-memory-optional-but-recommended)*  
+   &nbsp;&nbsp;&nbsp;&nbsp;*2.2.4 [Installation Steps](#224-installation-steps)*  
+   &nbsp;&nbsp;2.3 [AWSIM Labs](#23-awsim-labs)  
+   &nbsp;&nbsp;&nbsp;&nbsp;*2.3.1 [Networking Configurations](#231-networking-configurations)*  
+   &nbsp;&nbsp;&nbsp;&nbsp;*2.3.2 [Preparation](#232-preparation)*  
+   &nbsp;&nbsp;&nbsp;&nbsp;*2.3.3 [Unity Installation Steps](#233-unity-installation-steps)*  
+   &nbsp;&nbsp;&nbsp;&nbsp;*2.3.4 [AWSIM Labs Setup](#234-awsim-labs-setup)*  
+   &nbsp;&nbsp;2.4 [Zenoh Middleware](#24-zenoh-middleware)  
+   &nbsp;&nbsp;&nbsp;&nbsp;*2.4.1 [Installation Steps](#241-installation-steps)*  
 
-2. [Software Installation](#2-software-installation)  
-    2.1 [Repository](#21-repository)  
-    2.2 [Autoware Universe](#22-autoware-universe)  
-    2.3 [AWSIM Labs](#23-awsim-labs)  
-    2.4 [Zenoh Middleware](#24-zenoh-middleware)  
+3. **[Multi-Vehicle Simulation](#3-multi-vehicle-simulation)**  
+   &nbsp;&nbsp;3.1 [Prerequisites](#31-prerequisites)  
+   &nbsp;&nbsp;3.2 [Launch Sequence](#32-launch-sequence)  
 
-3. [Multi-Vehicle Simulation](#3-multi-vehicle-simulation)  
-    3.1 [Prerequisites](#31-prerequisites)  
-    3.2 [Launch Sequence](#32-launch-sequence)  
 
 ## 1. System Architecture
 This section outlines the software stack, hardware specifications, and machine roles used throughout the project. The architecture is built around a distributed, multi-host setup where each host is responsible for specific tasks such as simulation, perception, control, or coordination.
@@ -237,7 +246,7 @@ Follow the [Environment preparation](https://autowarefoundation.github.io/AWSIM-
 > The **"ROS 2"** section recommends that ROS 2 should **not** be sourced in your environment when running Unity.  
 > **Recommendation:** It is best to **remove ROS 2 sourcing lines from `~/.bashrc`** and manually source ROS 2 only when needed.
 
-#### Unity Installation Steps
+#### 2.3.3 Unity Installation Steps
 Due to authentication requirements, Unity Hub is first installed in Step 1 via the package manager to allow account sign-in. 
 In Step 2, the Unity Hub AppImage is installed and used for all subsequent project work.
 
@@ -282,7 +291,7 @@ In Step 2, the Unity Hub AppImage is installed and used for all subsequent proje
     ```bash
     ~/Unity/UnityHub.AppImage
     ```
-#### 2.3.3 AWSIM Labs Setup
+#### 2.3.4 AWSIM Labs Setup
 1. **Open the AWSIM Labs Project**
    
     Follow the [Open AWSIM Labs project](https://autowarefoundation.github.io/AWSIM-Labs/main/GettingStarted/SetupUnityProject/#open-awsim-project) section.
@@ -424,8 +433,7 @@ Ensure the following components are set up on each host:
 ### 3.2 Launch Sequence
 1. **Launch AWSIM Labs** (Host 1)
    
-   See [Section 2.3.3 – Step 3]() for detailed instructions.
-
+   See [Section 2.3.3 – Step 3](https://github.com/zubxxr/multi-vehicle-framework/tree/main?tab=readme-ov-file#233-awsim-labs-setup) for detailed instructions.
 
 ---
 
