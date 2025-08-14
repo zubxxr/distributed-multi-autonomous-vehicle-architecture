@@ -16,6 +16,9 @@ The framework allows you to simulate multiple autonomous vehicles across differe
 
 ## 1. Software Installation and Setup
 
+
+### Discuss how many hosts are used.
+
 ### 1.1 Repository
 
 
@@ -234,7 +237,7 @@ In Step 2, the Unity Hub AppImage is installed and used for all subsequent proje
    
     In the [Import external packages](https://autowarefoundation.github.io/AWSIM-Labs/main/GettingStarted/SetupUnityProject/#import-external-packages) section, **do not** use the green “Download Map Package” button shown in the docs.
     
-    Instead, **download the map package from this link**: [Download Zenoh-AWSIM-Labs-SIRC-June-4-2025.unitypackage](https://drive.google.com/file/d/1JXPlB_EWzItpGQwsTVuQIvlqlbNDCXrp/view?usp=sharing)
+    Instead, **download the map package from this link**: [Download SIRC_MultiVehicle_URP_v1.0.0.unitypackage](https://drive.google.com/file/d/1s5RB18-M80A2iE-m0wdnAcY-OZj2qmlt/view?usp=sharing)
     
     Then, follow the remaining steps in the section to import the `.unitypackage` file into Unity.
 
@@ -252,15 +255,94 @@ In Step 2, the Unity Hub AppImage is installed and used for all subsequent proje
 
 ### 1.4 Zenoh Middleware
 
-Zenoh is a lightweight communication middleware that bridges ROS 2 topics across machines. In this AVP system, Zenoh enables real-time communication between AWSIM Labs (simulating two ego vehicles) and their respective Autoware instances, which may be running on separate hosts.
+[Zenoh](github.com/eclipse-zenoh/zenoh-plugin-ros2dds) is a lightweight communication middleware designed for data routing across networks. 
+In this framework, Zenoh bridges ROS 2 topics between multiple hosts, enabling real-time communication between AWSIM Labs and their respective Autoware instances running on separate machines.
 
-Zenoh will be used to bridge ROS 2 topics between hosts.
-```bash
-# Download Zenoh
-wget https://github.com/eclipse-zenoh/zenoh/releases/download/0.11.0-rc/zenoh-0.11.0-rc-x86_64-unknown-linux-gnu.zip
-unzip zenoh-0.11.0-rc-x86_64-unknown-linux-gnu.zip -d ~/zenoh
-```
-Create a Zenoh configuration file (`config.json5`) for each host, defining routers or clients depending on your network topology.
+#### Design Considerations
+In this setup, AWSIM Labs simulates **two ego vehicles**, both publishing the same ROS 2 topics. To avoid collisions, one vehicle is assigned a topic namespace:
+
+- **EgoVehicle_1** — connects locally to AWSIM Labs on the same host (no namespace)
+- **EgoVehicle_2** — connects from the second host to AWSIM Labs on the first host with the `/vehicle2` namespace
+
+This ensures all topics are isolated. For the EgoVehicle_2 GameObject, open each relevant child GameObject in Unity and add the `/vehicle2` prefix to all topic names (see example below).
+
+![image](https://github.com/user-attachments/assets/c5a7c99a-d0b0-42b4-86f2-ea0ef9b76d84)
+
+#### Installation Steps
+1. **Install Rust**  
+   Follow the [official installation guide](https://www.rust-lang.org/tools/install).
+   
+2. **Clone the release/1.4.0 version of Zenoh Bridge and Build it on All Hosts**
+
+    ```bash
+    cd ~
+    git clone https://github.com/eclipse-zenoh/zenoh-plugin-ros2dds -b release/1.4.0
+    cd ~/zenoh-plugin-ros2dds
+    rustup update
+    rosdep install --from-paths . --ignore-src -r -y
+    colcon build --packages-select zenoh_bridge_ros2dds --cmake-args -DCMAKE_BUILD_TYPE=Release
+    source ~/zenoh-plugin-ros2dds/install/setup.bash
+    ```
+3. **Find the IP Address for Host 1**
+
+    You will need the **IP address of Host 1's active network interface** (usually Wi-Fi or Ethernet).
+   
+    Run the following:
+    ```bash
+    ip a
+    ```
+    Look for your active interface:
+    - **Wi-Fi** names usually start with `wlp` (e.g., `wlp3s0`)  
+    - **Ethernet** names usually start with `enp` (e.g., `enp2s0`)  
+    - Ignore `lo` (loopback), `docker0`, and `br-...` (Docker bridges)
+  
+    Example output:
+    ```
+    inet 10.0.0.172/24 ...
+    ```
+    
+    In the example output above, the IP before the slash (`10.0.0.172`) would be used for Zenoh connections:
+    ```bash
+    zenoh_bridge_ros2dds -e tcp/<IP-address>:7447
+    # Example:
+    zenoh_bridge_ros2dds -e tcp/10.0.0.172:7447
+    ```
+    > **Tip:** If unsure, choose the interface with an `inet` address in the `10.x.x.x` or `192.168.x.x` range and `state UP`.
+
+4. **Set up CycloneDDS for cross-host communication**
+
+    This step is identical to the CycloneDDS setup performed for AWSIM Labs, but it must also be completed on any additional hosts participating in the Zenoh network.
+
+    Copy the CycloneDDS configuration file to the home directory.
+    ```bash
+    cp ~/multi-vehicle-avp/cyclonedds.xml ~/cyclonedds.xml
+    ```
+    
+    Add the following to the .bashrc file.
+    ```bash
+    export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+    export CYCLONEDDS_URI=/home/your_username/cyclonedds.xml
+    ```
+    > Replace `your_username` with your actual Linux username.
+
+5. **Launch the Zenoh bridge with host-specific configuration**
+   
+   Both configs are available in the repository previously cloned.
+
+   **Host 1** (run this first):
+    ```bash
+    source ~/zenoh-plugin-ros2dds/install/setup.bash
+    zenoh_bridge_ros2dds -c ~/multi-vehicle-framework/zenoh_configs/zenoh-bridge-awsim.json5
+    ```
+
+   **Host 2** (run after Host 1 is running):
+    ```bash
+    source ~/zenoh-plugin-ros2dds/install/setup.bash
+    zenoh_bridge_ros2dds -c ~/multi-vehicle-framework/zenoh_configs/zenoh-bridge-vehicle2.json5 -e tcp/10.0.0.172:7447
+    ```
+
+    > **Note:** The IP `10.0.0.172` above is from an example network and is different for all machines.  
+    > Replace it with the Host 1 IP obtained via `ip a`.
 
 ---
 
