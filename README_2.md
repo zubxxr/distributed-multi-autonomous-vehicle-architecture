@@ -10,7 +10,7 @@ This repository provides a setup for running **Autoware** and **AWSIM Labs** in 
 - AWSIM Labs (Unity-based simulation)
 - Zenoh middleware for distributed ROS 2 topic synchronization
 
-The framework allows you to simulate multiple autonomous vehicles across different physical machines while maintaining synchronized perception, localization, planning, and control.
+The framework allows for the simulation of multiple autonomous vehicles across different physical machines while maintaining synchronized perception, localization, planning, and control.
 
 ---
 
