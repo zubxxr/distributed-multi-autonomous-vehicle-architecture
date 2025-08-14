@@ -1,6 +1,6 @@
 # Multi-Host Autonomous Vehicle Simulation Framework
 
-![Autoware](https://img.shields.io/badge/Autoware-2024.09-blue)
+![Autoware](https://img.shields.io/badge/Autoware-2024.11-blue)
 ![AWSIM Labs](https://img.shields.io/badge/AWSIM%20Labs-Unity-green)
 ![ROS 2 Humble](https://img.shields.io/badge/ROS2-Humble-purple)
 ![Zenoh](https://img.shields.io/badge/Zenoh-Middleware-orange)
@@ -39,6 +39,14 @@ The framework allows for the simulation of multiple autonomous vehicles across d
    &nbsp;&nbsp;3.1 [Prerequisites](#31-prerequisites)  
    &nbsp;&nbsp;3.2 [Launch Sequence](#32-launch-sequence)  
 
+4. **[Future Work & Extensions](#4-future-work--extensions)**  
+   &nbsp;&nbsp;4.1 [Automated Valet Parking (AVP) — Implemented](#41-automated-valet-parking-avp--implemented)  
+   &nbsp;&nbsp;4.2 [Adaptive Cruise Control (ACC)](#42-adaptive-cruise-control-acc)  
+   &nbsp;&nbsp;4.3 [Cooperative Maneuvers](#43-cooperative-maneuvers)  
+   &nbsp;&nbsp;4.4 [Occlusion Handling](#44-occlusion-handling)  
+   &nbsp;&nbsp;4.5 [Distributed Image Stitching & Sensor Fusion](#45-distributed-image-stitching--sensor-fusion)  
+   &nbsp;&nbsp;4.6 [Additional Ideas](#46-additional-ideas)
+   
 ---
 
 ## 1. System Architecture
@@ -497,6 +505,29 @@ Ensure the following components are set up on each host:
 1. **Set Distinct Goals**
    - **Vehicle 1:** use **Goal** tool and engage.
    - **Vehicle 2:** switch RViz to `/vehicle2` displays and use **Goal** tool again; then engage `/vehicle2`.
+
+## 4. Future Work & Extensions
+
+This framework was designed to be extended into additional autonomous driving capabilities beyond the current scope. Below are some potential directions for expansion.
+
+### 4.1 Automated Valet Parking (AVP) — Implemented
+This framework was already extened to develop a complete multi-vehicle AVP implementation, using namespaced Autoware stacks, Zenoh bridging, and parking goal execution.  
+Source code and documentation: [Multi-Vehicle AVP Repository](https://github.com/zubxxr/multi-vehicle-avp)
+
+### 4.2 Adaptive Cruise Control (ACC)
+Enable vehicles to maintain safe distances from others by automatically adjusting their speed based on a detected lead vehicle.
+
+### 4.3 Cooperative Maneuvers
+Implement coordinated behaviors such as merging, overtaking, and intersection handling, where vehicles communicate to negotiate priority and avoid conflicts.
+
+### 4.4 Occlusion Handling
+Integrate strategies to detect and address occluded objects, using multiple viewpoints or predictive modeling to reduce blind spots and improve safety in complex environments.
+
+### 4.5 Distributed Image Stitching & Sensor Fusion
+Enable multiple vehicles or infrastructure-mounted cameras to share and combine visual or LiDAR data in real-time, creating a unified, high-coverage perception view that enhances detection accuracy and environmental awareness.
+
+### 4.6 Additional Ideas
+Further potential extensions, implementation strategies, and detailed discussions can be found in the *Future Work* section of the thesis paper. *(Reference: Thesis Section X.X)*
 
 ---
 
