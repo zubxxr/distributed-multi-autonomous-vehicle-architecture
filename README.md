@@ -26,31 +26,38 @@ The framework allows for the simulation of multiple autonomous vehicles across d
    &nbsp;&nbsp;1.3 [Design Considerations](#13-design-considerations)  
 
 2. **[Software Installation](#2-software-installation)**  
-   &nbsp;&nbsp;2.1 [Repository](#21-repository)  
-   &nbsp;&nbsp;2.2 [Autoware Universe](#22-autoware-universe)  
-   &nbsp;&nbsp;&nbsp;&nbsp;*2.2.1 [Hardware Requirements](#221-hardware-requirements)*  
-   &nbsp;&nbsp;&nbsp;&nbsp;*2.2.2 [Version Used](#222-version-used)*  
-   &nbsp;&nbsp;&nbsp;&nbsp;*2.2.3 [Increase Swap Memory (Optional but Recommended)](#223-increase-swap-memory-optional-but-recommended)*  
-   &nbsp;&nbsp;&nbsp;&nbsp;*2.2.4 [Installation Steps](#224-installation-steps)*  
-   &nbsp;&nbsp;2.3 [AWSIM Labs](#23-awsim-labs)  
-   &nbsp;&nbsp;&nbsp;&nbsp;*2.3.1 [Networking Configurations](#231-networking-configurations)*  
-   &nbsp;&nbsp;&nbsp;&nbsp;*2.3.2 [Preparation](#232-preparation)*  
-   &nbsp;&nbsp;&nbsp;&nbsp;*2.3.3 [Unity Installation Steps](#233-unity-installation-steps)*  
-   &nbsp;&nbsp;&nbsp;&nbsp;*2.3.4 [AWSIM Labs Setup](#234-awsim-labs-setup)*  
-   &nbsp;&nbsp;2.4 [Zenoh Middleware](#24-zenoh-middleware)  
-   &nbsp;&nbsp;&nbsp;&nbsp;*2.4.1 [Installation Steps](#241-installation-steps)*  
+   &nbsp;&nbsp;2.1 [Barrier & AnyDesk (Multi-Host Control and File Access)](#21-barrier--anydesk-multi-host-control-and-file-access)  
+   &nbsp;&nbsp;&nbsp;&nbsp;*2.1.1 [Barrier](#211-barrier)*  
+   &nbsp;&nbsp;&nbsp;&nbsp;*2.1.2 [AnyDesk](#212-anydesk)*  
+   &nbsp;&nbsp;&nbsp;&nbsp;*2.1.3 [Installation](#213-installation)*  
+   &nbsp;&nbsp;2.2 [Repository](#22-repository)  
+   &nbsp;&nbsp;2.3 [Autoware Universe](#23-autoware-universe)  
+   &nbsp;&nbsp;&nbsp;&nbsp;*2.3.1 [Hardware Requirements](#231-hardware-requirements)*  
+   &nbsp;&nbsp;&nbsp;&nbsp;*2.3.2 [Version Used](#232-version-used)*  
+   &nbsp;&nbsp;&nbsp;&nbsp;*2.3.3 [Increase Swap Memory (Optional but Recommended)](#233-increase-swap-memory-optional-but-recommended)*  
+   &nbsp;&nbsp;&nbsp;&nbsp;*2.3.4 [Installation Steps](#234-installation-steps)*  
+   &nbsp;&nbsp;2.4 [AWSIM Labs](#24-awsim-labs)  
+   &nbsp;&nbsp;&nbsp;&nbsp;*2.4.1 [Networking Configurations](#241-networking-configurations)*  
+   &nbsp;&nbsp;&nbsp;&nbsp;*2.4.2 [Preparation](#242-preparation)*  
+   &nbsp;&nbsp;&nbsp;&nbsp;*2.4.3 [Unity Installation Steps](#243-unity-installation-steps)*  
+   &nbsp;&nbsp;&nbsp;&nbsp;*2.4.4 [AWSIM Labs Setup](#244-awsim-labs-setup)*  
+   &nbsp;&nbsp;2.5 [Zenoh Middleware](#25-zenoh-middleware)  
+   &nbsp;&nbsp;&nbsp;&nbsp;*2.5.1 [Installation Steps](#251-installation-steps)*  
 
 3. **[Multi-Vehicle Simulation](#3-multi-vehicle-simulation)**  
    &nbsp;&nbsp;3.1 [Prerequisites](#31-prerequisites)  
    &nbsp;&nbsp;3.2 [Launch Sequence](#32-launch-sequence)  
+   &nbsp;&nbsp;3.3 [Demonstration Scenarios: Goal Navigation & Parking](#33-demonstration-scenarios-goal-navigation--parking)  
 
 4. **[Future Work & Extensions](#4-future-work--extensions)**  
-   &nbsp;&nbsp;4.1 [Automated Valet Parking (AVP) — Implemented](#41-automated-valet-parking-avp--implemented)  
+   &nbsp;&nbsp;4.1 [Autonomous Valet Parking (AVP) — Implemented](#41-autonomous-valet-parking-avp--implemented)  
    &nbsp;&nbsp;4.2 [Adaptive Cruise Control (ACC)](#42-adaptive-cruise-control-acc)  
    &nbsp;&nbsp;4.3 [Cooperative Maneuvers](#43-cooperative-maneuvers)  
    &nbsp;&nbsp;4.4 [Occlusion Handling](#44-occlusion-handling)  
    &nbsp;&nbsp;4.5 [Distributed Image Stitching & Sensor Fusion](#45-distributed-image-stitching--sensor-fusion)  
-   &nbsp;&nbsp;4.6 [Additional Ideas](#46-additional-ideas)
+   &nbsp;&nbsp;4.6 [Additional Ideas](#46-additional-ideas)  
+
+
    
 ---
 
@@ -96,7 +103,42 @@ In this project, the **Nitro PC** (see hardware specs) was powerful enough to ru
 
 ## 2. Software Installation
 
-### 2.1 Repository
+### 2.1 Barrier & AnyDesk (Multi-Host Control and File Access)
+
+When managing multiple machines in a distributed simulation, efficient control and file transfer tools are essential.
+
+#### 2.1.1 Barrier
+Barrier allows one keyboard and mouse to control multiple systems by moving the cursor between screens, as if they were a single extended desktop. This is especially useful when running Autoware and related tools across hosts.
+
+#### 2.1.2 AnyDesk
+AnyDesk provides lightweight remote access and file transfer between hosts.  
+- **Remote Access:** Enables headless operation of Host 1 (Nitro PC), allowing Host 2 (ROG Laptop) to restart Barrier or terminals after reboots.  
+- **File Transfer:** Quick sharing without USB drives or external cloud services.
+
+#### 2.1.3 Installation
+
+1. **Initial Hardware Setup**
+
+   Connect a keyboard and mouse to each host for the first-time configuration.  
+
+2. **Install and Configure AnyDesk**
+
+   Install [AnyDesk](https://anydesk.com/en) on all hosts and set a password for unattended access to enable quick remote connections.  
+
+3. **Install and Configure Barrier**
+
+   Install [Barrier](https://github.com/debauchee/barrier) on all hosts.  
+   - **Host 1:** Run Barrier in **server** mode.  
+   - **Host 2:** Run Barrier in **client** mode and connect to Host 1.  
+
+4. **Post-Reboot Recovery**
+
+   If Barrier does not auto-launch after a reboot, use AnyDesk to remotely access the host and restart Barrier without physically reconnecting peripherals.  
+
+   > Barrier and AnyDesk significantly improved productivity by reducing downtime, avoiding physical reconnections, and streamlining debugging during multi-machine development.
+
+
+### 2.2 Repository
 Clone the main repository for this framework on **all hosts**.
 It contains:
 - Zenoh configuration files (`zenoh_configs/`) for different host setups.
@@ -110,17 +152,17 @@ git clone https://github.com/zubxxr/multi-vehicle-framework.git
 
 ---
 
-### 2.2 Autoware Universe
+### 2.3 Autoware Universe
 Autoware is an open-source autonomous driving stack designed for self-driving vehicles. It provides core modules for localization, perception, planning, and control.
 Autoware must be installed on each host that is responsible for controlling a vehicle.
 
-#### 2.2.1 Hardware Requirements
+#### 2.3.1 Hardware Requirements
 Before starting, review [Autoware’s official hardware requirements](https://autowarefoundation.github.io/autoware-documentation/main/installation/).
 
-#### 2.2.2 Version Used
+#### 2.3.2 Version Used
 This guide uses the Autoware branch [release/2024.11](https://github.com/autowarefoundation/autoware/tree/release/2024.11), with a forked and customized version available here: [Customized Autoware Repository](https://github.com/zubxxr/autoware)
 
-#### 2.2.3 Increase Swap Memory (Optional but Recommended)
+#### 2.3.3 Increase Swap Memory (Optional but Recommended)
 If you encounter memory issues when building Autoware, increase your swap size:
 
 ```bash
@@ -142,7 +184,7 @@ free -h
 ```
 > More info: [Autoware Build Troubleshooting](https://autowarefoundation.github.io/autoware-documentation/main/support/troubleshooting/#build-issues).
 
-#### 2.2.4 Installation Steps
+#### 2.3.4 Installation Steps
 
 The following installation steps are adapted from the [Autoware Universe Source Installation Guide](https://autowarefoundation.github.io/autoware-documentation/main/installation/autoware/source-installation/).
 
@@ -217,7 +259,7 @@ The following installation steps are adapted from the [Autoware Universe Source 
     
 ---
 
-### 2.3 AWSIM Labs
+### 2.4 AWSIM Labs
 [AWSIM Labs](https://autowarefoundation.github.io/AWSIM-Labs/main/) is a Unity-based 3D simulation environment tailored for testing autonomous vehicles using Autoware. It provides realistic visuals, physics, and ROS 2 integration to simulate ego vehicle behavior in structured environments like parking lots.
 > **Recommendation:** Install AWSIM Labs on the most powerful host in your setup (e.g., Nitro PC), as it is the most resource-intensive component in the simulation pipeline.
 
@@ -225,7 +267,7 @@ This section is adapted from the official [AWSIM Labs Unity Setup Guide](https:/
 
 ---
 
-#### 2.3.1 Networking Configurations
+#### 2.4.1 Networking Configurations
 
 1. **Add the following lines to your `~/.bashrc` file**
     ```bash
@@ -254,13 +296,13 @@ This section is adapted from the official [AWSIM Labs Unity Setup Guide](https:/
 
 ---
     
-#### 2.3.2 Preparation
+#### 2.4.2 Preparation
 Follow the [Environment preparation](https://autowarefoundation.github.io/AWSIM-Labs/main/GettingStarted/SetupUnityProject/#environment-preparation) and [ROS 2](https://autowarefoundation.github.io/AWSIM-Labs/main/GettingStarted/SetupUnityProject/#ros-2) sections.
 
 > The **"ROS 2"** section recommends that ROS 2 should **not** be sourced in your environment when running Unity.  
 > **Recommendation:** It is best to **remove ROS 2 sourcing lines from `~/.bashrc`** and manually source ROS 2 only when needed.
 
-#### 2.3.3 Unity Installation Steps
+#### 2.4.3 Unity Installation Steps
 Due to authentication requirements, Unity Hub is first installed in Step 1 via the package manager to allow account sign-in. 
 In Step 2, the Unity Hub AppImage is installed and used for all subsequent project work.
 
@@ -305,7 +347,7 @@ In Step 2, the Unity Hub AppImage is installed and used for all subsequent proje
     ```bash
     ~/Unity/UnityHub.AppImage
     ```
-#### 2.3.4 AWSIM Labs Setup
+#### 2.4.4 AWSIM Labs Setup
 1. **Open the AWSIM Labs Project**
    
     Follow the [Open AWSIM Labs project](https://autowarefoundation.github.io/AWSIM-Labs/main/GettingStarted/SetupUnityProject/#open-awsim-project) section.
@@ -341,7 +383,7 @@ In Step 2, the Unity Hub AppImage is installed and used for all subsequent proje
 
 ---
 
-### 2.4 Zenoh Middleware
+### 2.5 Zenoh Middleware
 
 [Zenoh](https://github.com/eclipse-zenoh/zenoh-plugin-ros2dds) is a lightweight communication middleware designed for data routing across networks. 
 In this framework, Zenoh bridges ROS 2 topics between multiple hosts, enabling real-time communication between AWSIM Labs and their respective Autoware instances running on separate machines.
@@ -356,7 +398,7 @@ This ensures all topics are isolated. For the EgoVehicle_2 GameObject, open each
 
 <img width="1852" height="617" alt="image" src="https://github.com/user-attachments/assets/06b181bd-b86b-4d8a-addf-943e4a6d1da8" />
 
-#### 2.4.1 Installation Steps
+#### 2.5.1 Installation Steps
 1. **Install Rust**  
    Follow the [official installation guide](https://www.rust-lang.org/tools/install).
    
