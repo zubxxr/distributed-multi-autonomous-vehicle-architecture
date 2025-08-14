@@ -91,13 +91,13 @@ git clone https://github.com/zubxxr/multi-vehicle-framework.git
 Autoware is an open-source autonomous driving stack designed for self-driving vehicles. It provides core modules for localization, perception, planning, and control.
 Autoware must be installed on each host that is responsible for controlling a vehicle.
 
-#### Hardware Requirements
+#### 2.2.1 Hardware Requirements
 Before starting, review [Autoware’s official hardware requirements](https://autowarefoundation.github.io/autoware-documentation/main/installation/).
 
-#### Version Used
+#### 2.2.2 Version Used
 This guide uses the Autoware branch [release/2024.11](https://github.com/autowarefoundation/autoware/tree/release/2024.11), with a forked and customized version available here: [Customized Autoware Repository](https://github.com/zubxxr/autoware)
 
-#### Increase Swap Memory (Optional but Recommended)
+#### 2.2.3 Increase Swap Memory (Optional but Recommended)
 If you encounter memory issues when building Autoware, increase your swap size:
 
 ```bash
@@ -119,7 +119,7 @@ free -h
 ```
 > More info: [Autoware Build Troubleshooting](https://autowarefoundation.github.io/autoware-documentation/main/support/troubleshooting/#build-issues).
 
-#### Installation Steps
+#### 2.2.4 Installation Steps
 
 The following installation steps are adapted from the [Autoware Universe Source Installation Guide](https://autowarefoundation.github.io/autoware-documentation/main/installation/autoware/source-installation/).
 
@@ -202,7 +202,7 @@ This section is adapted from the official [AWSIM Labs Unity Setup Guide](https:/
 
 ---
 
-#### Networking Configurations
+#### 2.3.1 Networking Configurations
 
 1. **Add the following lines to your `~/.bashrc` file**
     ```bash
@@ -231,7 +231,7 @@ This section is adapted from the official [AWSIM Labs Unity Setup Guide](https:/
 
 ---
     
-#### Preparation
+#### 2.3.2 Preparation
 Follow the [Environment preparation](https://autowarefoundation.github.io/AWSIM-Labs/main/GettingStarted/SetupUnityProject/#environment-preparation) and [ROS 2](https://autowarefoundation.github.io/AWSIM-Labs/main/GettingStarted/SetupUnityProject/#ros-2) sections.
 
 > The **"ROS 2"** section recommends that ROS 2 should **not** be sourced in your environment when running Unity.  
@@ -282,7 +282,7 @@ In Step 2, the Unity Hub AppImage is installed and used for all subsequent proje
     ```bash
     ~/Unity/UnityHub.AppImage
     ```
-#### AWSIM Labs Setup
+#### 2.3.3 AWSIM Labs Setup
 1. **Open the AWSIM Labs Project**
    
     Follow the [Open AWSIM Labs project](https://autowarefoundation.github.io/AWSIM-Labs/main/GettingStarted/SetupUnityProject/#open-awsim-project) section.
@@ -335,7 +335,7 @@ This ensures all topics are isolated. For the EgoVehicle_2 GameObject, open each
 
 <img width="1852" height="617" alt="image" src="https://github.com/user-attachments/assets/06b181bd-b86b-4d8a-addf-943e4a6d1da8" />
 
-#### Installation Steps
+#### 2.4.1 Installation Steps
 1. **Install Rust**  
    Follow the [official installation guide](https://www.rust-lang.org/tools/install).
    
@@ -424,15 +424,8 @@ Ensure the following components are set up on each host:
 ### 3.2 Launch Sequence
 1. **Launch AWSIM Labs** (Host 1)
    
-   Open Unity Hub:  
-   ```bash
-   ~/Unity/UnityHub.AppImage
-   ```
-   > Make sure ROS 2 is **not** sourced in this terminal.
+   See [Section 2.3.3 – Step 3]() for detailed instructions.
 
-   Follow Step 3 of the [Open AWSIM Project](https://autowarefoundation.github.io/AWSIM-Labs/main/GettingStarted/SetupUnityProject/#open-awsim-project) guide to open the project in Unity.  
-
-   Then follow the [Run the Demo in Editor](https://autowarefoundation.github.io/AWSIM-Labs/main/GettingStarted/SetupUnityProject/#run-the-demo-in-editor) instructions to start the simulation.
 
 ---
 
