@@ -39,6 +39,7 @@ The framework allows for the simulation of multiple autonomous vehicles across d
    &nbsp;&nbsp;3.1 [Prerequisites](#31-prerequisites)  
    &nbsp;&nbsp;3.2 [Launch Sequence](#32-launch-sequence)  
 
+---
 
 ## 1. System Architecture
 This section outlines the software stack, hardware specifications, and machine roles used throughout the project. The architecture is built around a distributed, multi-host setup where each host is responsible for specific tasks such as simulation, perception, control, or coordination.
@@ -430,6 +431,8 @@ Ensure the following components are set up on each host:
 - **Host 1:** Runs AWSIM Labs, Autoware (for Vehicle 1), and Zenoh.  
 - **Host 2:** Runs Autoware (for Vehicle 2) and Zenoh.
 
+---
+
 ### 3.2 Launch Sequence
 1. **Launch AWSIM Labs** (Host 1)
    
@@ -445,6 +448,10 @@ Ensure the following components are set up on each host:
     source ~/autoware/install/setup.bash
     ros2 launch autoware_launch e2e_simulator.launch.xml vehicle_model:=awsim_labs_vehicle sensor_model:=awsim_labs_sensor_kit map_path:=$HOME/autoware_map/sirc/ launch_vehicle_interface:=true
     ```
+    
+    On Host 1, Autoware automatically connects to AWSIM Labs because both components are running on the same machine.
+    <img width="1472" height="802" alt="image" src="https://github.com/user-attachments/assets/247377c5-0288-40a9-8a21-5c3458788c24" />
+
 
     **Host 2**  
     ```bash
@@ -452,6 +459,9 @@ Ensure the following components are set up on each host:
     source ~/autoware/install/setup.bash
     ros2 launch autoware_launch e2e_simulator.launch.xml vehicle_model:=awsim_labs_vehicle sensor_model:=awsim_labs_sensor_kit map_path:=$HOME/autoware_map/sirc/ launch_vehicle_interface:=true
     ```
+    On Host 2, Autoware will remain in a waiting state until it receives an initial pose via Zenoh.
+    <img width="1600" height="880" alt="image" src="https://github.com/user-attachments/assets/b0792fa0-c63d-4c0f-96d8-d63f6aa3e0b0" />
+
 ---
 
 3. **Run the Zenoh Bridges**
@@ -468,6 +478,9 @@ Ensure the following components are set up on each host:
    zenoh_bridge_ros2dds -c ~/multi-vehicle-avp/zenoh_configs/zenoh-bridge-vehicle2.json5 -e tcp/<IP-address>:7447
    ```
    > Replace `<IP-address>` with the Host 1 IP address found in Step 3 of the [Zenoh Installation Steps](https://github.com/zubxxr/multi-vehicle-framework/blob/main/README_2.md#installation-steps-1).
+
+   Once both Zenoh Bridges are connected, Autoware on Host 2 immediately receives the initial pose and localizes successfully.
+   <img width="1600" height="877" alt="image" src="https://github.com/user-attachments/assets/fc7cf011-eab7-4749-848c-466394413f09" />
 
 ---
 
