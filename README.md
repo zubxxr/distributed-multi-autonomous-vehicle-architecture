@@ -240,7 +240,7 @@ This section is adapted from the official [AWSIM Labs Unity Setup Guide](https:/
     
 2. **Set up CycloneDDS**
 
-    Copy the configuration file:
+    Copy the configuration file from the repository to the home directory:
     ```bash
     cp ~/multi-vehicle-framework/cyclonedds.xml ~/cyclonedds.xml
     ```
@@ -401,9 +401,9 @@ This ensures all topics are isolated. For the EgoVehicle_2 GameObject, open each
 
     This step is identical to the CycloneDDS setup performed for AWSIM Labs, but it must also be completed on any additional hosts participating in the Zenoh network.
 
-    Copy the CycloneDDS configuration file to the home directory.
+    Copy the configuration file from the repository to the home directory:
     ```bash
-    cp ~/multi-vehicle-avp/cyclonedds.xml ~/cyclonedds.xml
+    cp ~/multi-vehicle-framework/cyclonedds.xml ~/cyclonedds.xml
     ```
     
     Add the following to the .bashrc file.
