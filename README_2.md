@@ -19,60 +19,66 @@ The framework allows you to simulate multiple autonomous vehicles across differe
 ### 1.1 Autoware Universe
 
 #### Hardware Requirements
-First, refer to [Autoware’s hardware requirements](https://autowarefoundation.github.io/autoware-documentation/main/installation/).
+Before starting, review [Autoware’s official hardware requirements](https://autowarefoundation.github.io/autoware-documentation/main/installation/).
 
 #### Version Used
-The version of Autoware used is [release/2024.11](https://github.com/autowarefoundation/autoware/tree/release/2024.11), but was forked and customized to support the AVP scenario, available [here](https://github.com/zubxxr/autoware).
+This guide uses the Autoware branch [release/2024.11](https://github.com/autowarefoundation/autoware/tree/release/2024.11), with a forked and customized version available here: [Customized Autoware Repository](https://github.com/zubxxr/autoware)
 
-#### Increase Swap Memory
-``` bash
-# Optional: Check the current swapfile
+---
+
+#### Increase Swap Memory (Optional but Recommended)
+If you encounter memory issues when building Autoware, increase your swap size:
+
+```bash
+# Check current swap usage
 free -h
 
-# Remove the current swapfile
+# Remove the existing swapfile
 sudo swapoff /swapfile
 sudo rm /swapfile
 
-# Create a new swapfile
+# Create a new 32GB swapfile
 sudo fallocate -l 32G /swapfile
 sudo chmod 600 /swapfile
 sudo mkswap /swapfile
 sudo swapon /swapfile
 
-# Optional: Check if the change is reflected
+# Verify changes
 free -h
 ```
-> See [this page](https://autowarefoundation.github.io/autoware-documentation/main/support/troubleshooting/#build-issues) for more information.
+> More info: [Autoware Build Troubleshooting](https://autowarefoundation.github.io/autoware-documentation/main/support/troubleshooting/#build-issues).
 
-#### Installation
+#### Installation Steps
 
-1. Install Git
+The following installation steps are adapted from the [Autoware Universe Source Installation Guide](https://autowarefoundation.github.io/autoware-documentation/main/installation/autoware/source-installation/).
+
+1. **Install Git**
     ```bash
     sudo apt-get -y update
     sudo apt-get -y install git
     ```
 
-2. Clone Autoware
+2. **Clone Autoware**
     ```bash
     cd ~
     git clone https://github.com/zubxxr/autoware.git
     cd ~/autoware
     ```
 
-3. Install Dependencies
+3. **Install Development Environment**
     ```bash
     ./setup-dev-env.sh
     ```
-    > If any build issues are encountered, see [here](https://autowarefoundation.github.io/autoware-documentation/main/support/troubleshooting/#build-issues) and [here](https://github.com/zubxxr/multi-vehicle-framework/issues/24).
+    > If any build issues are encountered, see the [Autoware Troubleshooting Guide](https://autowarefoundation.github.io/autoware-documentation/main/support/troubleshooting/#build-issues) and [this issue thread](https://github.com/zubxxr/multi-vehicle-framework/issues/24).
 
-4. Import Source Code
+4. **Import Source Code**
     ```bash
     cd ~/autoware
     mkdir src
     vcs import src < autoware.repos
     ```
 
-5. Install Dependencies
+5. **Install ROS 2 Dependencies**
     ```bash
     source /opt/ros/humble/setup.bash
     sudo apt update && sudo apt upgrade
@@ -80,46 +86,40 @@ free -h
     rosdep install -y --from-paths src --ignore-src --rosdistro $ROS_DISTRO
     ```
 
-6. Setup Ccache
+6. **Setup Ccache**
     ```bash
-    # Install Ccache
     sudo apt update && sudo apt install ccache
-    
-    # Configure Ccache
     mkdir -p ~/.cache/ccache
     touch ~/.cache/ccache/ccache.conf
-    
     echo "max_size = 60G" >> ~/.cache/ccache/ccache.conf
     ```
 
-- Integrate Ccache into Environment
+7. **Integrate Ccache into Environment**
 
-```bash
-# Open .bashrc file
-gedit ~/.bashrc
-```
+    Open the .bashrc file using the Text Editor:
+    ```bash
+    gedit ~/.bashrc
+    ```
+    Add the following lines:
+    ```bash
+    export CC="/usr/lib/ccache/gcc"
+    export CXX="/usr/lib/ccache/g++"
+    export CCACHE_DIR="$HOME/.cache/ccache/"
+    ```
+    Save the file and source it:
+    ```bash
+    source ~/.bashrc
+    ```
+    Verify:
+    ```bash
+    ccache -s
+    ```
 
-- Import the following lines into the file and save it.
-```bash
-export CC="/usr/lib/ccache/gcc"
-export CXX="/usr/lib/ccache/g++"
-export CCACHE_DIR="$HOME/.cache/ccache/"
-```
-
-- Then, reload the .bashrc or restart the terminal session to apply the changes.
-
-- Lastly, verify it works.
-```bash
-ccache -s
-```
-
-7. Build Autoware
+9. **Build Autoware**
     ```bash
     cd ~/autoware
     colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
     ```
-
-
 
 ### 1.2 AWSIM Labs
 1. Install Unity Hub and Unity Editor version **2023.2.6f1**.
