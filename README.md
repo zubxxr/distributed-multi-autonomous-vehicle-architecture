@@ -1,4 +1,6 @@
-# Multi-Host Autonomous Vehicle Simulation Framework
+# Multi-Vehicle AV Framework
+*A Distributed Simulation Framework for Autonomous Vehicles*
+
 
 ![Autoware](https://img.shields.io/badge/Autoware-2024.11-blue?logo=autoware)
 ![AWSIM Labs](https://img.shields.io/badge/AWSIM%20Labs-Unity-green?logo=unity)
