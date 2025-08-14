@@ -16,7 +16,12 @@ The framework allows you to simulate multiple autonomous vehicles across differe
 
 ## 1. Software Installation and Setup
 
-### 1.1 Autoware Universe
+### 1.1 Repository
+
+
+### 1.2 Autoware Universe
+Autoware is an open-source autonomous driving stack designed for full-sized self-driving vehicles. It provides core modules for localization, perception, planning, and control.
+Autoware must be installed on each device that is responsible for controlling a vehicle.
 
 #### Hardware Requirements
 Before starting, review [Autoware’s official hardware requirements](https://autowarefoundation.github.io/autoware-documentation/main/installation/).
@@ -121,16 +126,134 @@ The following installation steps are adapted from the [Autoware Universe Source 
     colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
     ```
 
-### 1.2 AWSIM Labs
-1. Install Unity Hub and Unity Editor version **2023.2.6f1**.
-2. Clone the AWSIM Labs repository:
-```bash
-git clone https://github.com/tier4/AWSIM.git
-```
-3. Open the project in Unity Hub and allow packages to load.
-4. Configure your simulation scene with desired map and ego vehicle setup.
+### 1.3 AWSIM Labs
+[AWSIM Labs](https://autowarefoundation.github.io/AWSIM-Labs/main/) is a Unity-based 3D simulation environment tailored for testing autonomous vehicles using Autoware. It provides realistic visuals, physics, and ROS 2 integration to simulate ego vehicle behavior in structured environments like parking lots.
+> **Recommendation:** Install AWSIM Labs on the most powerful host in your setup (e.g., Nitro PC), as it is the most resource-intensive component in the simulation pipeline.
 
-### 1.3 Zenoh Middleware
+This section is adapted from the official [AWSIM Labs Unity Setup Guide](https://autowarefoundation.github.io/AWSIM-Labs/main/GettingStarted/SetupUnityProject/).
+
+---
+
+#### Networking Configurations
+
+1. **Add the following lines to your `~/.bashrc` file**
+    ```bash
+    if [ ! -e /tmp/cycloneDDS_configured ]; then
+        sudo sysctl -w net.core.rmem_max=2147483647
+        sudo sysctl -w net.ipv4.ipfrag_time=3
+        sudo sysctl -w net.ipv4.ipfrag_high_thresh=134217728     # (128 MB)
+        sudo ip link set lo multicast on
+        touch /tmp/cycloneDDS_configured
+    fi
+    ```
+    
+2. **Set up CycloneDDS**
+
+    Copy the configuration file:
+    ```bash
+    cp ~/multi-vehicle-framework/cyclonedds.xml ~/cyclonedds.xml
+    ```
+
+    Add these lines to your `~/.bashrc`:
+    ```bash
+    export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+    export CYCLONEDDS_URI=/home/your_username/cyclonedds.xml
+    ```
+    > Replace `your_username` with your actual Linux username.
+
+---
+    
+#### Preparation
+Follow the [Environment preparation](https://autowarefoundation.github.io/AWSIM-Labs/main/GettingStarted/SetupUnityProject/#environment-preparation) and [ROS 2](https://autowarefoundation.github.io/AWSIM-Labs/main/GettingStarted/SetupUnityProject/#ros-2) sections.
+
+> The **"ROS 2"** section recommends that ROS 2 should **not** be sourced in your environment when running Unity.  
+> **Recommendation:** It is best to **remove ROS 2 sourcing lines from `~/.bashrc`** and manually source ROS 2 only when needed.
+
+#### Unity Installation Steps
+Due to authentication requirements, Unity Hub is first installed in Step 1 via the package manager to allow account sign-in. 
+In Step 2, the Unity Hub AppImage is installed and used for all subsequent project work.
+
+1. **Install Unity Hub from the Package Manager**
+
+    Follow the **"Install the Unity Hub on Linux"** section in [this page](https://docs.unity3d.com/hub/manual/InstallHub.html).
+
+    After installation, launch Unity Hub with:
+    ```bash
+    unityhub
+    ```
+    Sign in or create a Unity account as prompted.
+
+2. **Install Unity Editor Binary**
+   
+    Run the following commands to install the Unity Editor:
+    ```bash
+    
+    # Create a directory to store Unity-related files
+    mkdir ~/Unity
+    cd ~/Unity
+
+    # Install and configure required libraries
+    sudo apt install fuse libfuse2
+    sudo modprobe fuse
+    sudo groupadd fuse
+    sudo usermod -a -G fuse $USER
+
+    # Download the Unity Hub AppImage
+    wget https://public-cdn.cloud.unity3d.com/hub/prod/UnityHub.AppImage
+
+    # Make the Unity Hub AppImage executable
+    chmod +x UnityHub.AppImage
+    
+    # Launch Unity Hub and directly install Unity Editor version 2022.3.62f1
+    ./UnityHub.AppImage unityhub://2022.3.62f1/d91830b65d9b
+    ```
+    
+    > The final command installs Unity version `2022.3.62f1`, which at the time of writing is the current version.
+
+    For future use, to launch Unity Hub later, run the following command in a terminal that does not have ROS 2 sourced:
+    ```bash
+    ~/Unity/UnityHub.AppImage
+    ```
+#### AWSIM Labs Setup
+1. **Open the AWSIM Labs Project**
+   
+    Follow the [Open AWSIM Labs project](https://autowarefoundation.github.io/AWSIM-Labs/main/GettingStarted/SetupUnityProject/#open-awsim-project) section.
+    > **Note:** Replace the following command:
+    > 
+    > ```bash
+    > git clone https://github.com/autowarefoundation/AWSIM-Labs.git
+    > ```
+    > 
+    > with:
+    > 
+    > ```bash
+    > git clone https://github.com/zubxxr/AWSIM-Labs.git
+    > ```
+
+2. **Import the Environment**
+   
+    In the [Import external packages](https://autowarefoundation.github.io/AWSIM-Labs/main/GettingStarted/SetupUnityProject/#import-external-packages) section, **do not** use the green “Download Map Package” button shown in the docs.
+    
+    Instead, **download the map package from this link**: [Download Zenoh-AWSIM-Labs-SIRC-June-4-2025.unitypackage](https://drive.google.com/file/d/1JXPlB_EWzItpGQwsTVuQIvlqlbNDCXrp/view?usp=sharing)
+    
+    Then, follow the remaining steps in the section to import the `.unitypackage` file into Unity.
+
+3. **Running the Simulation**
+   
+    Lastly, follow the [Run the Demo in Editor](https://autowarefoundation.github.io/AWSIM-Labs/main/GettingStarted/SetupUnityProject/#run-the-demo-in-editor) section.
+    
+    After successful completion, the simulation will be running (see image below), which will simulates two ego vehicles. These vehicles will later be controlled by their own Autoware clients. 
+    
+    ![image](https://github.com/user-attachments/assets/fffc4994-3622-4f69-a574-68b61ac352b1)
+    
+    > The game view is expanded by double clicking on the **Game** tab.
+
+---
+
+### 1.4 Zenoh Middleware
+
+Zenoh is a lightweight communication middleware that bridges ROS 2 topics across machines. In this AVP system, Zenoh enables real-time communication between AWSIM Labs (simulating two ego vehicles) and their respective Autoware instances, which may be running on separate hosts.
+
 Zenoh will be used to bridge ROS 2 topics between hosts.
 ```bash
 # Download Zenoh
