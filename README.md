@@ -330,7 +330,7 @@ In Step 2, the Unity Hub AppImage is installed and used for all subsequent proje
 
 ### 2.4 Zenoh Middleware
 
-[Zenoh](github.com/eclipse-zenoh/zenoh-plugin-ros2dds) is a lightweight communication middleware designed for data routing across networks. 
+[Zenoh](https://github.com/eclipse-zenoh/zenoh-plugin-ros2dds) is a lightweight communication middleware designed for data routing across networks. 
 In this framework, Zenoh bridges ROS 2 topics between multiple hosts, enabling real-time communication between AWSIM Labs and their respective Autoware instances running on separate machines.
 
 #### Design Considerations
