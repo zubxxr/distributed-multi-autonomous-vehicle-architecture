@@ -312,7 +312,9 @@ In Step 2, the Unity Hub AppImage is installed and used for all subsequent proje
     
     After successful completion, the simulation will be running (see image below), which will simulates two ego vehicles. These vehicles will later be controlled by their own Autoware clients. 
     
-    ![image](https://github.com/user-attachments/assets/fffc4994-3622-4f69-a574-68b61ac352b1)
+    <img width="1850" height="973" alt="image" src="https://github.com/user-attachments/assets/7b8835b0-19ca-42c7-8366-dfd3499369a2" />
+
+
     
     > The game view is expanded by double clicking on the **Game** tab.
 
