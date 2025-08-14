@@ -14,15 +14,62 @@ The framework allows you to simulate multiple autonomous vehicles across differe
 
 ---
 
-## 1. Software Installation and Setup
+## 1. System Architecture
+This section outlines the software stack, hardware specifications, and machine roles used throughout the project. The architecture is built around a distributed, multi-host setup where each host is responsible for specific tasks such as simulation, perception, control, or coordination.
 
+### Software Stack and Version Overview
 
-### Discuss how many hosts are used.
+| **Component**              | **Name**                                | **Version / Branch**                               |
+|---------------------------|-----------------------------------------|-----------------------------------------------------|
+| Operating System           | Ubuntu                                  | 22.04 LTS                                          |
+| ROS 2 Distribution         | ROS 2                                   | Humble Hawksbill                                   |
+| Autonomy Stack             | Autoware Universe                       | `release/2024.11` (forked and modified)            |
+| Simulation Engine          | AWSIM Labs                              | Internal version (modified since Nov 2024)         |
+| Middleware Bridge          | Zenoh Bridge for ROS 2                  | `release/1.4.0`                                    |
 
-### 1.1 Repository
+### Hardware Specifications of Host Machines Used During Development
 
+| **Host**        | **Model**                      | **CPU**                    | **GPU**                   | **RAM**  | **OS**          | **NVIDIA Driver** |
+|-----------------|--------------------------------|----------------------------|---------------------------|----------|-----------------|-------------------|
+| Nitro PC        | Acer Nitro N50-640             | Intel Core i7-12700F       | GeForce RTX 3060          | 24 GB    | Ubuntu 22.04    | 575               |
+| ROG Laptop      | ASUS ROG Zephyrus G15 GA502IV  | AMD Ryzen 7 4800HS         | GeForce RTX 2060 Max-Q    | 24 GB    | Ubuntu 22.04    | 575               |
 
-### 1.2 Autoware Universe
+<img width="700" height="500" alt="image" src="https://github.com/user-attachments/assets/f329880a-004f-4e7c-bf47-3b05aeceb701" />
+
+---
+
+### Design Considerations
+This framework is designed for a **multi-host setup** to distribute computational load and enable coordinated operation of multiple ego vehicles in AWSIM Labs.  
+
+- **Host 1**: Runs AWSIM Labs and Autoware for `EgoVehicle_1` (no namespace).  
+- **Host 2**: Runs Autoware for `EgoVehicle_2` (namespaced as `/vehicle2`) and communicates with Host 1 via Zenoh.
+
+Additional hosts may be added for more ego vehicles, following the same pattern as Host 2.  
+
+If your machine is powerful enough, you may choose to run both AWSIM Labs and Autoware on a single host. Otherwise, it's recommended to distribute the workload across multiple machines, especially if you're using laptops or other resource-constrained systems, **which means that it's good to have AWSIM Labs on its own host, and have each other host only run Autoware**.
+
+In this project, the **Nitro PC** (see hardware specs) was powerful enough to run both AWSIM Labs and Autoware for `EgoVehicle_1`, while the ROG Laptop was used to run Autoware for `EgoVehicle_2`, effectively creating a two-host, two-vehicle architecture (multi-vehicle setup).
+
+> If your machine has similar or better specifications than the Nitro PC, you should be able to run both components together without major issues.  
+
+---
+
+## 2. Software Installation
+
+### Repository
+Clone the main repository for this framework, which contains:
+- Zenoh configuration files (`zenoh_configs/`) for different host setups.
+- A `cyclonedds.xml` configuration file for cross-host ROS 2 communication.
+- Map and localization configuration files for Autoware.
+
+```bash
+cd ~
+git clone https://github.com/zubxxr/multi-vehicle-framework.git
+```
+
+---
+
+### Autoware Universe
 Autoware is an open-source autonomous driving stack designed for full-sized self-driving vehicles. It provides core modules for localization, perception, planning, and control.
 Autoware must be installed on each device that is responsible for controlling a vehicle.
 
@@ -31,8 +78,6 @@ Before starting, review [Autoware’s official hardware requirements](https://au
 
 #### Version Used
 This guide uses the Autoware branch [release/2024.11](https://github.com/autowarefoundation/autoware/tree/release/2024.11), with a forked and customized version available here: [Customized Autoware Repository](https://github.com/zubxxr/autoware)
-
----
 
 #### Increase Swap Memory (Optional but Recommended)
 If you encounter memory issues when building Autoware, increase your swap size:
@@ -128,8 +173,10 @@ The following installation steps are adapted from the [Autoware Universe Source 
     cd ~/autoware
     colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
     ```
+    
+---
 
-### 1.3 AWSIM Labs
+### AWSIM Labs
 [AWSIM Labs](https://autowarefoundation.github.io/AWSIM-Labs/main/) is a Unity-based 3D simulation environment tailored for testing autonomous vehicles using Autoware. It provides realistic visuals, physics, and ROS 2 integration to simulate ego vehicle behavior in structured environments like parking lots.
 > **Recommendation:** Install AWSIM Labs on the most powerful host in your setup (e.g., Nitro PC), as it is the most resource-intensive component in the simulation pipeline.
 
@@ -253,7 +300,7 @@ In Step 2, the Unity Hub AppImage is installed and used for all subsequent proje
 
 ---
 
-### 1.4 Zenoh Middleware
+### Zenoh Middleware
 
 [Zenoh](github.com/eclipse-zenoh/zenoh-plugin-ros2dds) is a lightweight communication middleware designed for data routing across networks. 
 In this framework, Zenoh bridges ROS 2 topics between multiple hosts, enabling real-time communication between AWSIM Labs and their respective Autoware instances running on separate machines.
@@ -346,13 +393,13 @@ This ensures all topics are isolated. For the EgoVehicle_2 GameObject, open each
 
 ---
 
-## 2. Multi-Host Setup
+## 3. Multi-Host Setup
 
-### 2.1 Host Roles
+### Host Roles
 - **Host 1:** Runs AWSIM Labs and Autoware for vehicle1.
 - **Host 2:** Runs Autoware for vehicle2.
 
-### 2.2 Zenoh Bridging
+### Zenoh Bridging
 1. On Host 1 (Router mode):
 ```bash
 ~/zenoh/zenohd --config config_router.json5
@@ -363,7 +410,7 @@ This ensures all topics are isolated. For the EgoVehicle_2 GameObject, open each
 ```
 3. Ensure that namespaced topics (e.g., `/vehicle2/`) are bridged correctly.
 
-### 2.3 Launch Sequence
+### Launch Sequence
 1. **Host 1:** Start AWSIM Labs.
 2. **Host 1:** Launch Autoware for vehicle1:
 ```bash
@@ -378,12 +425,12 @@ ros2 launch autoware_launch e2e_simulation.launch.xml vehicle_model:=sample_vehi
 
 ---
 
-## 3. Notes
+## 4. Notes
 - Use **ROS 2 namespaces** for each vehicle to prevent topic collisions.
 - Ensure all hosts are on the same ROS 2 DDS domain.
 - Test Zenoh connectivity before launching Autoware.
 
 ---
 
-## 4. License
-This project is licensed under the MIT License.
+## 5. License
+This project is licensed under the Apache License 2.0.
