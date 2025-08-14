@@ -266,7 +266,7 @@ In this setup, AWSIM Labs simulates **two ego vehicles**, both publishing the sa
 
 This ensures all topics are isolated. For the EgoVehicle_2 GameObject, open each relevant child GameObject in Unity and add the `/vehicle2` prefix to all topic names (see example below).
 
-![image](https://github.com/user-attachments/assets/c5a7c99a-d0b0-42b4-86f2-ea0ef9b76d84)
+<img width="1852" height="617" alt="image" src="https://github.com/user-attachments/assets/06b181bd-b86b-4d8a-addf-943e4a6d1da8" />
 
 #### Installation Steps
 1. **Install Rust**  
