@@ -1,3 +1,5 @@
+# Software Installation
+
 This section covers the installation process for all required software components.  
 
 Except for **AWSIM Labs**, which is installed only on **Host 1**, **Autoware**, **Zenoh**, and tools like **Barrier** and **AnyDesk** are installed on **every host** in the system.
@@ -42,7 +44,7 @@ AnyDesk provides lightweight remote access and file transfer between hosts.
     > Barrier and AnyDesk significantly improved productivity by reducing downtime, avoiding physical reconnections, and streamlining debugging during multi-machine development.
 
 
-### Repository
+### Repository Cloning
 Clone the main repository for this framework on **all hosts**.
 
 ```bash
@@ -165,6 +167,7 @@ The following installation steps are adapted from the [Autoware Universe Source 
     colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
     ```
     
+10. LANELET AND POINTCLOUD
 ---
 
 ### AWSIM Labs
@@ -291,6 +294,8 @@ In Step 2, the Unity Hub AppImage is installed and used for all subsequent proje
 
     > The game view is expanded by double clicking on the **Game** tab.
 
+
+4. LANELET
 ---
 
 ### Zenoh Middleware
