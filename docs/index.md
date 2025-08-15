@@ -21,8 +21,6 @@ It enables simulation of multiple autonomous vehicles across different physical 
 
 ## Getting Started
 
-Before installing or running anything, start with the **[System Architecture](framework/system-architecture.md)** to understand how the components fit together, what hardware is recommended, and the roles of each host in the distributed setup.
+Before installing or running anything, start with the **[System Architecture](GettingStarted/SystemArchitecture/index.md)** to understand how the components fit together, what hardware is recommended, and the roles of each host in the distributed setup.
 
-Once you’re familiar with the architecture, continue with the **[Software Installation](framework/software-installation.md)** guide to set up Autoware Universe, AWSIM Labs, and Zenoh on your machines.
-
-
+Once you’re familiar with the architecture, continue with the **[Software Installation](GettingStarted/SoftwareInstallation/index.md)** guide to set up Autoware Universe, AWSIM Labs, and Zenoh on your machines.

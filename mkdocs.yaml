@@ -59,17 +59,23 @@ nav:
   - Home: index.md
 
   - Getting Started:
-      - System Architecture: framework/system-architecture.md
-      - Software Installation: framework/software-installation.md
-      - Multi-Vehicle Simulation: framework/multi-vehicle-simulation.md
-      - Scaling to More Vehicles/Hosts: framework/scaling-multi-vehicle.md
+      - System Architecture: GettingStarted/SystemArchitecture/index.md
+      - Software Installation: GettingStarted/SoftwareInstallation/index.md
+      - Multi-Vehicle Simulation: GettingStarted/Multi-VehicleSimulation/index.md
+      - Scaling to More Vehicles: GettingStarted/ScalingToMoreVehicles/index.md
 
   - Extensions:
-    - Multi-Vehicle AVP (Autonomous Valet Parking):
-      - Overview: extensions/avp/overview.md
-      - Workspace & Launch: avp/workspace-launch.md
-      - Troubleshooting: avp/troubleshooting.md
-    - Future Work: extensions/future-work.md
+    - Multi-Vehicle AVP (Autonomous Valet Parking): Extensions/Multi-VehicleAVP/index.md
+    - Future Work: Extensions/FutureWork/index.md
   - About:
-      - License: about/license.md
-      - Acknowledgements: about/acknowledgements.md
+      - License: About/License/index.md
+      - Acknowledgements: About/Acknowledgements/index.md
+
+
+
+  # - Extensions:
+  #   - Multi-Vehicle AVP (Autonomous Valet Parking):
+  #     - Overview: extensions/avp/overview.md
+  #     - Workspace & Launch: avp/workspace-launch.md
+  #     - Troubleshooting: avp/troubleshooting.md
+  #   - Future Work: Extensions/FutureWork/index.md

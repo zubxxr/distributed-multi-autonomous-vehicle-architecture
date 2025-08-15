@@ -9,9 +9,11 @@ Ensure the following components are set up on each host:
 ### Launch Sequence
 1. **Launch AWSIM Labs** (Host 1)
    
-      See [Section 2.3.3 – Step 3](https://github.com/zubxxr/multi-vehicle-framework/tree/main?tab=readme-ov-file#234-awsim-labs-setup) for detailed instructions.
+      See [AWSIM Labs Setup](software-installation.md/#awsim-labs-setup) for detailed instructions.
 
-      ![Multi-Vehicle Simulation Diagram](images/multi_vehicle_simulation.png)
+      
+
+      ![Multi-Vehicle Simulation Diagram](multi_vehicle_simulation.png)
 
 
 2. **Launch Autoware**
@@ -28,7 +30,7 @@ Ensure the following components are set up on each host:
     
     On Host 1, Autoware automatically connects to AWSIM Labs because both components are running on the same machine.
     
-    ![image](images/vehicle1_localized.png)
+    ![image](vehicle1_localized.png)
 
 
     **Host 2**
@@ -42,7 +44,7 @@ Ensure the following components are set up on each host:
     ```
     On Host 2, Autoware will remain in a waiting state until it receives an initial pose via Zenoh.
 
-    ![image](images/vehicle2_waiting.png)
+    ![image](vehicle2_waiting.png)
 
 
 3. **Run the Zenoh Bridges**
@@ -64,11 +66,11 @@ Ensure the following components are set up on each host:
       source ~/zenoh-plugin-ros2dds/install/setup.bash
       zenoh_bridge_ros2dds -c ~/multi-vehicle-avp/zenoh_configs/zenoh-bridge-vehicle2.json5 -e tcp/<IP-address>:7447
       ```
-      > Replace `<IP-address>` with the Host 1 IP address found in Step 3 of the [Zenoh Installation Steps](https://github.com/zubxxr/multi-vehicle-framework/blob/main/README_2.md#installation-steps-1).
+      > Replace `<IP-address>` with the Host 1 IP address found in Step 3 of the [Zenoh Installation Steps](software-installation.md/#installation-steps_1).
 
       Once both Zenoh Bridges are connected, Autoware on Host 2 immediately receives the initial pose and localizes successfully.
       
-      ![image](images/vehicle2_localized.png)
+      ![image](vehicle2_localized.png)
 
 
 ### Demonstration Scenarios: Goal Navigation & Parking
@@ -80,5 +82,8 @@ Ensure the following components are set up on each host:
    - **Vehicle 1:** use **Goal** tool and engage.
    - **Vehicle 2:** switch RViz to `/vehicle2` displays and use **Goal** tool again; then engage `/vehicle2`.
 
+---
 
-   
+**Next Steps:** To scale this setup beyond two vehicles, see [Scaling to More Vehicles/Hosts](../ScalingToMoreVehicles/index.md).  
+
+

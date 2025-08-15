@@ -1,10 +1,8 @@
 # Scaling to More Vehicles/Hosts
 
-The framework can be extended beyond two vehicles by adding more hosts and namespaces.  
+The framework can be extended beyond two vehicles by adding more hosts and namespaces. However, during testing with the available machines, certain issues were encountered that impacted performance.  
 
-During testing with the available machines, certain issues were encountered that impacted performance.  
-
-Despite these constraints, the framework remained fully operational.
+Despite these constraints, the framework remained fully operational. Instructions are given below, as well as an example using a third host.
 
 ## General Scaling Procedure
 
@@ -26,13 +24,14 @@ To extend the system, replicate the following for each additional vehicle/host:
 
 ## Third Host Example
 
-To evaluate the scalability of the proposed architecture, a **third host (Victus)** was introduced alongside the existing **Nitro** and **ROG** hosts. The Victus specifications are detailed in *Table 3.2* of the main documentation.
+To evaluate the scalability of the proposed architecture, a **third host (Victus Laptop)** was introduced alongside the existing **Nitro** and **ROG** hosts.
 
-## Hardware Specification of Third Host
+### Hardware Specification of Third Host
 
 | **Host**   | **Model**                     | **CPU**              | **GPU**                 | **RAM** | **OS**        | **NVIDIA Driver** |
 |------------|-------------------------------|----------------------|-------------------------|---------|---------------|-------------------|
 | Victus Laptop   | HP Victus 15-fa1xxx            | Intel Core i5-12500H | GeForce RTX 4050        | 16 GB   | Ubuntu 22.04  | 575               |
+
 
 A **third ego vehicle** was also added to the Unity simulation.
 

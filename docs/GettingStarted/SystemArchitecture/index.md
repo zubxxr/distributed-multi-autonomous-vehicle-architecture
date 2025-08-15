@@ -39,7 +39,7 @@ See [Required PC Specs](https://autowarefoundation.github.io/AWSIM-Labs/main/Get
 | Nitro PC   | Acer Nitro N50-640            | Intel Core i7-12700F | GeForce RTX 3060        | 24 GB   | Ubuntu 22.04  | 575               |
 | ROG Laptop | ASUS ROG Zephyrus G15 GA502IV | AMD Ryzen 7 4800HS   | GeForce RTX 2060 Max-Q  | 24 GB   | Ubuntu 22.04  | 575               |
 
-![image](images/computer_setup.png)
+![image](computer_setup.png)
 
 
 
@@ -66,4 +66,4 @@ See [Scaling for Multiple Vehicles](scaling-multi-vehicle.md).
 
 ---
 
-**Proceed to [Software Installation](software-installation.md)** once you understand the overall setup and machine roles.
+**Next Steps:** Proceed to [Software Installation](../SoftwareInstallation/index.md) once you understand the overall setup and machine roles.

@@ -287,7 +287,7 @@ In Step 2, the Unity Hub AppImage is installed and used for all subsequent proje
     
     After successful completion, the simulation will be running with two ego vehicles. These vehicles will later be controlled by their own Autoware clients. 
     
-    ![Multi-Vehicle Simulation Diagram](images/multi_vehicle_simulation.png)
+    ![Multi-Vehicle Simulation Diagram](multi_vehicle_simulation.png)
 
     > The game view is expanded by double clicking on the **Game** tab.
 
@@ -306,7 +306,7 @@ In this setup, AWSIM Labs simulates **two ego vehicles**, both publishing the sa
 
 This ensures all topics are isolated. For the EgoVehicle_2 GameObject, open each relevant child GameObject in Unity and add the `/vehicle2` prefix to all topic names.
 
-![Topics Prefixing](images/topic_prefixing.png)
+![Topics Prefixing](topic_prefixing.png)
 
 #### Installation Steps
 
@@ -399,8 +399,4 @@ This ensures all topics are isolated. For the EgoVehicle_2 GameObject, open each
 
 ---
 
----
-
-Once all components are installed and configured, you’re ready to start the simulation.
-
-**Proceed to [Multi-Vehicle Simulation](multi-vehicle-simulation.md)** for instructions.
+**Next Steps:** Proceed to [Multi-Vehicle Simulation](../Multi-VehicleSimulation/index.md) to start the simulation.
