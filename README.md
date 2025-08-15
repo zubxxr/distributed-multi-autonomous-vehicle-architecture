@@ -19,7 +19,7 @@ It enables simulation of multiple autonomous vehicles across different physical 
 
 ---
 
-## Documentation
+## Getting Started and Documentation
 
 [https://zubxxr.github.io/multi-vehicle-framework](https://zubxxr.github.io/multi-vehicle-framework)
 
