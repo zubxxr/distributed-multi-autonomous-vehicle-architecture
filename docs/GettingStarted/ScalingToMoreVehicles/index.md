@@ -42,13 +42,16 @@ A **third ego vehicle** was also added to the Unity simulation.
 ### Configuration Steps
 
 1. Added a new ego vehicle GameObject in Unity, with all published topics namespaced under `/vehicle3`.
+
 2. Created a dedicated clock publisher at `/vehicle3/clock` via the `Vehicle3_ClockPublisher` script.
 
-   **Figure 2:** *Parking spot publisher for Vehicle 3* (placeholder)
+
+      ![image](third_egovehicle_created.png)
+
 
 3. Modified the UI camera bridge (`UICameraBridge` script) to adjust coordinate offsets for Vehicle 3 visualization.
 
-   **Figure 3:** *Camera adjustments for Vehicle 3 visualization* (placeholder)
+      ![image](modify_ui_camera.png)
 
 ---
 
@@ -56,13 +59,23 @@ A **third ego vehicle** was also added to the Unity simulation.
 
 After launching the simulation, all three vehicles were visible and initialized.
 
-**Figure 4:** *Simulation started with all three vehicles active* (placeholder)
+   ![image](three_vehicles_simulated.png)
 
-Each vehicle localized successfully:
 
-- **Figure 5:** Vehicle 1 Localized (Nitro PC) *(placeholder)*
-- **Figure 6:** Vehicle 2 Localized (ROG Laptop) *(placeholder)*
-- **Figure 7:** Vehicle 3 Localized (Victus Laptop) *(placeholder)*
+After the Zenoh connections, each vehicle localized successfully inside Autoware.
+
+   **Vehicle 1 (Host 1)**
+
+   ![image](vehicle1_localized.png)
+
+   **Vehicle 2 (Host 2)**
+
+   ![image](vehicle2_localized.png)
+
+   **Vehicle 3 (Host 3)**
+
+   ![image](vehicle3_localized.png)
+
 
 ---
 
