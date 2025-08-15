@@ -1,14 +1,12 @@
-## 3. Multi-Vehicle Simulation
-
-### 3.1 Prerequisites
+### Prerequisites
 Ensure the following components are set up on each host:
 
-- **Host 1:** Runs AWSIM Labs, Autoware (for Vehicle 1), and Zenoh.  
-- **Host 2:** Runs Autoware (for Vehicle 2) and Zenoh.
+- **Host 1:** AWSIM Labs, Autoware, and Zenoh
+- **Host 2:** Autoware and Zenoh
 
 ---
 
-### 3.2 Launch Sequence
+### Launch Sequence
 1. **Launch AWSIM Labs** (Host 1)
    
       See [Section 2.3.3 – Step 3](https://github.com/zubxxr/multi-vehicle-framework/tree/main?tab=readme-ov-file#234-awsim-labs-setup) for detailed instructions.
@@ -21,6 +19,7 @@ Ensure the following components are set up on each host:
     **Host 1**
    
     Run the following command:
+
     ```bash
     source /opt/ros/humble/setup.bash
     source ~/autoware/install/setup.bash
@@ -35,6 +34,7 @@ Ensure the following components are set up on each host:
     **Host 2**
    
     Run the following command:
+
     ```bash
     source /opt/ros/humble/setup.bash
     source ~/autoware/install/setup.bash
@@ -59,6 +59,7 @@ Ensure the following components are set up on each host:
       **Host 2**
       
       Run the following command:
+
       ```bash
       source ~/zenoh-plugin-ros2dds/install/setup.bash
       zenoh_bridge_ros2dds -c ~/multi-vehicle-avp/zenoh_configs/zenoh-bridge-vehicle2.json5 -e tcp/<IP-address>:7447
@@ -70,10 +71,14 @@ Ensure the following components are set up on each host:
       ![image](images/vehicle2_localized.png)
 
 
-### 3.3 Demonstration Scenarios: Goal Navigation & Parking
+### Demonstration Scenarios: Goal Navigation & Parking
 
 **Goal:** demonstrate two example scenarios—first, both vehicles navigating to distinct goal poses; second, both vehicles performing parking maneuvers.
 
 1. **Set Distinct Goals**
+
    - **Vehicle 1:** use **Goal** tool and engage.
    - **Vehicle 2:** switch RViz to `/vehicle2` displays and use **Goal** tool again; then engage `/vehicle2`.
+
+
+   

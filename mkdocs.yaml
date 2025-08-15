@@ -14,16 +14,21 @@ theme:
     - search.highlight
     - content.code.copy
     - content.tabs.link
-    - toc.integrate
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
       primary: indigo
       accent: indigo
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
       primary: indigo
       accent: indigo
+      toggle:
+        icon: material/weather-night
+        name: Switch to light mode
   icon:
     repo: fontawesome/brands/github
 
@@ -48,23 +53,23 @@ markdown_extensions:
   - pymdownx.keys
   - pymdownx.tabbed:
       alternate_style: true
+    
 
 nav:
   - Home: index.md
+
   - Getting Started:
-      - Quick Start: getting-started/quick-start.md
-      - Requirements: getting-started/requirements.md
-  - Framework:
       - System Architecture: framework/system-architecture.md
       - Software Installation: framework/software-installation.md
       - Multi-Vehicle Simulation: framework/multi-vehicle-simulation.md
-  - AVP (This Repo):
-      - Overview: avp/overview.md
-      - Workspace & Launch: avp/workspace-launch.md
-      - Scenarios: avp/scenarios.md
-      - Troubleshooting: avp/troubleshooting.md
+      - Scaling to More Vehicles/Hosts: framework/scaling-multi-vehicle.md
+
   - Extensions:
-      - Future Work & Extensions: extensions/future-work.md
+    - Multi-Vehicle AVP (Autonomous Valet Parking):
+      - Overview: extensions/avp/overview.md
+      - Workspace & Launch: avp/workspace-launch.md
+      - Troubleshooting: avp/troubleshooting.md
+    - Future Work: extensions/future-work.md
   - About:
       - License: about/license.md
       - Acknowledgements: about/acknowledgements.md

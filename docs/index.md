@@ -7,25 +7,22 @@
 ![Zenoh](https://img.shields.io/badge/Zenoh-1.4.0-orange?logo=zenoh)
 ![License](https://img.shields.io/badge/License-Apache%202.0-blue?logo=apache)
 
-This repository provides a setup for running **Autoware** and **AWSIM Labs** in a multi-host, multi-vehicle simulation environment. It includes installation and configuration instructions for:
-- Autoware Universe
-- AWSIM Labs (Unity-based simulation)
-- Zenoh middleware for distributed ROS 2 topic synchronization
+The **Multi-Vehicle AV Framework** provides a complete setup for running **Autoware** and **AWSIM Labs** in a multi-host, multi-vehicle simulation environment.  
 
-The framework allows simulation of multiple autonomous vehicles across different physical machines while maintaining synchronized perception, localization, planning, and control.
+It enables simulation of multiple autonomous vehicles across different physical machines while maintaining synchronized perception, localization, planning, and control.
 
-## Docs Map
-- **Framework**
-  - [System Architecture](framework/system-architecture.md)
-  - [Software Installation](framework/software-installation.md)
-  - [Multi-Vehicle Simulation](framework/multi-vehicle-simulation.md)
-- **AVP (Automated Valet Parking)**
-  - [Overview](../avp/overview.md)
-  - [Workspace & Launch](../avp/workspace-launch.md)
-  - [Scenarios](../avp/scenarios.md)
-  - [Troubleshooting](../avp/troubleshooting.md)
-- **Extensions**
-  - [Future Work & Extensions](extensions/future-work.md)
-- **About**
-  - [License](about/license.md)
-  - [Acknowledgements](about/acknowledgements.md)
+## Features
+- Distributed simulation across multiple hosts
+- Multi-vehicle Automated Valet Parking (AVP) coordination
+- Zenoh-based ROS 2 topic synchronization
+- Supports Ubuntu 22.04 (ROS 2 Humble) and Unity-based AWSIM Labs
+
+---
+
+## Getting Started
+
+Before installing or running anything, start with the **[System Architecture](framework/system-architecture.md)** to understand how the components fit together, what hardware is recommended, and the roles of each host in the distributed setup.
+
+Once you’re familiar with the architecture, continue with the **[Software Installation](framework/software-installation.md)** guide to set up Autoware Universe, AWSIM Labs, and Zenoh on your machines.
+
+

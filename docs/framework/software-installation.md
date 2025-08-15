@@ -1,13 +1,15 @@
-## 2. Software Installation
+This section covers the installation process for all required software components.  
 
-### 2.1 Barrier & AnyDesk (Multi-Host Control and File Access)
+Except for **AWSIM Labs**, which is installed only on **Host 1**, **Autoware**, **Zenoh**, and tools like **Barrier** and **AnyDesk** are installed on **every host** in the system.
+
+### Barrier & AnyDesk (Multi-Host Control and File Access)
 
 When managing multiple machines in a distributed simulation, efficient control and file transfer tools are essential.
 
-#### 2.1.1 Barrier
+#### Barrier
 Barrier allows one keyboard and mouse to control multiple systems by moving the cursor between screens, as if they were a single extended desktop. This is especially useful when running Autoware and related tools across hosts.
 
-#### 2.1.2 AnyDesk
+#### AnyDesk
 AnyDesk provides lightweight remote access and file transfer between hosts.  
 
 - **Remote Access:**
@@ -16,7 +18,7 @@ AnyDesk provides lightweight remote access and file transfer between hosts.
 - **File Transfer:**
     Quick sharing without USB drives or external cloud services.
 
-#### 2.1.3 Installation
+#### Installation
 
 1. **Initial Hardware Setup**
 
@@ -40,7 +42,7 @@ AnyDesk provides lightweight remote access and file transfer between hosts.
     > Barrier and AnyDesk significantly improved productivity by reducing downtime, avoiding physical reconnections, and streamlining debugging during multi-machine development.
 
 
-### 2.2 Repository
+### Repository
 Clone the main repository for this framework on **all hosts**.
 
 ```bash
@@ -56,17 +58,17 @@ The repository contains:
 
 ---
 
-### 2.3 Autoware Universe
+### Autoware Universe
 Autoware is an open-source autonomous driving stack designed for self-driving vehicles. It provides core modules for localization, perception, planning, and control.
 Autoware must be installed on each host that is responsible for controlling a vehicle.
 
-#### 2.3.1 Hardware Requirements
+#### Hardware Requirements
 Before starting, review [Autoware’s official hardware requirements](https://autowarefoundation.github.io/autoware-documentation/main/installation/).
 
-#### 2.3.2 Version
+#### Version
 This guide uses the Autoware branch [release/2024.11](https://github.com/autowarefoundation/autoware/tree/release/2024.11), with a forked and customized version available here: [Customized Autoware Repository](https://github.com/zubxxr/autoware)
 
-#### 2.3.3 Increase Swap Memory (Optional but Recommended)
+#### Increase Swap Memory (Optional but Recommended)
 If you encounter memory issues when building Autoware, increase your swap size:
 
 ```bash
@@ -88,7 +90,7 @@ free -h
 ```
 > More info: [Autoware Build Troubleshooting](https://autowarefoundation.github.io/autoware-documentation/main/support/troubleshooting/#build-issues).
 
-#### 2.3.4 Installation Steps
+#### Installation Steps
 
 The following installation steps are adapted from the [Autoware Universe Source Installation Guide](https://autowarefoundation.github.io/autoware-documentation/main/installation/autoware/source-installation/).
 
@@ -165,7 +167,7 @@ The following installation steps are adapted from the [Autoware Universe Source 
     
 ---
 
-### 2.4 AWSIM Labs
+### AWSIM Labs
 [AWSIM Labs](https://autowarefoundation.github.io/AWSIM-Labs/main/) is a Unity-based 3D simulation environment tailored for testing autonomous vehicles using Autoware. It provides realistic visuals, physics, and ROS 2 integration to simulate ego vehicle behavior in structured environments like parking lots.
 > **Recommendation:** Install AWSIM Labs on the most powerful host in your setup (e.g., Nitro PC), as it is the most resource-intensive component in the simulation pipeline.
 
@@ -173,7 +175,7 @@ This section is adapted from the official [AWSIM Labs Unity Setup Guide](https:/
 
 ---
 
-#### 2.4.1 Networking Configurations
+#### Networking Configurations
 
 1. **Add the following lines to your `~/.bashrc` file**
     ```bash
@@ -202,13 +204,13 @@ This section is adapted from the official [AWSIM Labs Unity Setup Guide](https:/
 
 ---
     
-#### 2.4.2 Preparation
+#### Preparation
 Follow the [Environment preparation](https://autowarefoundation.github.io/AWSIM-Labs/main/GettingStarted/SetupUnityProject/#environment-preparation) and [ROS 2](https://autowarefoundation.github.io/AWSIM-Labs/main/GettingStarted/SetupUnityProject/#ros-2) sections.
 
 > The **"ROS 2"** section recommends that ROS 2 should **not** be sourced in your environment when running Unity.  
 > **Recommendation:** It is best to **remove ROS 2 sourcing lines from `~/.bashrc`** and manually source ROS 2 only when needed.
 
-#### 2.4.3 Unity Installation Steps
+#### Unity Installation Steps
 Due to authentication requirements, Unity Hub is first installed in Step 1 via the package manager to allow account sign-in. 
 In Step 2, the Unity Hub AppImage is installed and used for all subsequent project work.
 
@@ -254,7 +256,7 @@ In Step 2, the Unity Hub AppImage is installed and used for all subsequent proje
     ~/Unity/UnityHub.AppImage
     ```
 
-#### 2.4.4 AWSIM Labs Setup
+#### AWSIM Labs Setup
 
 1. **Open the AWSIM Labs Project**
    
@@ -291,12 +293,12 @@ In Step 2, the Unity Hub AppImage is installed and used for all subsequent proje
 
 ---
 
-### 2.5 Zenoh Middleware
+### Zenoh Middleware
 
 [Zenoh](https://github.com/eclipse-zenoh/zenoh-plugin-ros2dds) is a lightweight communication middleware designed for data routing across networks. 
 In this framework, Zenoh bridges ROS 2 topics between multiple hosts, enabling real-time communication between AWSIM Labs and their respective Autoware instances running on separate machines.
 
-#### 2.5.1 Design Considerations
+#### Design Considerations
 In this setup, AWSIM Labs simulates **two ego vehicles**, both publishing the same ROS 2 topics. To avoid collisions, one vehicle is assigned a topic namespace:
 
 - **EgoVehicle_1** — connects locally to AWSIM Labs on the same host (no namespace)
@@ -306,11 +308,14 @@ This ensures all topics are isolated. For the EgoVehicle_2 GameObject, open each
 
 ![Topics Prefixing](images/topic_prefixing.png)
 
-#### 2.5.2 Installation Steps
+#### Installation Steps
+
 1. **Install Rust**  
-   Follow the [official installation guide](https://www.rust-lang.org/tools/install).
+
+    Follow the [official installation guide](https://www.rust-lang.org/tools/install).
    
-2. **Clone the release/1.4.0 version of Zenoh Bridge and Build it on All Hosts**
+
+2. **Clone Zenoh Bridge Version *release/1.4.0* and Build on All Hosts**
 
     ```bash
     cd ~
@@ -321,63 +326,81 @@ This ensures all topics are isolated. For the EgoVehicle_2 GameObject, open each
     colcon build --packages-select zenoh_bridge_ros2dds --cmake-args -DCMAKE_BUILD_TYPE=Release
     source ~/zenoh-plugin-ros2dds/install/setup.bash
     ```
+
 3. **Find the IP Address for Host 1**
 
     You will need the **IP address of Host 1's active network interface** (usually Wi-Fi or Ethernet).
    
     Run the following:
+
     ```bash
     ip a
     ```
+
     Look for your active interface:
+
     - **Wi-Fi** names usually start with `wlp` (e.g., `wlp3s0`)  
     - **Ethernet** names usually start with `enp` (e.g., `enp2s0`)  
     - Ignore `lo` (loopback), `docker0`, and `br-...` (Docker bridges)
   
     Example output:
+    
     ```
     inet 10.0.0.172/24 ...
     ```
     
     In the example output above, the IP before the slash (`10.0.0.172`) would be used for Zenoh connections:
+
     ```bash
     zenoh_bridge_ros2dds -e tcp/<IP-address>:7447
     # Example:
     zenoh_bridge_ros2dds -e tcp/10.0.0.172:7447
     ```
+
     > **Tip:** If unsure, choose the interface with an `inet` address in the `10.x.x.x` or `192.168.x.x` range and `state UP`.
 
-4. **Set up CycloneDDS for cross-host communication**
+
+4. **Set Up CycloneDDS for Cross-Host Communication**
 
     This step is identical to the CycloneDDS setup performed for AWSIM Labs, but it must also be completed on any additional hosts participating in the Zenoh network.
 
     Copy the configuration file from the repository to the home directory:
+
     ```bash
     cp ~/multi-vehicle-framework/cyclonedds.xml ~/cyclonedds.xml
     ```
     
-    Add the following to the .bashrc file.
+    Add the following to the .bashrc file:
+
     ```bash
     export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
     export CYCLONEDDS_URI=/home/your_username/cyclonedds.xml
     ```
     > Replace `your_username` with your actual Linux username.
 
-5. **Launch the Zenoh bridge with host-specific configuration**
+5. **Launch the Zenoh bridge with Host-Specific Configuration**
    
-   Both configs are available in the repository previously cloned.
+    Both configs are available in the repository previously cloned.
 
-   **Host 1** (run this first):
-    ```bash
-    source ~/zenoh-plugin-ros2dds/install/setup.bash
-    zenoh_bridge_ros2dds -c ~/multi-vehicle-framework/zenoh_configs/zenoh-bridge-awsim.json5
-    ```
+    **Host 1** (run this first):
+        ```bash
+        source ~/zenoh-plugin-ros2dds/install/setup.bash
+        zenoh_bridge_ros2dds -c ~/multi-vehicle-framework/zenoh_configs/zenoh-bridge-awsim.json5
+        ```
 
-   **Host 2** (run after Host 1 is running):
-    ```bash
-    source ~/zenoh-plugin-ros2dds/install/setup.bash
-    zenoh_bridge_ros2dds -c ~/multi-vehicle-framework/zenoh_configs/zenoh-bridge-vehicle2.json5 -e tcp/10.0.0.172:7447
-    ```
+    **Host 2** (run after Host 1 is running):
+        ```bash
+        source ~/zenoh-plugin-ros2dds/install/setup.bash
+        zenoh_bridge_ros2dds -c ~/multi-vehicle-framework/zenoh_configs/zenoh-bridge-vehicle2.json5 -e tcp/10.0.0.172:7447
+        ```
 
     > **Note:** The IP `10.0.0.172` above is from an example network and is different for all machines.  
     > Replace it with the Host 1 IP obtained via `ip a`.
+
+---
+
+---
+
+Once all components are installed and configured, you’re ready to start the simulation.
+
+**Proceed to [Multi-Vehicle Simulation](multi-vehicle-simulation.md)** for instructions.
