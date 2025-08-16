@@ -1,6 +1,6 @@
-# Software Installation
+# Software Setup
 
-This section covers the installation process for all required software components.  
+This section covers the setup process for all required software components.  
 
 Except for **AWSIM Labs**, which is installed only on **Host 1**, **Autoware**, **Zenoh**, and tools like **Barrier** and **AnyDesk** are installed on **every host** in the system.
 
@@ -166,9 +166,40 @@ The following installation steps are adapted from the [Autoware Universe Source 
     cd ~/autoware
     colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
     ```
+> Building Autoware can take about 1-3 hours.
     
 10. LANELET AND POINTCLOUD
 ---
+
+#### Running Autoware
+
+Once Autoware is successfully built, you can test that it runs properly using the maps provided in this framework.
+
+1. Prepare the Maps
+
+    Copy the pointcloud and Lanelet2 map from the repository into the Autoware map folder.
+
+    ```bash
+    mkdir -p ~/autoware_map/sirc
+    cp ~/multi-vehicle-framework/maps/sirc.pcd ~/autoware_map/sirc/
+    cp ~/multi-vehicle-framework/maps/sirc_lanelet2.osm ~/autoware_map/sirc/
+    ```
+
+2. Source the Environment
+
+    ```bash
+    source /opt/ros/humble/setup.bash
+    source ~/autoware/install/setup.bash
+    ```
+
+3. Launch Autoware using the Planning Simulation
+
+    ```bash
+    ros2 launch autoware_launch planning_simulator.launch.xml map_path:=$HOME/autoware_map/sirc vehicle_model:=sample_vehicle sensor_model:=sample_sensor_kit
+    ```
+
+    Follow the [Basic Simulations](https://autowarefoundation.github.io/autoware-documentation/main/tutorials/ad-hoc-simulation/planning-simulation/#basic-simulations) to run different scenarios in Autoware.
+
 
 ### AWSIM Labs
 [AWSIM Labs](https://autowarefoundation.github.io/AWSIM-Labs/main/) is a Unity-based 3D simulation environment tailored for testing autonomous vehicles using Autoware. It provides realistic visuals, physics, and ROS 2 integration to simulate ego vehicle behavior in structured environments like parking lots.
