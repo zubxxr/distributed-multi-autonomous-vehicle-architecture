@@ -88,15 +88,44 @@ After the Zenoh connections, each vehicle localized successfully inside Autoware
 - Likely cause: **system memory constraints**.
 - *Table 7.1* from the thesis showed that Victus (16 GB RAM) had far less free memory than Nitro/ROG (24 GB each), even with 32 GB swap configured.
 
-| Setup       | Host        | Free Memory After Launch |
-|-------------|-------------|--------------------------|
-| Three-Host  | ROG Laptop  | 500 MB                   |
-|             | Nitro PC    | 833 MB                   |
-|             | Victus      | 316 MB                   |
-| Two-Host    | ROG Laptop  | 820 MB                   |
-|             | Nitro PC    | 2.0 GB                   |
+
 
 This strongly suggests low available RAM on Victus caused the emergency-state failure.
+
+| Setup       | Host        | Free Memory After Launch |
+|-------------|-------------|--------------------------|
+| Three-Host  | ROG Laptop  | 4.6 GiB                   |
+|             | Nitro PC    | 721 MiB                   |
+|             | Victus      | 209 MiB                   |
+| Two-Host    | ROG Laptop  | 820 MiB                   |
+|             | Nitro PC    | 2.0 GiB                   |
+
+#### Victus Laptop
+
+```bash
+Zubair@AVLab:~$ free -h
+               total        used        free      shared  buff/cache   available
+Mem:            15Gi       9.4Gi       321Mi       795Mi       5.6Gi       5.0Gi
+Swap:           31Gi       0.0Ki        31Gi
+```
+
+#### ROG Laptop
+
+```bash
+zubair@zubair-ROG-Zephyrus-G15:~$ free -h
+               total        used        free      shared  buff/cache   available
+Mem:            22Gi        13Gi       1.3Gi       263Mi       7.6Gi       9.1Gi
+Swap:           31Gi          0B        31Gi
+```
+
+#### Nitro PC
+
+```bash
+ovin@ovin-Nitro-N50-640:~/multi-vehicle-avp/multi_vehicle_avp$ free -h
+               total        used        free      shared  buff/cache   available
+Mem:            23Gi        14Gi       903Mi       118Mi       8.0Gi       8.4Gi
+Swap:           31Gi          0B        31Gi
+```
 
 ---
 
