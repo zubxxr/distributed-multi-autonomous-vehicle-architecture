@@ -68,7 +68,7 @@ Autoware must be installed on each host that is responsible for controlling a ve
 Before starting, review [Autoware’s official hardware requirements](https://autowarefoundation.github.io/autoware-documentation/main/installation/).
 
 #### Version
-This guide uses the Autoware branch [release/2024.11](https://github.com/autowarefoundation/autoware/tree/release/2024.11), with a forked and customized version available here: [Customized Autoware Repository](https://github.com/zubxxr/autoware)
+This guide uses the Autoware branch [release/2024.11](https://github.com/autowarefoundation/autoware/tree/release/2024.11), with a forked and customized version available here: [Customized Autoware Repository](https://github.com/zubxxr/autoware/tree/2024.11-adapted)
 
 #### Increase Swap Memory (Optional but Recommended)
 If you encounter memory issues when building Autoware, increase your swap size:
@@ -105,7 +105,7 @@ The following installation steps are adapted from the [Autoware Universe Source 
 2. **Clone Autoware**
     ```bash
     cd ~
-    git clone https://github.com/zubxxr/autoware.git
+    git clone https://github.com/zubxxr/autoware.git -b 2024.11-adapted
     cd ~/autoware
     ```
 
@@ -166,23 +166,22 @@ The following installation steps are adapted from the [Autoware Universe Source 
     cd ~/autoware
     colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
     ```
-> Building Autoware can take about 1-3 hours.
+
+    > Building Autoware can take about 1-3 hours.
+
+    > If any build issues occur, refer to [issues](https://github.com/zubxxr/multi-vehicle-framework/issues) or the Autoware community for possible solutions.
     
-10. LANELET AND POINTCLOUD
 ---
 
 #### Running Autoware
 
-Once Autoware is successfully built, you can test that it runs properly using the maps provided in this framework.
+Once Autoware is successfully built, it should be tested to ensure the installation is functioning correctly.
 
-1. Prepare the Maps
-
-    Copy the pointcloud and Lanelet2 map from the repository into the Autoware map folder.
+1. Download the Map
 
     ```bash
-    mkdir -p ~/autoware_map/sirc
-    cp ~/multi-vehicle-framework/maps/sirc.pcd ~/autoware_map/sirc/
-    cp ~/multi-vehicle-framework/maps/sirc_lanelet2.osm ~/autoware_map/sirc/
+    gdown -O ~/autoware_map/ 'https://docs.google.com/uc?export=download&id=1prmoy4UBgT_J-tJ7SELsL7m9alWGzD71'
+    unzip -d ~/autoware_map ~/autoware_map/sirc.zip
     ```
 
 2. Source the Environment
@@ -290,7 +289,7 @@ In Step 2, the Unity Hub AppImage is installed and used for all subsequent proje
     ~/Unity/UnityHub.AppImage
     ```
 
-#### AWSIM Labs Setup
+#### Running AWSIM Labs
 
 1. **Open the AWSIM Labs Project**
    
@@ -325,8 +324,6 @@ In Step 2, the Unity Hub AppImage is installed and used for all subsequent proje
 
     > The game view is expanded by double clicking on the **Game** tab.
 
-
-4. LANELET
 ---
 
 ### Zenoh Middleware
@@ -414,25 +411,28 @@ This ensures all topics are isolated. For the EgoVehicle_2 GameObject, open each
     ```
     > Replace `your_username` with your actual Linux username.
 
-5. **Launch the Zenoh bridge with Host-Specific Configuration**
-   
-    Both configs are available in the repository previously cloned.
-
-    **Host 1** (run this first):
-        ```bash
-        source ~/zenoh-plugin-ros2dds/install/setup.bash
-        zenoh_bridge_ros2dds -c ~/multi-vehicle-framework/zenoh_configs/zenoh-bridge-awsim.json5
-        ```
-
-    **Host 2** (run after Host 1 is running):
-        ```bash
-        source ~/zenoh-plugin-ros2dds/install/setup.bash
-        zenoh_bridge_ros2dds -c ~/multi-vehicle-framework/zenoh_configs/zenoh-bridge-vehicle2.json5 -e tcp/10.0.0.172:7447
-        ```
-
-    > **Note:** The IP `10.0.0.172` above is from an example network and is different for all machines.  
-    > Replace it with the Host 1 IP obtained via `ip a`.
-
 ---
+
+#### Running Zenoh Bridges  
+
+Each Zenoh bridge must be launched with host-specific configurations, already available in the cloned repository.  
+
+**Host 1** (start this first)
+
+```bash
+source ~/zenoh-plugin-ros2dds/install/setup.bash
+zenoh_bridge_ros2dds -c ~/multi-vehicle-framework/zenoh_configs/zenoh-bridge-awsim.json5  
+```
+
+**Host 2** (start after Host 1 is running):  
+
+```bash
+source ~/zenoh-plugin-ros2dds/install/setup.bash
+zenoh_bridge_ros2dds -c ~/multi-vehicle-framework/zenoh_configs/zenoh-bridge-vehicle2.json5 -e tcp/10.0.0.172:7447  
+```
+
+> **Note:** The IP `10.0.0.172` is only an example.  
+
+If done correctly, both bridges will be connected.
 
 **Next Steps:** Proceed to [Multi-Vehicle Simulation](../Multi-VehicleSimulation/index.md) to start the simulation.
