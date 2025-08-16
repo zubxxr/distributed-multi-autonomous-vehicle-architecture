@@ -68,7 +68,7 @@ Autoware must be installed on each host that is responsible for controlling a ve
 Before starting, review [Autoware’s official hardware requirements](https://autowarefoundation.github.io/autoware-documentation/main/installation/).
 
 #### Version
-This guide uses the Autoware branch [release/2024.11](https://github.com/autowarefoundation/autoware/tree/release/2024.11), with a forked and customized version available here: [Customized Autoware Repository](https://github.com/zubxxr/autoware/tree/2024.11-adapted)
+This guide uses the Autoware branch [release/2024.11](https://github.com/autowarefoundation/autoware/tree/release/2024.11), with a forked and customized version available here: [Customized Autoware Repository](https://github.com/zubxxr/autoware/tree/avp-release/2025.08)
 
 #### Increase Swap Memory (Optional but Recommended)
 If you encounter memory issues when building Autoware, increase your swap size:
@@ -103,9 +103,20 @@ The following installation steps are adapted from the [Autoware Universe Source 
     ```
 
 2. **Clone Autoware**
+
+    **Recommended**: use the latest stable release
+
     ```bash
     cd ~
-    git clone https://github.com/zubxxr/autoware.git -b 2024.11-adapted
+    git clone https://github.com/zubxxr/autoware.git -b avp-release/2025.08
+    cd ~/autoware
+    ```
+
+    **Alternatively**: use the development branch if you want the newest changes
+
+    ```bash
+    cd ~
+    git clone https://github.com/zubxxr/autoware.git
     cd ~/autoware
     ```
 
