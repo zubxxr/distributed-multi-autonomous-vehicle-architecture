@@ -289,7 +289,7 @@ In Step 2, the Unity Hub AppImage is installed and used for all subsequent proje
     ~/Unity/UnityHub.AppImage
     ```
 
-#### Running AWSIM Labs
+#### AWSIM Labs Configuration Steps
 
 1. **Open the AWSIM Labs Project**
    
@@ -314,15 +314,19 @@ In Step 2, the Unity Hub AppImage is installed and used for all subsequent proje
     
     Then, follow the remaining steps in the section to import the `.unitypackage` file into Unity.
 
-3. **Running the Simulation**
-   
-    Lastly, follow the [Run the Demo in Editor](https://autowarefoundation.github.io/AWSIM-Labs/main/GettingStarted/SetupUnityProject/#run-the-demo-in-editor) section.
-    
-    After successful completion, the simulation will be running with two ego vehicles. These vehicles will later be controlled by their own Autoware clients. 
-    
-    ![Multi-Vehicle Simulation Diagram](multi_vehicle_simulation.png)
+3. **Import Assets**
 
-    > The game view is expanded by double clicking on the **Game** tab.
+    Follow the [Import Vehicle Physics Pro Community Edition Asset](https://autowarefoundation.github.io/AWSIM-Labs/main/GettingStarted/SetupUnityProject/#import-vehicle-physics-pro-community-edition-asset) and [Import Graphy Asset](https://autowarefoundation.github.io/AWSIM-Labs/main/GettingStarted/SetupUnityProject/#import-graphy-asset).
+
+#### Running AWSIM Labs
+
+To run the simulation, follow the [Run the Demo in Editor](https://autowarefoundation.github.io/AWSIM-Labs/main/GettingStarted/SetupUnityProject/#run-the-demo-in-editor) section.
+
+After successful completion, the simulation will be running with two ego vehicles. These vehicles will later be controlled by their own Autoware clients. 
+    
+![Multi-Vehicle Simulation Diagram](multi_vehicle_simulation.png)
+
+> The game view is expanded by double clicking on the **Game** tab.
 
 ---
 
