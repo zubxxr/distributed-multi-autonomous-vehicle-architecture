@@ -12,10 +12,12 @@ The **Multi-Vehicle AV Framework** provides a complete setup for running **Autow
 It enables simulation of multiple autonomous vehicles across different physical machines while maintaining synchronized perception, localization, planning, and control.
 
 ## Features
+
 - Distributed simulation across multiple hosts
-- Multi-vehicle Automated Valet Parking (AVP) coordination
 - Zenoh-based ROS 2 topic synchronization
-- Supports Ubuntu 22.04 (ROS 2 Humble) and Unity-based AWSIM Labs
+- Multi-vehicle coordination with namespaced topics for collision avoidance
+- Modular design enabling integration of new perception, planning, or control components
+- Scalable to larger fleets and more complex simulation scenarios
 
 ---
 
