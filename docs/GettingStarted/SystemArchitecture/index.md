@@ -62,7 +62,7 @@ Otherwise, distribute components across machines to balance load. For example, A
 
 The framework can be applied to use multiple hosts/vehicles.
 
-See [Scaling for Multiple Vehicles](scaling-multi-vehicle.md).
+See [Scaling for Multiple Vehicles](../../Scalability/ScalingToMoreVehicles/index.md).
 
 ---
 

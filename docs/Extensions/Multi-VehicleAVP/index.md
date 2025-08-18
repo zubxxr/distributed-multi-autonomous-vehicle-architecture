@@ -5,8 +5,7 @@
 ![Autoware](https://img.shields.io/badge/Autoware-2024.11-brightgreen?logo=autodesk)
 ![YOLOv5](https://img.shields.io/badge/YOLO-v5-red?logo=github)
 ![Zenoh](https://img.shields.io/badge/Zenoh-1.4.0-purple?logo=apache)
-![AVP Node](https://img.shields.io/badge/AVP_Node-Orchestrator-black?logo=robotframework)
-![Multi-Host](https://img.shields.io/badge/Topology-2_Host_Setup-yellow?logo=windows)
+![AVP Node](https://img.shields.io/badge/AVP_Node-custom-black?logo=robotframework)
 ![License](https://img.shields.io/badge/License-Apache%202.0-blue?logo=apache)
 
 The **Multi-Vehicle AVP** system extends the **Multi-Vehicle Framework** to support **multiple vehicles operating in a shared simulation environment across different physical hosts**.  

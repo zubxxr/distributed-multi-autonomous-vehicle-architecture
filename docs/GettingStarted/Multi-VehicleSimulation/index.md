@@ -111,21 +111,6 @@ This layout provides a clean and organized workspace for operating the framework
 
 ---
 
-
-```bash
-zubair@zubair-ROG-Zephyrus-G15:~$ free -h
-               total        used        free      shared  buff/cache   available
-Mem:            22Gi       9.5Gi       7.7Gi       110Mi       5.7Gi        13Gi
-Swap:           31Gi          0B        31Gi
-```
-
-```bash
-ovin@ovin-Nitro-N50-640:~$ free -h
-               total        used        free      shared  buff/cache   available
-Mem:            23Gi        13Gi       4.5Gi       108Mi       5.7Gi       9.7Gi
-Swap:           31Gi          0B        31Gi
-```
-
 **Next Steps:** To scale this setup beyond two vehicles, see [Scaling to More Vehicles/Hosts](../../Scalability/ScalingToMoreVehicles/index.md).  
 
 

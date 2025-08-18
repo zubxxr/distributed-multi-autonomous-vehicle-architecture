@@ -19,8 +19,13 @@ It enables simulation of multiple autonomous vehicles across different physical 
 
 ---
 
+## Extensions
+
+This framework has already been extended to support **[Automated Valet Parking (AVP)](Extensions/Multi-VehicleAVP/index.md)** as a working implementation.  
+
+In addition, several other ideas are explored as possible directions for future **[Multi-Agent Implementations](Extensions/FutureWork/index.md)**. While not yet validated, these highlight the broader potential of the framework for distributed autonomous driving research.  
+
+
 ## Getting Started
 
-Before installing or running anything, start with the **[System Architecture](GettingStarted/SystemArchitecture/index.md)** to understand how the components fit together, what hardware is recommended, and the roles of each host in the distributed setup.
-
-Once you’re familiar with the architecture, continue with the **[Software Installation](GettingStarted/SoftwareSetup/index.md)** guide to set up Autoware Universe, AWSIM Labs, and Zenoh on your machines.
+To get started with running the framework, see the [System Architecture](GettingStarted/SystemArchitecture/index.md) page.
