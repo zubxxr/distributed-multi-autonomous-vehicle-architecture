@@ -65,6 +65,8 @@ nav:
   - Scalability: 
     - Scaling to More Vehicles: Scalability/ScalingToMoreVehicles/index.md
     - Benchmarks: Scalability/Benchmarks/index.md
+  - Developer Guide:
+    - Quick Commands: DeveloperGuide/QuickCommands/index.md
   - Extensions:
     - Multi-Vehicle AVP (Autonomous Valet Parking): Extensions/Multi-VehicleAVP/index.md
     - Future Work: Extensions/FutureWork/index.md
