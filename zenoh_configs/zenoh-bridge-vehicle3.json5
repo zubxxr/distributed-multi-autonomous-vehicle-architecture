@@ -18,11 +18,11 @@
   },
   "plugins": {
     "ros2dds": {
-      "nodename": "zenoh_vehicle2_bridge",
-      "namespace": "/vehicle2",
+      "nodename": "zenoh_vehicle3_bridge",
+      "namespace": "/vehicle3",
       deny: {
-      subscribers: ["/sensing/camera/traffic_light/camera_info", "/sensing/camera/traffic_light/image_raw", "/vehicle3/.*"],
-      publishers: ["/sensing/camera/traffic_light/camera_info", "/sensing/camera/traffic_light/image_raw", "/vehicle3/.*"], 
+      subscribers: ["/sensing/camera/traffic_light/camera_info", "/sensing/camera/traffic_light/image_raw", "/vehicle2/.*"],
+      publishers: ["/sensing/camera/traffic_light/camera_info", "/sensing/camera/traffic_light/image_raw", "/vehicle2/.*"], 
       service_servers: [
           ".*/set_parameters",
           ".*/set_parameters_atomically",
