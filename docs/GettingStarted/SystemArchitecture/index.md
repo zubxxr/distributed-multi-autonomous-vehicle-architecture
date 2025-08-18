@@ -66,4 +66,4 @@ See [Scaling for Multiple Vehicles](../../Scalability/ScalingToMoreVehicles/inde
 
 ---
 
-**Next Steps:** Proceed to [Software Installation](../SoftwareSetup/index.md).
+**Next Steps:** Proceed to [Software Setup](../SoftwareSetup/index.md).
