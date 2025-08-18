@@ -58,8 +58,6 @@ Two-host, two-vehicle scenarios never exhibited these delays, confirming that sc
 
 ### Baseline Comparison (Two-Host Setup)
 
-To validate this, memory usage on the two primary machines was also recorded:  
-
 **Nitro PC (Host 1)**  
 
 ```bash
