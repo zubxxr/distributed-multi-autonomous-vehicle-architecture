@@ -66,4 +66,4 @@ See [Scaling for Multiple Vehicles](scaling-multi-vehicle.md).
 
 ---
 
-**Next Steps:** Proceed to [Software Installation](../SoftwareSetup/index.md) once you understand the overall setup and machine roles.
+**Next Steps:** Proceed to [Software Installation](../SoftwareSetup/index.md).

@@ -105,17 +105,11 @@ This layout provides a clean and organized workspace for operating the framework
       ![image](vehicle2_localized.png)
 
 
-### Demonstration Scenarios: Goal Navigation & Parking
+### Multi-Vehicle Demonstration
 
-**Goal:** demonstrate two example scenarios—first, both vehicles navigating to distinct goal poses; second, both vehicles performing parking maneuvers.
-
-1. **Set Distinct Goals**
-
-   - **Vehicle 1:** use **Goal** tool and engage.
-   - **Vehicle 2:** switch RViz to `/vehicle2` displays and use **Goal** tool again; then engage `/vehicle2`.
+<iframe width="560" height="315" src="https://www.youtube.com/embed/47XUYeN61CI?list=PL4MADLjXmDi1Q5XXCuFTEntWz1c_T50jd" title="YouTube video" frameborder="0" allowfullscreen></iframe>
 
 ---
-
 
 
 ```bash
@@ -132,6 +126,6 @@ Mem:            23Gi        13Gi       4.5Gi       108Mi       5.7Gi       9.7Gi
 Swap:           31Gi          0B        31Gi
 ```
 
-**Next Steps:** To scale this setup beyond two vehicles, see [Scaling to More Vehicles/Hosts](../ScalingToMoreVehicles/index.md).  
+**Next Steps:** To scale this setup beyond two vehicles, see [Scaling to More Vehicles/Hosts](../../Scalability/ScalingToMoreVehicles/index.md).  
 
 
