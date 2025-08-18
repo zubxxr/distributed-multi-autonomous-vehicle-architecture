@@ -29,3 +29,5 @@ In addition, several other ideas are explored as possible directions for future 
 ## Getting Started
 
 To get started with running the framework, see the [System Architecture](GettingStarted/SystemArchitecture/index.md) page.
+
+For a condensed list of frequently used commands, see the [Developer Quick Commands](DeveloperGuide/QuickCommands/index.md) page.
