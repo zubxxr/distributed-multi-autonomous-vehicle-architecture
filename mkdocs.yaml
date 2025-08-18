@@ -57,7 +57,6 @@ markdown_extensions:
 
 nav:
   - Home: index.md
-
   - Getting Started:
     - System Architecture: GettingStarted/SystemArchitecture/index.md
     - Software Setup: GettingStarted/SoftwareSetup/index.md
