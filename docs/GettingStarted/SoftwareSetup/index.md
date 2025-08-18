@@ -45,7 +45,17 @@ AnyDesk provides lightweight remote access and file transfer between hosts.
 
 
 ### Repository Cloning
+
 Clone the main repository for this framework on **all hosts**.
+
+**Recommended**: use the latest stable release  
+
+```bash
+cd ~
+git clone https://github.com/zubxxr/multi-vehicle-framework.git -b release/2025.08
+```
+
+**Alternatively**: use the main branch if you want the newest (possibly experimental) changes
 
 ```bash
 cd ~
@@ -112,7 +122,7 @@ The following installation steps are adapted from the [Autoware Universe Source 
     cd ~/autoware
     ```
 
-    **Alternatively**: use the development branch if you want the newest changes
+    **Alternatively**: use the main branch if you want the newest (possibly experimental) changes
 
     ```bash
     cd ~
