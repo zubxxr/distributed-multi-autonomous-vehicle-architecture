@@ -68,4 +68,6 @@ nav:
     - Future Work: Extensions/FutureWork/index.md
   - Developer Guide:
     - Quick Commands: DeveloperGuide/QuickCommands/index.md
+    - Mapping Workflow: DeveloperGuide/MappingWorkflow/index.md
+    - Lanelet Creation: DeveloperGuide/LaneletCreation/index.md
     - License: DeveloperGuide/License/index.md
