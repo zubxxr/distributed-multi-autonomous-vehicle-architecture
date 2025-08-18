@@ -4,7 +4,7 @@ This section outlines the software stack, hardware specifications, and machine r
 
 ## Distributed Framework Architecture
 
-![Distributed Framework Architecture](image.png)
+![Distributed Framework Architecture](distributed_framework_arch.png)
 
 See diagram in [full view](https://viewer.diagrams.net/?tags=%7B%7D&lightbox=1&highlight=0000ff&edit=_blank&layers=1&nav=1&title=Distributed%20Framework%20Architecture%20-%20Multi-Host%20Configuration&dark=auto#Uhttps%3A%2F%2Fdrive.google.com%2Fuc%3Fid%3D1QWieEbRPEVF_kHMBsqN-ph_WiZJWYDf-%26export%3Ddownload).
 
@@ -12,11 +12,11 @@ See diagram in [full view](https://viewer.diagrams.net/?tags=%7B%7D&lightbox=1&h
 
 ## Zenoh-Based ROS 2 Communication
 
-![Zenoh Communication](image-1.png)
+![Zenoh Communication](zenoh_communication.png)
 
 See diagram in [full view](https://viewer.diagrams.net/?tags=%7B%7D&lightbox=1&highlight=0000ff&edit=_blank&layers=1&nav=1&title=Zenoh-Communication.drawio&dark=auto#Uhttps%3A%2F%2Fdrive.google.com%2Fuc%3Fid%3D1VGkrEYiPsvXtUnLiAkFGN7ufOgqsbEQV%26export%3Ddownload).
 
-
+---
 
 ## Planning Your Deployment
 
