@@ -1,10 +1,11 @@
 # Multi-Vehicle AVP
 *Distributed Automated Valet Parking Across Multiple Hosts*
 
-![ROS 2](https://img.shields.io/badge/ROS2-Humble-blue?logo=ros)
-![Autoware](https://img.shields.io/badge/Autoware-2024.11-brightgreen?logo=autodesk)
+![Autoware](https://img.shields.io/badge/Autoware-2024.11-blue?logo=autoware)
+![AWSIM Labs](https://img.shields.io/badge/AWSIM%20Labs-Unity-green?logo=unity)
+![ROS 2 Humble](https://img.shields.io/badge/ROS2-Humble-purple?logo=ros)
+![Zenoh](https://img.shields.io/badge/Zenoh-1.4.0-orange?logo=zenoh)
 ![YOLOv5](https://img.shields.io/badge/YOLO-v5-red?logo=github)
-![Zenoh](https://img.shields.io/badge/Zenoh-1.4.0-purple?logo=apache)
 ![AVP Node](https://img.shields.io/badge/AVP_Node-custom-black?logo=robotframework)
 ![License](https://img.shields.io/badge/License-Apache%202.0-blue?logo=apache)
 

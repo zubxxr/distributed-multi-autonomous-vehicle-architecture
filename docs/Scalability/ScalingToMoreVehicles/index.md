@@ -25,7 +25,7 @@ To extend the system, replicate the following for each additional vehicle/host:
 
 1. Install **Autoware** and **Zenoh** on the new host.
 2. Add a new ego vehicle in AWSIM Labs with a **unique namespace** (e.g., `/vehicle3`, `/vehicle4`, etc.).
-3. Update Zenoh configuration to bridge the new namespace.
+3. Create and update Zenoh configuration to bridge the new namespace.
 4. Connect the host to **Host 1** via Zenoh.
 
 An example is shown below, where a third host is introduced.
@@ -46,10 +46,9 @@ To evaluate the scalability of the proposed architecture, a **third host (Victus
 
 ### Configuration Steps
 
-1. Added a new ego vehicle GameObject in Unity, with all published topics namespaced under `/vehicle3`.
+1. Add a new ego vehicle GameObject in Unity, with all published topics namespaced under `/vehicle3`.
 
 2. Created a dedicated clock publisher at `/vehicle3/clock` via the `Vehicle3_ClockPublisher` script.
-
 
       ![image](third_egovehicle_created.png)
 
@@ -57,6 +56,13 @@ To evaluate the scalability of the proposed architecture, a **third host (Victus
 3. Modified the UI camera bridge (`UICameraBridge` script) to adjust coordinate offsets for Vehicle 3 visualization.
 
       ![image](modify_ui_camera.png)
+
+4. Create a Zenoh configuration file for Vehicle 3 (similar to Host 2). The file is already provided here: [zenoh-bridge-vehicle3.json5](https://github.com/zubxxr/multi-vehicle-framework/blob/main/zenoh_configs/zenoh-bridge-vehicle3.json5).
+
+5. In each vehicle’s Zenoh configuration, explicitly deny the other vehicles’ topics to avoid cross-subscription.
+
+      - For **Vehicle 3**, deny all topics under `/vehicle2/.*`.  
+      - For **Vehicle 2**, deny all topics under `/vehicle3/.*`.  
 
 ---
 

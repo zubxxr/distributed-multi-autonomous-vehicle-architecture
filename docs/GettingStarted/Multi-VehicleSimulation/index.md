@@ -1,6 +1,6 @@
 # Multi-Vehicle Simulation
 
-### Prerequisites
+## Prerequisites
 Ensure the following components are set up on each host:
 
 - **Host 1:** AWSIM Labs, Autoware, and Zenoh
@@ -34,7 +34,7 @@ This layout provides a clean and organized workspace for operating the framework
 
 ---
 
-### Launch Sequence
+## Launch Sequence
 1. **Launch AWSIM Labs** (Host 1)
 
       In **Tab 1**, run the following command to open Unity Hub:  
@@ -105,12 +105,12 @@ This layout provides a clean and organized workspace for operating the framework
       ![image](vehicle2_localized.png)
 
 
-### Multi-Vehicle Demonstration
+## Multi-Vehicle Demonstration
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/47XUYeN61CI?list=PL4MADLjXmDi1Q5XXCuFTEntWz1c_T50jd" title="YouTube video" frameborder="0" allowfullscreen></iframe>
 
 ---
 
-**Next Steps:** To scale this setup beyond two vehicles, see [Scaling to More Vehicles/Hosts](../../Scalability/ScalingToMoreVehicles/index.md).  
+**Next Steps:** To scale this setup beyond two vehicles, see [Scaling to More Vehicles](../../Scalability/ScalingToMoreVehicles/index.md).  
 
 

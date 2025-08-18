@@ -31,3 +31,7 @@ In addition, several other ideas are explored as possible directions for future 
 To get started with running the framework, see the [System Architecture](GettingStarted/SystemArchitecture/index.md) page.
 
 For a condensed list of frequently used commands, see the [Developer Quick Commands](DeveloperGuide/QuickCommands/index.md) page.
+
+## Troubleshooting 
+
+Refer to [Issues](https://github.com/zubxxr/multi-vehicle-framework/issues) to see if the issue has been addressed. Otherwise, feel free to open one.
