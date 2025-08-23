@@ -331,7 +331,7 @@ In Step 2, the Unity Hub AppImage is installed and used for all subsequent proje
    
     In the [Import external packages](https://autowarefoundation.github.io/AWSIM-Labs/main/GettingStarted/SetupUnityProject/#import-external-packages) section, **do not** use the green “Download Map Package” button shown in the docs.
     
-    Instead, **download the map package from this link**: [Download SIRC_MultiVehicle_URP_v1.0.0.unitypackage](https://drive.google.com/file/d/1s5RB18-M80A2iE-m0wdnAcY-OZj2qmlt/view?usp=sharing)
+    Instead, **download the map package from this link**: [Download SIRC_MultiVehicle_URP_v1.0.0.unitypackage](https://drive.google.com/file/d/1AqETq-FrH9ayitxePGYnGe8IsjkAjyqq/view?usp=sharing)
     
     Then, follow the remaining steps in the section to import the `.unitypackage` file into Unity.
 
