@@ -1,5 +1,5 @@
-# Multi-Vehicle AV Framework
-*A Distributed Simulation Framework for Autonomous Vehicles*
+# Distributed Multi-Vehicle Architecture
+*A distributed simulation architecture for autonomous vehicles integrating Autoware Universe, AWSIM Labs, and Zenoh for synchronized multi-vehicle operation.*
 
 ![Autoware](https://img.shields.io/badge/Autoware-2024.11-blue?logo=autoware)
 ![AWSIM Labs](https://img.shields.io/badge/AWSIM%20Labs-Unity-green?logo=unity)
@@ -7,9 +7,9 @@
 ![Zenoh](https://img.shields.io/badge/Zenoh-1.4.0-orange?logo=zenoh)
 ![License](https://img.shields.io/badge/License-Apache%202.0-blue?logo=apache)
 
-The **Multi-Vehicle AV Framework** provides a complete setup for running **Autoware** and **AWSIM Labs** in a multi-host, multi-vehicle simulation environment.  
+The **Distributed Multi-Vehicle Architecture** provides a complete setup for running **Autoware** and **AWSIM Labs** in a multi-host, multi-vehicle simulation environment for **autonomous vehicles**.  
 
-It enables simulation of multiple autonomous vehicles across different physical machines while maintaining synchronized perception, localization, planning, and control.
+It enables simulation of multiple autonomous vehicles across different physical machines while maintaining synchronized perception, localization, planning, and control pipelines.
 
 ## Features
 
@@ -23,7 +23,7 @@ It enables simulation of multiple autonomous vehicles across different physical 
 
 ## Getting Started and Documentation
 
-[https://zubxxr.github.io/multi-vehicle-framework](https://zubxxr.github.io/multi-vehicle-framework)
+[https://zubxxr.github.io/distributed-multi-vehicle-architecture](https://zubxxr.github.io/distributed-multi-vehicle-architecture)
 
 ---
 
