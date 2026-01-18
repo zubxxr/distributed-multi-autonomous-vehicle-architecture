@@ -1,4 +1,4 @@
-name: Deploy GitHub Pages
+name: Deploy MkDocs to GitHub Pages
 
 on:
   push:
@@ -15,14 +15,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      # If this is a static site, replace this with your build step if needed
-      - name: Upload artifact
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install MkDocs
+        run: |
+          pip install mkdocs mkdocs-material
+
+      - name: Build site
+        run: |
+          mkdocs build
+
+      - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: site
 
   deploy:
     needs: build
@@ -33,6 +44,6 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
-      - name: Deploy to GitHub Pages
+      - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
