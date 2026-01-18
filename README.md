@@ -7,7 +7,7 @@
 ![Zenoh](https://img.shields.io/badge/Zenoh-1.4.0-orange?logo=zenoh)
 ![License](https://img.shields.io/badge/License-Apache%202.0-blue?logo=apache)
 
-The **Distributed Multi-Vehicle Architecture** provides a complete setup for running **Autoware** and **AWSIM Labs** in a multi-host, multi-vehicle simulation environment for **autonomous vehicles**.  
+The **DMAVA** provides a complete setup for running **Autoware** and **AWSIM Labs** in a multi-host, multi-vehicle simulation environment for **autonomous vehicles**.  
 
 It enables simulation of multiple autonomous vehicles across different physical machines while maintaining synchronized perception, localization, planning, and control pipelines.
 
