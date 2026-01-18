@@ -1,9 +1,9 @@
-site_name: Multi-Vehicle AV Framework
+site_name: DMAVA
 site_description: A real-time distributed simulation framework for autonomous multi-vehicle operations
-site_url: https://zubxxr.github.io/multi-vehicle-framework   # update this
+site_url: https://zubxxr.github.io/distributed-multi-autonomous-vehicle-architecture
 
-repo_name: zubxxr/multi-vehicle-framework                    # update this
-repo_url: https://github.com/zubxxr/multi-vehicle-framework  # update this
+repo_name: zubxxr/distributed-multi-autonomous-vehicle-architecture                  
+repo_url: https://github.com/zubxxr/distributed-multi-autonomous-vehicle-architecture
 
 theme:
   name: material
