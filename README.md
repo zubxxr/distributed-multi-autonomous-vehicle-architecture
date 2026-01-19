@@ -23,7 +23,7 @@ It enables simulation of multiple autonomous vehicles across different physical 
 
 ## Getting Started and Documentation
 
-[https://zubxxr.github.io/distributed-multi-vehicle-architecture](https://zubxxr.github.io/distributed-multi-vehicle-architecture)
+[https://zubxxr.github.io/distributed-multi-autonomous-vehicle-architecture/](https://zubxxr.github.io/distributed-multi-autonomous-vehicle-architecture/)
 
 ---
 
