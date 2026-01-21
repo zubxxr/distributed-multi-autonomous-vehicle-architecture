@@ -48,18 +48,9 @@ AnyDesk provides lightweight remote access and file transfer between hosts.
 
 Clone the main repository for this framework on **all hosts**.
 
-**Recommended**: use the latest stable release  
-
 ```bash
 cd ~
-git clone https://github.com/zubxxr/multi-vehicle-framework.git -b release/2025.08
-```
-
-**Alternatively**: use the main branch if you want the newest (possibly experimental) changes
-
-```bash
-cd ~
-git clone https://github.com/zubxxr/multi-vehicle-framework.git
+git clone https://github.com/zubxxr/distributed-multi-autonomous-vehicle-architecture.git
 ```
 
 The repository contains:
@@ -425,7 +416,7 @@ This ensures all topics are isolated. For the EgoVehicle_2 GameObject, open each
     Copy the configuration file from the repository to the home directory:
 
     ```bash
-    cp ~/multi-vehicle-framework/cyclonedds.xml ~/cyclonedds.xml
+    cp ~/distributed-multi-autonomous-vehicle-architecture/cyclonedds.xml ~/cyclonedds.xml
     ```
     
     Add the following to the .bashrc file:
@@ -446,14 +437,14 @@ Each Zenoh bridge must be launched with host-specific configurations, already av
 
 ```bash
 source ~/zenoh-plugin-ros2dds/install/setup.bash
-zenoh_bridge_ros2dds -c ~/multi-vehicle-framework/zenoh_configs/zenoh-bridge-awsim.json5  
+zenoh_bridge_ros2dds -c ~/distributed-multi-autonomous-vehicle-architecture/zenoh_configs/zenoh-bridge-awsim.json5  
 ```
 
 **Host 2** (start after Host 1 is running):  
 
 ```bash
 source ~/zenoh-plugin-ros2dds/install/setup.bash
-zenoh_bridge_ros2dds -c ~/multi-vehicle-framework/zenoh_configs/zenoh-bridge-vehicle2.json5 -e tcp/10.0.0.172:7447  
+zenoh_bridge_ros2dds -c ~/distributed-multi-autonomous-vehicle-architecture/zenoh_configs/zenoh-bridge-vehicle2.json5 -e tcp/10.0.0.172:7447  
 ```
 
 > **Note:** The IP `10.0.0.172` is only an example.  
