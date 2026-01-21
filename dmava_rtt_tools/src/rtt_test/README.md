@@ -90,6 +90,25 @@ Each pong node responds within its own namespace, allowing RTT to be measured in
 
 ---
 
+### Optional: Logging RTT to File
+
+The ping node supports logging RTT measurements to a CSV file for offline analysis.
+
+Example:
+
+~~~bash
+ros2 run rtt_test ping --ros-args \
+  -p namespace:=vehicle2 \
+  -p output_file:=rtt_phase1_baseline.csv
+~~~
+
+This will write RTT samples to the specified file on Host 1, including:
+- Timestamp
+- RTT (ms)
+- Sequence ID
+
+The output file can be used for post-processing and visualization of latency statistics.
+
 ## Notes
 
 - RTT measurements are end-to-end and include middleware, serialization, and transport overhead.
