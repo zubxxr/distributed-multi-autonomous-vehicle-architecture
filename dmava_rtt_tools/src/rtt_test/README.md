@@ -40,13 +40,13 @@ Ensure Zenoh bridges are running and ROS 2 topic discovery is functional across 
 On **each remote host** (e.g., vehicle2, vehicle3):
 
 ```bash
-ros2 run dmava_rtt_probe rtt_pong
+ros2 run rtt_test rtt_pong
 ```
 
 If using namespaces:
 
 ```bash
-ros2 run dmava_rtt_probe rtt_pong --ros-args -r __ns:=/vehicle2
+ros2 run rtt_test rtt_pong --ros-args -r __ns:=/vehicle2
 ```
 
 Repeat this step for each additional remote host, using the appropriate namespace (e.g., `/vehicle3`).
@@ -58,7 +58,7 @@ Repeat this step for each additional remote host, using the appropriate namespac
 On **Host 1** (the RTT origin):
 
 ```bash
-ros2 run dmava_rtt_probe rtt_ping
+ros2 run rtt_test rtt_ping
 ```
 
 The ping node publishes RTT probes at a fixed rate and computes round-trip latency statistics based on echoed responses.
