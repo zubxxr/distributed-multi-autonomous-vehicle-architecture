@@ -87,7 +87,7 @@ This layout provides a clean and organized workspace for operating the framework
 
       ```bash
       source ~/zenoh-plugin-ros2dds/install/setup.bash
-      zenoh_bridge_ros2dds -c ~/multi-vehicle-framework/zenoh_configs/zenoh-bridge-awsim.json5
+      zenoh_bridge_ros2dds -c ~/distributed-multi-autonomous-vehicle-architecture/zenoh_configs/zenoh-bridge-awsim.json5
       ```
 
       **Host 2**
@@ -96,7 +96,7 @@ This layout provides a clean and organized workspace for operating the framework
 
       ```bash
       source ~/zenoh-plugin-ros2dds/install/setup.bash
-      zenoh_bridge_ros2dds -c ~/multi-vehicle-framework/zenoh_configs/zenoh-bridge-vehicle2.json5 -e tcp/<IP-address>:7447
+      zenoh_bridge_ros2dds -c ~/distributed-multi-autonomous-vehicle-architecture/zenoh_configs/zenoh-bridge-vehicle2.json5 -e tcp/<IP-address>:7447
       ```
       > Replace `<IP-address>` with the Host 1 IP address found in Step 3 of the [Zenoh Installation Steps](software-installation.md/#installation-steps_1).
 
