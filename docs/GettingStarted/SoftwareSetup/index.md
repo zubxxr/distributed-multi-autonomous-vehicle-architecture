@@ -127,7 +127,7 @@ The following installation steps are adapted from the [Autoware Universe Source 
     ./setup-dev-env.sh
     ```
     
-    > If any build issues are encountered, see the [Autoware Troubleshooting Guide](https://autowarefoundation.github.io/autoware-documentation/main/support/troubleshooting/#build-issues) and [this issue thread](https://github.com/zubxxr/multi-vehicle-framework/issues/24).
+    > If any build issues are encountered, see the [Autoware Troubleshooting Guide](https://autowarefoundation.github.io/autoware-documentation/main/support/troubleshooting/#build-issues) and [this issue thread](https://github.com/zubxxr/distributed-multi-autonomous-vehicle-architecture/issues/24).
 
 4. **Import Source Code**
     ```bash
@@ -181,7 +181,7 @@ The following installation steps are adapted from the [Autoware Universe Source 
 
     > Building Autoware can take about 1-3 hours.
 
-    > If any build issues occur, refer to [issues](https://github.com/zubxxr/multi-vehicle-framework/issues) or the Autoware community for possible solutions.
+    > If any build issues occur, refer to [issues](https://github.com/zubxxr/distributed-multi-autonomous-vehicle-architecture/issues) or the Autoware community for possible solutions.
     
 ---
 
@@ -237,7 +237,7 @@ This section is adapted from the official [AWSIM Labs Unity Setup Guide](https:/
 
     Copy the configuration file from the repository to the home directory:
     ```bash
-    cp ~/multi-vehicle-framework/cyclonedds.xml ~/cyclonedds.xml
+    cp ~/distributed-multi-autonomous-vehicle-architecture/cyclonedds.xml ~/cyclonedds.xml
     ```
 
     Add these lines to your `~/.bashrc`:
