@@ -20,25 +20,50 @@
     "ros2dds": {
       "nodename": "zenoh_vehicle2_bridge",
       "namespace": "/vehicle2",
-      deny: {
-      subscribers: ["/sensing/camera/traffic_light/camera_info", "/sensing/camera/traffic_light/image_raw", "/vehicle3/.*"],
-      publishers: ["/sensing/camera/traffic_light/camera_info", "/sensing/camera/traffic_light/image_raw", "/vehicle3/.*"], 
-      service_servers: [
-          ".*/set_parameters",
-          ".*/set_parameters_atomically",
-          ".*/describe_parameters",
-          ".*/get_parameter_types",
-          ".*/list_parameters",
-          ".*/get_parameters"
-      ],
-      service_clients: [
-          ".*/set_parameters",
-          ".*/set_parameters_atomically",
-          ".*/describe_parameters",
-          ".*/get_parameter_types",
-          ".*/list_parameters",
-          ".*/get_parameters"
-      ],
+      "deny": {
+        // =========================
+        // Topic traffic to deny
+        // =========================
+        "subscribers": [
+          "^/vehicle3/.*",
+          "^/perception/traffic_light_recognition/.*",
+          "^/rviz2/.*",
+          "^/system/topic_state_monitor_.*",
+          "^/parameter_events$",
+          "^/sensing/camera/traffic_light/.*"
+        ],
+
+        "publishers": [
+          "^/vehicle3/.*",
+          "^/perception/traffic_light_recognition/.*",
+          "^/rviz2/.*",
+          "^/system/topic_state_monitor_.*",
+          "^/parameter_events$",
+          "^/sensing/camera/traffic_light/.*"
+        ],
+
+        // =========================
+        // Services to deny
+        // =========================
+        "service_servers": [
+          "^/vehicle3/.*",
+          "^/perception/traffic_light_recognition/.*",
+          "^/rviz2/.*",
+          ".*/set_parameters.*",
+          ".*/get_parameters.*",
+          ".*/list_parameters.*",
+          ".*/describe_parameters.*"
+        ],
+
+        "service_clients": [
+          "^/vehicle3/.*",
+          "^/perception/traffic_light_recognition/.*",
+          "^/rviz2/.*",
+          ".*/set_parameters.*",
+          ".*/get_parameters.*",
+          ".*/list_parameters.*",
+          ".*/describe_parameters.*"
+        ]
       },
     }
   },
