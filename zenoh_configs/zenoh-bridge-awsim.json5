@@ -3,7 +3,7 @@
 // and community-shared configurations
 
 {
-  "connect": {
+  "listen": {
     "endpoints": ["tcp/0.0.0.0:7447"]
   },
   "transport": {
@@ -22,24 +22,42 @@
   "plugins": {
     "ros2dds": {
       deny: {
-      subscribers: ["/sensing/camera/traffic_light/camera_info", "/sensing/camera/traffic_light/image_raw"],
-      publishers: ["/sensing/camera/traffic_light/camera_info", "/sensing/camera/traffic_light/image_raw"], 
-      service_servers: [
-          ".*/set_parameters",
-          ".*/set_parameters_atomically",
-          ".*/describe_parameters",
-          ".*/get_parameter_types",
-          ".*/list_parameters",
-          ".*/get_parameters"
-      ],
-      service_clients: [
-          ".*/set_parameters",
-          ".*/set_parameters_atomically",
-          ".*/describe_parameters",
-          ".*/get_parameter_types",
-          ".*/list_parameters",
-          ".*/get_parameters"
-      ],
+        "subscribers": [
+          "^/perception/traffic_light_recognition/.*",
+          "^/rviz2/.*",
+          "^/system/topic_state_monitor_.*",
+          "^/parameter_events$",
+          "^/sensing/camera/traffic_light/.*"
+        ],
+
+        "publishers": [
+          "^/perception/traffic_light_recognition/.*",
+          "^/rviz2/.*",
+          "^/system/topic_state_monitor_.*",
+          "^/parameter_events$",
+          "^/sensing/camera/traffic_light/.*"
+        ],
+
+        // =========================
+        // Services to deny
+        // =========================
+        "service_servers": [
+          "^/perception/traffic_light_recognition/.*",
+          "^/rviz2/.*",
+          ".*/set_parameters.*",
+          ".*/get_parameters.*",
+          ".*/list_parameters.*",
+          ".*/describe_parameters.*"
+        ],
+
+        "service_clients": [
+          "^/perception/traffic_light_recognition/.*",
+          "^/rviz2/.*",
+          ".*/set_parameters.*",
+          ".*/get_parameters.*",
+          ".*/list_parameters.*",
+          ".*/describe_parameters.*"
+        ]
       }
     }
   }
