@@ -2,6 +2,10 @@
 
 This section outlines the software stack, hardware specifications, and machine roles. The architecture is built around a distributed, multi-host setup where each host handles specific tasks such as simulation, autonomous driving, and communication.
 
+## Workflow Architecture
+
+![Workflow Architecture](Workflow_Architecture.png)
+
 ## System-Level Container-Based Architecture
 
 ![Distributed Architecture](System_Architecture.png)
