@@ -32,6 +32,19 @@ Preprint: https://arxiv.org/abs/2601.16336
 
 ---
 
+
+## Demo Videos
+
+A playlist of recorded demonstrations showcasing multi-host, multi-vehicle execution using DMAVA is available below:
+
+**DMAVA Demo Playlist**  
+https://youtube.com/playlist?list=PL4MADLjXmDi2MWOM2Ulagf3Bk2z1ABV28
+
+The videos include distributed execution across multiple hosts, synchronized vehicle behavior, and end-to-end system operation under different configurations.
+
+---
+
+
 ## Getting Started and Documentation
 
 [https://zubxxr.github.io/distributed-multi-autonomous-vehicle-architecture/](https://zubxxr.github.io/distributed-multi-autonomous-vehicle-architecture/)
