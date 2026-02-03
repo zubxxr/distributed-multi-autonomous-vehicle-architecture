@@ -1,5 +1,5 @@
 site_name: DMAVA
-site_description: A real-time distributed simulation framework for autonomous multi-vehicle operations
+site_description: A real-time distributed simulation architecture for autonomous multi-vehicle operations
 site_url: https://zubxxr.github.io/distributed-multi-autonomous-vehicle-architecture
 
 repo_name: zubxxr/distributed-multi-autonomous-vehicle-architecture                  
@@ -62,12 +62,12 @@ nav:
     - Multi-Vehicle Simulation: GettingStarted/Multi-VehicleSimulation/index.md
   - Scalability: 
     - Scaling to More Vehicles: Scalability/ScalingToMoreVehicles/index.md
-    - Benchmarks: Scalability/Benchmarks/index.md
+    - System Performance & Network Characterization: Scalability/SystemPerformanceAndNetworkCharacterization/index.md
   - Extensions:
-    - Multi-Vehicle AVP (Autonomous Valet Parking): Extensions/Multi-VehicleAVP/index.md
+    - Multi-Vehicle AVP: Extensions/Multi-VehicleAVP/index.md
     - Future Work: Extensions/FutureWork/index.md
   - Developer Guide:
     - Quick Commands: DeveloperGuide/QuickCommands/index.md
-    - Mapping Workflow: DeveloperGuide/MappingWorkflow/index.md
-    - Lanelet Creation: DeveloperGuide/LaneletCreation/index.md
+    - Creating a Map: DeveloperGuide/CreatingMap/index.md
+    # - Lanelet Creation: DeveloperGuide/LaneletCreation/index.md
     - License: DeveloperGuide/License/index.md
