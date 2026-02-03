@@ -1,14 +1,8 @@
 # Scaling to More Vehicles
 
-The framework can be extended beyond two vehicles by adding more hosts and namespaces. However, during testing with the available machines, certain issues were encountered that impacted performance.  
+DMAVA can be extended beyond two vehicles by adding more hosts and namespaces. However, during testing with the available machines, issues were encountered that impacted performance.  
 
-Despite these constraints, the framework remained fully operational. Instructions are given below, as well as an example using a third host.
-
----
-
-## Requirements
-
-- Multiple physical machines (one Autoware instance per vehicle)
+Despite these constraints, DMAVA remained fully operational. Instructions are given below, as well as an example using a third host.
 
 ---
 
@@ -57,7 +51,7 @@ To evaluate the scalability of the proposed architecture, a **third host (Victus
 
       ![image](modify_ui_camera.png)
 
-4. Create a Zenoh configuration file for Vehicle 3 (similar to Host 2). The file is already provided here: [zenoh-bridge-vehicle3.json5](https://github.com/zubxxr/multi-vehicle-framework/blob/main/zenoh_configs/zenoh-bridge-vehicle3.json5).
+4. Create a Zenoh configuration file for Vehicle 3 (similar to Host 2). The file is already provided here: [zenoh-bridge-vehicle3.json5](https://github.com/zubxxr/multi-vehicle-architecture/blob/main/zenoh_configs/zenoh-bridge-vehicle3.json5).
 
 5. In each vehicle’s Zenoh configuration, explicitly deny the other vehicles’ topics to avoid cross-subscription.
 
@@ -74,10 +68,14 @@ To evaluate the scalability of the proposed architecture, a **third host (Victus
 
 ## Discussion
 
-During this three-host experiment, an issue was observed with the **Victus Laptop**. Unlike the other two vehicles, it did not begin moving immediately. At around **0:56 in the video**, when the first vehicle had already completed its route and the second was close to finishing, the third vehicle finally started driving.  
+During the three-host experiment, a delayed start was observed for the vehicle running on the **Victus laptop**. Unlike the other two vehicles, this vehicle did not begin moving immediately. At approximately **0:56 in the video**, after the first vehicle had completed its route and the second was nearing completion, the third vehicle finally initiated motion.
 
-This delay could be attributed to several factors. For example, the **Victus host’s lower available memory**, potential **traffic overhead on the Zenoh bridge**, or even some **unresolved issue in the execution pipeline**. While the exact cause remains unclear, the resource constraints likely played a role in the delayed response.  
+This delay was caused by **network-related factors**, specifically increased communication latency and instability affecting inter-host message delivery over the Zenoh bridge during multi-host operation. The behavior was not attributable to CPU or memory limitations on the Victus host.
 
-Further analysis of memory usage and host performance can be found in the [Benchmarks](../Benchmarks/index.md) section.
+This observation highlights the sensitivity of distributed multi-vehicle execution to network conditions, even when computational resources are sufficient across all hosts.
+
+Further discussion of host performance metrics and communication behavior is provided in the [System Performance & Network Characterization](../SystemPerformanceAndNetworkCharacterization/index.md) section.
+
+
 
 

@@ -4,10 +4,10 @@
 ![Autoware](https://img.shields.io/badge/Autoware-2024.11-blue?logo=autoware)
 ![AWSIM Labs](https://img.shields.io/badge/AWSIM%20Labs-Unity-green?logo=unity)
 ![ROS 2 Humble](https://img.shields.io/badge/ROS2-Humble-purple?logo=ros)
-![Zenoh](https://img.shields.io/badge/Zenoh-1.4.0-orange?logo=zenoh)
+![Zenoh](https://img.shields.io/badge/Zenoh-1.7.2-orange?logo=zenoh)
 ![License](https://img.shields.io/badge/License-Apache%202.0-blue?logo=apache)
 
-The **DMAVA** provides a complete setup for running **Autoware** and **AWSIM Labs** in a multi-host, multi-vehicle simulation environment.  
+**DMAVA** provides a complete setup for running **Autoware** and **AWSIM Labs** in a multi-host, multi-vehicle simulation environment.  
 
 It enables simulation of multiple autonomous vehicles across different physical machines while maintaining synchronized perception, localization, planning, and control.
 
@@ -23,14 +23,17 @@ It enables simulation of multiple autonomous vehicles across different physical 
 
 ## Extensions
 
-This framework has already been extended to support **[Automated Valet Parking (AVP)](Extensions/Multi-VehicleAVP/index.md)** as a working implementation.  
+DMAVA has already been extended to support **[Automated Valet Parking (AVP)](Extensions/Multi-VehicleAVP/index.md)** as a working implementation.  
 
-In addition, several other ideas are explored as possible directions for future **[Multi-Agent Implementations](Extensions/FutureWork/index.md)**. While not yet validated, these highlight the broader potential of the framework for distributed autonomous driving research.  
+In addition, several other ideas are explored as possible directions for future **[Multi-Agent Implementations](Extensions/FutureWork/index.md)**. While not yet validated, these highlight the broader potential of the architecture for distributed autonomous driving research.  
 
 
 ## Getting Started
 
-To get started with running the framework, see the [System Architecture](GettingStarted/SystemArchitecture/index.md) page.
+To get started with running the architecture, see the [System Architecture](GettingStarted/SystemArchitecture/index.md) page.
+
+## Developer Quick Commands
+
 
 For a condensed list of frequently used commands, see the [Developer Quick Commands](DeveloperGuide/QuickCommands/index.md) page.
 

@@ -46,7 +46,7 @@ AnyDesk provides lightweight remote access and file transfer between hosts.
 
 ### Repository Cloning
 
-Clone the main repository for this framework on **all hosts**.
+Clone the main repository for this architecture on **all hosts**.
 
 ```bash
 cd ~
@@ -345,7 +345,7 @@ After successful completion, the simulation will be running with two ego vehicle
 ### Zenoh Middleware
 
 [Zenoh](https://github.com/eclipse-zenoh/zenoh-plugin-ros2dds) is a lightweight communication middleware designed for data routing across networks. 
-In this framework, Zenoh bridges ROS 2 topics between multiple hosts, enabling real-time communication between AWSIM Labs and their respective Autoware instances running on separate machines.
+In this architecture, Zenoh bridges ROS 2 topics between multiple hosts, enabling real-time communication between AWSIM Labs and their respective Autoware instances running on separate machines.
 
 #### Design Considerations
 In this setup, AWSIM Labs simulates **two ego vehicles**, both publishing the same ROS 2 topics. To avoid collisions, one vehicle is assigned a topic namespace:
@@ -368,7 +368,7 @@ This ensures all topics are isolated. For the EgoVehicle_2 GameObject, open each
 
     ```bash
     cd ~
-    git clone https://github.com/eclipse-zenoh/zenoh-plugin-ros2dds -b release/1.4.0
+    git clone https://github.com/eclipse-zenoh/zenoh-plugin-ros2dds -b release/1.7.2
     cd ~/zenoh-plugin-ros2dds
     rustup update
     rosdep install --from-paths . --ignore-src -r -y

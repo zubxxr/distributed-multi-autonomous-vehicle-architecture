@@ -1,6 +1,6 @@
 # Developer Quick Commands
 
-This section provides frequently used commands for building, launching, and testing the framework. It is intended for developers who already have the environment set up and want a fast reference during iteration.
+This section provides frequently used commands for building, launching, and testing the architecture. It is intended for developers who already have the environment set up and want a fast reference during iteration.
 
 ## Host 1
 

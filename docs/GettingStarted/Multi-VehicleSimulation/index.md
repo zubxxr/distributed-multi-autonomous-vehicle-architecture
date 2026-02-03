@@ -30,7 +30,7 @@ Open Terminator with a **single tab**, then split it into two vertical panes.
 
 
 
-This layout provides a clean and organized workspace for operating the framework.  
+This layout provides a clean and organized workspace for operating the architecture.  
 
 ---
 
