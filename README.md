@@ -21,6 +21,16 @@ It enables simulation of multiple autonomous vehicles across different physical 
 
 ---
 
+## Related Publication
+This repository is part of the following paper:
+
+**DMAVA: Distributed Multi-Autonomous Vehicle Architecture Using Autoware**  
+Zubair Islam, Mohamed El-Darieby  
+*Accepted at IEEE Intelligent Vehicles Symposium (IV) 2026, awaiting publication*  
+
+Preprint: https://arxiv.org/abs/2601.16336
+
+
 ## Getting Started and Documentation
 
 [https://zubxxr.github.io/distributed-multi-autonomous-vehicle-architecture/](https://zubxxr.github.io/distributed-multi-autonomous-vehicle-architecture/)
